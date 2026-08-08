@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "home": "Home",
+    "submit": "Report Issue",
+    "track": "Track Complaint",
+    "constituency": "Constituency",
+    "learn": "Learn",
+    "about": "About",
+    "staffLogin": "Staff Login",
+    "language": "Language"
+  },
+  "hero": {
+    "headline": "Every Voice Matters. Every Issue Has a Path to Action.",
+    "subheadline": "A secure, AI-assisted platform that helps citizens report public-service issues and helps constituency representatives identify patterns, prioritize urgent cases, and coordinate responsible action.",
+    "ctaSubmit": "Submit a Grievance",
+    "ctaLearn": "Learn About the Constituency",
+    "ctaStaff": "Staff Access",
+    "badge": "AI-assisted · Human-reviewed · Public-service focused",
+    "disclaimer": "Proposed civic-technology platform · Not an official government website"
+  },
+  "submit": {
+    "title": "Report a Public Issue",
+    "subtitle": "Secure & Anonymous Grievance Submission",
+    "descLabel": "Describe the Issue",
+    "descPlaceholder": "What happened? Where? When? Describe in as much detail as possible.",
+    "mandalLabel": "Select Mandal",
+    "villageLabel": "Village / Ward (Optional)",
+    "deptLabel": "Concerned Department (if known)",
+    "mediaLabel": "Upload Evidence (Photos, Videos, Documents)",
+    "audioLabel": "Record / Upload Voice Message",
+    "submitBtn": "Submit Grievance Securely",
+    "submitting": "Processing...",
+    "success": "Grievance Submitted Successfully",
+    "successSub": "Please save your Complaint ID to track status:",
+    "successNote": "Your complaint has been received. An AI-generated preliminary assessment will be generated and human review will follow. You are not required to provide your identity.",
+    "returnHome": "Return to Home",
+    "trackComplaint": "Track this Complaint",
+    "anonymousNote": "Your identity remains anonymous. AI will analyze the submission to assist human reviewers.",
+    "aiDisclaimer": "AI-generated preliminary assessment. Not a legal finding."
+  },
+  "track": {
+    "title": "Track Your Complaint",
+    "subtitle": "Enter your Complaint ID to check status",
+    "idLabel": "Complaint ID",
+    "idPlaceholder": "e.g. SKT-2026-12345",
+    "searchBtn": "Check Status",
+    "notFound": "No complaint found with this ID. Please check and try again.",
+    "status": "Status"
+  },
+  "footer": {
+    "disclaimer": "This platform is a proposed civic-technology concept and is not an official government website unless formally authorized. AI-generated outputs are preliminary assessments only.",
+    "copyright": "Srikalahasti Praja Seva Intelligence Platform",
+    "builtFor": "Built for Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh."
+  },
+  "security": {
+    "tagline1": "Your complaint is visible only to authorized personnel assigned to review or act on it.",
+    "tagline2": "Access is protected by authentication, role permissions and audit logging.",
+    "tagline3": "Political branding does not control complaint priority, access or routing.",
+    "tagline4": "Uploaded evidence is not publicly displayed."
+  }
+}
