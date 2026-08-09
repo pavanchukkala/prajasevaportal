@@ -159,9 +159,33 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Equal Leadership & Legacy Gallery Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.75rem" }}>
-            {[mla, cm, lokesh, pm, ntr, father].map((item) => (
+          {/* Srikalahasti Constituency Legacy (Sudhir Reddy & Gopala Krishna Reddy Side-by-Side) */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem", marginBottom: "2.5rem" }}>
+            {[mla, father].map((item) => (
+              <div key={item.id} style={{
+                background: "#FDFBF7",
+                color: "#1C0A00",
+                border: "2px solid #B45309",
+                borderRadius: "20px",
+                padding: "1.75rem",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "0 12px 30px rgba(0,0,0,0.35)",
+              }}>
+                <div style={{ position: "relative", width: "100%", height: "280px", borderRadius: "14px", overflow: "hidden", marginBottom: "1.25rem", border: "2px solid #B45309" }}>
+                  <Image src={item.imagePath} alt={item.name} fill style={{ objectFit: "cover", objectPosition: "center top" }} />
+                </div>
+                <div style={{ fontSize: "0.78rem", color: "#B45309", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.35rem" }}>
+                  {item.role}
+                </div>
+                <h3 style={{ fontSize: "1.4rem", fontWeight: 900, color: "#1C0A00", margin: 0 }}>{item.name}</h3>
+              </div>
+            ))}
+          </div>
+
+          {/* State, Technology, National & Party Leadership Gallery */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.5rem" }}>
+            {[cm, lokesh, pm, ntr].map((item) => (
               <div key={item.id} style={{
                 background: "#FDFBF7",
                 color: "#1C0A00",
@@ -170,21 +194,15 @@ export default function HomePage() {
                 padding: "1.5rem",
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between",
-                boxShadow: "0 12px 30px rgba(0,0,0,0.35)",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
               }}>
-                <div>
-                  <div style={{ position: "relative", width: "100%", height: "230px", borderRadius: "14px", overflow: "hidden", marginBottom: "1.25rem", border: "2px solid #B45309" }}>
-                    <Image src={item.imagePath} alt={item.name} fill style={{ objectFit: "cover", objectPosition: "center top" }} />
-                  </div>
-                  <div style={{ fontSize: "0.75rem", color: "#B45309", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.35rem" }}>
-                    {item.role}
-                  </div>
-                  <h3 style={{ fontSize: "1.25rem", fontWeight: 900, color: "#1C0A00", marginBottom: "0.5rem" }}>{item.name}</h3>
+                <div style={{ position: "relative", width: "100%", height: "220px", borderRadius: "14px", overflow: "hidden", marginBottom: "1rem", border: "2px solid #B45309" }}>
+                  <Image src={item.imagePath} alt={item.name} fill style={{ objectFit: "cover", objectPosition: "center top" }} />
                 </div>
-                <div style={{ fontSize: "0.7rem", color: "#78350F", borderTop: "1px solid rgba(180,83,9,0.2)", paddingTop: "0.75rem", marginTop: "1rem" }}>
-                  {item.permissionStatus}
+                <div style={{ fontSize: "0.72rem", color: "#B45309", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.35rem" }}>
+                  {item.role}
                 </div>
+                <h3 style={{ fontSize: "1.2rem", fontWeight: 900, color: "#1C0A00", margin: 0 }}>{item.name}</h3>
               </div>
             ))}
           </div>
