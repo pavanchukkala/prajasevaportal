@@ -71,11 +71,11 @@ export default function HomePage() {
           style={{
             position: "absolute",
             top: "50%",
-            right: "2%",
+            right: "3%",
             transform: "translateY(-50%)",
-            width: "clamp(380px, 45vw, 650px)",
-            height: "clamp(380px, 45vw, 650px)",
-            opacity: 0.12,
+            width: "clamp(340px, 42vw, 580px)",
+            height: "clamp(340px, 42vw, 580px)",
+            opacity: 0.10,
             zIndex: 0,
             pointerEvents: "none",
           }}
@@ -83,12 +83,12 @@ export default function HomePage() {
           <Image
             src="/assets/symbols/civic-emblem.svg"
             alt="Praja Seva Official Emblem Watermark"
-            width={650}
-            height={650}
+            width={580}
+            height={580}
             priority
             style={{
               objectFit: "contain",
-              filter: "drop-shadow(0 0 30px var(--accent-teal))",
+              filter: "drop-shadow(0 0 25px rgba(13,148,136,0.18))",
             }}
           />
         </div>
@@ -123,30 +123,30 @@ export default function HomePage() {
           {/* Action CTAs */}
           <div style={{ display: "flex", gap: "1.25rem", flexWrap: "wrap", alignItems: "center" }}>
             <Link href="/submit" style={{
-              display: "inline-flex", alignItems: "center", gap: "0.6rem",
+              display: "inline-flex", alignItems: "center", gap: "0.5rem",
               background: "var(--accent-teal)",
               color: "#FFFFFF", fontWeight: 800, fontSize: "1rem",
               padding: "1.1rem 2.25rem", borderRadius: "9999px", textDecoration: "none",
               boxShadow: "0 4px 20px rgba(13,148,136,0.3)", transition: "transform 0.2s ease"
             }}>
-              <span>{t("home.submitGrievance", "Submit a Grievance")}</span>
-              <ArrowRight size={18} />
+              <span>{t("home.submitGrievance", "Submit a Grievance")} →</span>
             </Link>
 
             <Link href="/constituency" style={{
               display: "inline-flex", alignItems: "center", gap: "0.5rem",
               border: "1.5px solid var(--accent-gold)", color: "var(--accent-gold)",
-              backgroundColor: "var(--bg-elevated)", fontWeight: 700, fontSize: "0.95rem",
+              backgroundColor: "var(--bg-surface)", fontWeight: 700, fontSize: "0.95rem",
               padding: "1.1rem 2.25rem", borderRadius: "9999px", textDecoration: "none"
             }}>
-              {t("home.learnConstituency", "Explore Constituency")}
+              <span>{t("home.learnConstituency", "Learn About the Constituency")}</span>
             </Link>
 
             <Link href="/track" style={{
-              color: "var(--text-main)", fontWeight: 600, fontSize: "0.95rem",
-              padding: "1.1rem 1.5rem", textDecoration: "none"
+              display: "inline-flex", alignItems: "center", gap: "0.4rem",
+              color: "var(--text-main)", fontWeight: 700, fontSize: "0.95rem",
+              padding: "1.1rem 1.5rem", borderRadius: "9999px", textDecoration: "none"
             }}>
-              {t("home.trackComplaint", "Track Complaint →")}
+              <span>{isTe ? "ఫిర్యాదు ట్రాక్ చేయండి →" : "Track Complaint →"}</span>
             </Link>
           </div>
         </div>
