@@ -191,33 +191,9 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Srikalahasti Constituency Legacy (Sudhir Reddy & Gopala Krishna Reddy Side-by-Side) */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem", marginBottom: "2.5rem" }}>
-            {[mla, father].map((item) => (
-              <div key={item.id} style={{
-                background: "var(--bg-elevated)",
-                color: "var(--text-main)",
-                border: "1.5px solid var(--border-main)",
-                borderRadius: "20px",
-                padding: "1.75rem",
-                display: "flex",
-                flexDirection: "column",
-                boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-              }}>
-                <div style={{ position: "relative", width: "100%", height: "280px", borderRadius: "14px", overflow: "hidden", marginBottom: "1.25rem", border: "1.5px solid var(--border-main)" }}>
-                  <Image src={item.imagePath} alt={item.name} fill style={{ objectFit: "cover", objectPosition: "center top" }} />
-                </div>
-                <div style={{ fontSize: "0.78rem", color: "var(--accent-gold)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.35rem" }}>
-                  {item.role}
-                </div>
-                <h3 style={{ fontSize: "1.4rem", fontWeight: 900, color: "var(--text-main)", margin: 0 }}>{item.name}</h3>
-              </div>
-            ))}
-          </div>
-
-          {/* State, Technology, National & Party Leadership Gallery (Lokesh, Chandrababu, NTR, Modi) */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.5rem" }}>
-            {[lokesh, cm, ntr, pm].map((item) => (
+          {/* Unified Leadership Gallery (6 Cards with Equal Size & Visual Importance) */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.75rem" }}>
+            {[mla, father, lokesh, cm, ntr, pm].map((item) => (
               <div key={item.id} style={{
                 background: "var(--bg-elevated)",
                 color: "var(--text-main)",
@@ -227,14 +203,17 @@ export default function HomePage() {
                 display: "flex",
                 flexDirection: "column",
                 boxShadow: "0 6px 20px rgba(0,0,0,0.06)",
-              }}>
-                <div style={{ position: "relative", width: "100%", height: "220px", borderRadius: "14px", overflow: "hidden", marginBottom: "1rem", border: "1.5px solid var(--border-main)" }}>
+                transition: "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease",
+              }}
+              className="leadership-card"
+              >
+                <div style={{ position: "relative", width: "100%", height: "250px", borderRadius: "14px", overflow: "hidden", marginBottom: "1.25rem", border: "1.5px solid var(--border-main)" }}>
                   <Image src={item.imagePath} alt={item.name} fill style={{ objectFit: "cover", objectPosition: "center top" }} />
                 </div>
-                <div style={{ fontSize: "0.72rem", color: "var(--accent-gold)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.35rem" }}>
+                <div style={{ fontSize: "0.75rem", color: "var(--accent-gold)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.35rem" }}>
                   {item.role}
                 </div>
-                <h3 style={{ fontSize: "1.2rem", fontWeight: 900, color: "var(--text-main)", margin: 0 }}>{item.name}</h3>
+                <h3 style={{ fontSize: "1.35rem", fontWeight: 900, color: "var(--text-main)", margin: 0, lineHeight: 1.3 }}>{item.name}</h3>
               </div>
             ))}
           </div>

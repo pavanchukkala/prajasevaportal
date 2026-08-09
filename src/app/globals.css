@@ -88,8 +88,28 @@
 
   *:focus-visible {
     outline: 2px solid var(--accent-gold);
-    outline-offset: 2px;
+    outline-offset: 3px;
+    border-radius: 4px;
   }
+}
+
+/* ── PURPOSEFUL MOTION & ELEVATION UTILITIES ── */
+.leadership-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+.leadership-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--accent-gold) !important;
+  box-shadow: 0 12px 30px rgba(180, 83, 9, 0.18) !important;
+}
+
+.mandal-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+.mandal-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-teal) !important;
+  box-shadow: 0 10px 25px rgba(13, 148, 136, 0.18) !important;
 }
 
 /* Reduced motion preference override */
@@ -99,5 +119,8 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  .leadership-card:hover, .mandal-card:hover {
+    transform: none !important;
   }
 }
