@@ -138,6 +138,7 @@ interface SubmitResult {
 }
 
 import Navbar from "@/components/layout/Navbar";
+import Breadcrumb from "@/components/layout/Breadcrumb";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function SubmitPage() {
@@ -424,6 +425,7 @@ export default function SubmitPage() {
 
       {/* Nav */}
       <Navbar />
+      <Breadcrumb />
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: "700px", margin: "0 auto", padding: "2.5rem 1.5rem 5rem" }}>
 

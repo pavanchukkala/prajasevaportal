@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <rect width="400" height="400" fill="#0d2137" rx="16"/>
+  <circle cx="200" cy="200" r="175" fill="none" stroke="#d4a017" stroke-width="2.5"/>
+  <circle cx="200" cy="145" r="58" fill="#162f4a" stroke="#d4a017" stroke-width="2"/>
+  <path d="M 125 275 C 125 210, 275 210, 275 275 L 275 315 L 125 315 Z" fill="#162f4a" stroke="#d4a017" stroke-width="2"/>
+  <rect x="50" y="325" width="300" height="45" rx="8" fill="#060f1a" stroke="#d4a017" stroke-width="1.5"/>
+  <text x="200" y="346" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#fbbf24" text-anchor="middle">Sri Narendra Modi</text>
+  <text x="200" y="362" font-family="system-ui, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle">Hon'ble Prime Minister of India</text>
+</svg>

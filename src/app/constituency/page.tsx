@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
+import Breadcrumb from "@/components/layout/Breadcrumb";
 import { useLanguage } from "@/context/LanguageContext";
 
 const MANDAL_DATA = [
@@ -17,6 +18,7 @@ export default function ConstituencyPage() {
   return (
     <main style={{ minHeight: "100vh", background: "#060f1a", color: "#f0f4f8" }}>
       <Navbar />
+      <Breadcrumb />
 
       <section style={{ background: "linear-gradient(135deg, #060f1a 0%, #0D2137 100%)", padding: "5rem 1.5rem" }}>
         <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>

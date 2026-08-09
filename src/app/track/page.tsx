@@ -92,6 +92,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 import Navbar from "@/components/layout/Navbar";
+import Breadcrumb from "@/components/layout/Breadcrumb";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function TrackPage() {
@@ -149,6 +150,7 @@ export default function TrackPage() {
 
       {/* Nav */}
       <Navbar />
+      <Breadcrumb />
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: "640px", margin: "0 auto", padding: "3rem 1.5rem 6rem" }}>
 

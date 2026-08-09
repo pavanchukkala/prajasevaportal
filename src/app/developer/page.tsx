@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
+import Breadcrumb from "@/components/layout/Breadcrumb";
 import { developerConfig } from "@/config/developer";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -19,6 +20,7 @@ export default function DeveloperPage() {
 
       {/* Nav */}
       <Navbar />
+      <Breadcrumb />
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: "800px", margin: "0 auto", padding: "3rem 1.5rem 6rem" }}>
 
