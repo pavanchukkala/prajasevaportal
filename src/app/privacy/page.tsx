@@ -1,71 +1,49 @@
+"use client";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
-
-export const metadata = {
-  title: "Privacy Policy | Srikalahasti Praja Seva Intelligence Platform",
-};
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function PrivacyPage() {
+  const { language, t } = useLanguage();
+  const isTe = language === "te";
+
   return (
     <main style={{ minHeight: "100vh", background: "#060f1a", color: "#f0f4f8" }}>
       <Navbar />
 
       <section style={{ background: "linear-gradient(135deg, #060f1a 0%, #0D2137 100%)", padding: "4rem 1.5rem" }}>
         <div style={{ maxWidth: "700px", margin: "0 auto", textAlign: "center" }}>
-          <div style={{ fontSize: "0.7rem", color: "#D4A017", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.5rem" }}>Privacy & Data Protection</div>
-          <h1 style={{ fontSize: "2.5rem", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.03em", marginBottom: "1rem" }}>Privacy Policy</h1>
-          <p style={{ color: "#94a3b8" }}>Last updated: August 2026</p>
+          <div style={{ fontSize: "0.7rem", color: "#D4A017", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
+            {isTe ? "గోప్యతా విధి విధానాలు" : "Privacy & Data Protection"}
+          </div>
+          <h1 style={{ fontSize: "2.5rem", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.03em", marginBottom: "1rem" }}>
+            {t("privacyPage.title")}
+          </h1>
+          <p style={{ color: "#94a3b8" }}>{t("privacyPage.subtitle")}</p>
         </div>
       </section>
 
       <section style={{ padding: "4rem 1.5rem" }}>
-        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <div style={{ maxWidth: "800px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "2rem" }}>
           {[
             {
-              title: "1. What We Collect",
-              content: "When you submit a complaint, we collect: your complaint description, location (mandal and village if provided), selected department, and any evidence files you upload (photos, audio, video, documents). We do NOT require your name, phone number, Aadhaar, or email address. Submissions are anonymous by design.",
+              title: isTe ? "1. సంప్రదింపు గోప్యత" : "1. Confidential Contact Handling",
+              desc: isTe ? "మీ మొబైల్ సంఖ్య కేవలం ఫిర్యాదు ID మరియు స్థితి నవీకరణలను పంపడానికి మాత్రమే ఉపయోగించబడుతుంది. ఇది బహిరంగంగా ఎప్పుడూ చూపబడదు." : "Mobile numbers are collected strictly for notification purposes. Raw mobile numbers are never exposed in public API responses."
             },
             {
-              title: "2. How Your Data Is Used",
-              content: "Your submission is processed by an AI system that generates a preliminary structural assessment (category, urgency, credibility indicators). This assessment is a prioritization tool only. The complaint and assessment are then made available to authorized constituency staff for human review. Your data is never sold, shared publicly, or used for advertising.",
+              title: isTe ? "2. అనామక సమర్పణలు" : "2. Anonymous Reporting Option",
+              desc: isTe ? "పౌరులు ఎలాంటి సంప్రదింపు వివరాలు ఇవ్వకుండా ఫిర్యాదులు సమర్పించవచ్చు. అనామక సమర్పణలలో మొబైల్ సంఖ్య నిల్వ చేయబడదు." : "Citizens may choose to submit complaints anonymously without providing phone numbers or email addresses."
             },
             {
-              title: "3. Evidence Files",
-              content: "Uploaded evidence files are stored securely and are NOT publicly accessible. They are only visible to authorized reviewers assigned to your case. Evidence URLs are signed and time-limited. We recommend you do not upload documents containing sensitive personal information (Aadhaar, bank details, medical records) unless directly relevant to the complaint.",
-            },
-            {
-              title: "4. Access Control",
-              content: "Your complaint is visible only to authorized personnel assigned to review or act on it. Access is controlled by authentication, role-based permissions and audit logging. Political branding and party affiliation do not affect who can see your complaint or how it is prioritized.",
-            },
-            {
-              title: "5. AI Processing",
-              content: "AI-generated outputs are preliminary assessments only. The AI does not determine guilt, confirm the truth of allegations, or trigger automatic action. All AI outputs are labeled as preliminary assessments requiring human review. The AI disclaimer is always visible alongside any AI output.",
-            },
-            {
-              title: "6. Data Retention",
-              content: "In the current demonstration phase, all complaint data is mock/sample data. In production, complaints will be retained for a minimum period required for accountability tracking and deleted in accordance with a formal data retention policy. Citizens may request deletion of their complaint subject to legal and accountability requirements.",
-            },
-            {
-              title: "7. Contact",
-              content: "For privacy-related questions, please use the Contact page. This platform is a proposed civic-technology initiative and is not an official government website unless formally authorized.",
-            },
-          ].map((s, i) => (
-            <div key={i} style={{ marginBottom: "2.5rem" }}>
-              <h2 style={{ fontWeight: 700, color: "#D4A017", fontSize: "1.1rem", marginBottom: "0.75rem" }}>{s.title}</h2>
-              <p style={{ color: "#94a3b8", lineHeight: 1.8, fontSize: "0.95rem" }}>{s.content}</p>
+              title: isTe ? "3. ఆధారాల పరిరక్షణ" : "3. Evidence Privacy",
+              desc: isTe ? "అప్‌లోడ్ చేసిన ఫొటోలు మరియు పత్రాలు అధికారిక సిబ్బందికి మాత్రమే లభిస్తాయి. ఇవి బహిరంగంగా ప్రదర్శించబడవు." : "Uploaded photos, audio recordings, and documents are accessible strictly to authorized review staff."
+            }
+          ].map(section => (
+            <div key={section.title} style={{ background: "rgba(13,33,55,0.5)", border: "1px solid rgba(212,160,23,0.12)", borderRadius: "16px", padding: "2rem" }}>
+              <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#D4A017", marginBottom: "0.75rem" }}>{section.title}</h2>
+              <p style={{ color: "#94a3b8", lineHeight: 1.7, fontSize: "0.95rem" }}>{section.desc}</p>
             </div>
           ))}
-
-          <div style={{ background: "rgba(212,160,23,0.06)", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "12px", padding: "1.5rem", marginTop: "2rem" }}>
-            <p style={{ color: "#94a3b8", fontSize: "0.85rem", lineHeight: 1.7 }}>
-              <strong style={{ color: "#D4A017" }}>Disclaimer:</strong> This platform is a proposed civic-technology concept and is not an official government website unless formally authorized. Data handling practices in the full production version must comply with applicable Indian data protection laws including the Digital Personal Data Protection Act (DPDPA) 2023.
-            </p>
-          </div>
-
-          <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-            <Link href="/security" style={{ color: "#D4A017", textDecoration: "none", fontSize: "0.9rem" }}>Security Policy →</Link>
-            <Link href="/contact" style={{ color: "#D4A017", textDecoration: "none", fontSize: "0.9rem" }}>Contact Us →</Link>
-          </div>
         </div>
       </section>
     </main>

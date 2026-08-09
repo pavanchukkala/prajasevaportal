@@ -1,15 +1,13 @@
+"use client";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import { developerConfig } from "@/config/developer";
-
-export const metadata = {
-  title: "Meet the Developer | Srikalahasti Praja Seva",
-  description:
-    "Learn about the civic-technology initiative behind the Srikalahasti Praja Seva Intelligence Platform.",
-};
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function DeveloperPage() {
   const dev = developerConfig;
+  const { language, t } = useLanguage();
+  const isTe = language === "te";
 
   return (
     <main style={{ minHeight: "100vh", background: "#04091A", color: "#f0f4f8" }}>
@@ -26,12 +24,15 @@ export default function DeveloperPage() {
 
         {/* Hero */}
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-          {/* Avatar */}
           <div style={{ width: "100px", height: "100px", borderRadius: "50%", background: "linear-gradient(135deg, rgba(212,160,23,0.15), rgba(96,165,250,0.15))", border: "2px solid rgba(212,160,23,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.5rem", fontSize: "2.5rem", fontWeight: 900, color: "#D4A017", boxShadow: "0 0 30px rgba(212,160,23,0.1)" }}>
             {dev.name.split(" ").map(n => n[0]).join("")}
           </div>
-          <h1 style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.025em", marginBottom: "0.5rem" }}>{dev.name}</h1>
-          <div style={{ color: "#D4A017", fontWeight: 600, marginBottom: "0.5rem" }}>{dev.title}</div>
+          <h1 style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.025em", marginBottom: "0.5rem" }}>
+            {isTe ? "పవన్ చుక్కల" : dev.name}
+          </h1>
+          <div style={{ color: "#D4A017", fontWeight: 600, marginBottom: "0.5rem" }}>
+            {isTe ? "పౌర-సాంకేతిక సాఫ్ట్‌వేర్ ఇంజనీర్" : dev.title}
+          </div>
           {dev.location && (
             <div style={{ color: "#64748b", fontSize: "0.9rem" }}>📍 {dev.location}</div>
           )}
@@ -39,19 +40,28 @@ export default function DeveloperPage() {
 
         {/* Platform context badge */}
         <div style={{ background: "rgba(212,160,23,0.05)", border: "1px solid rgba(212,160,23,0.15)", borderRadius: "12px", padding: "1rem 1.5rem", marginBottom: "2rem", textAlign: "center" }}>
-          <div style={{ fontSize: "0.65rem", color: "#D4A017", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: "0.25rem" }}>Platform Context</div>
-          <div style={{ color: "#94a3b8", fontSize: "0.9rem" }}>{dev.platformContext}</div>
+          <div style={{ fontSize: "0.65rem", color: "#D4A017", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, marginBottom: "0.25rem" }}>
+            {t("developerPopup.platformLabel", "Platform Context")}
+          </div>
+          <div style={{ color: "#94a3b8", fontSize: "0.9rem" }}>
+            {isTe ? "శ్రీకాళహస్తి అసెంబ్లీ నియోజకవర్గం కోసం ప్రతిపాదించిన పౌర-సాంకేతిక వేదిక." : dev.platformContext}
+          </div>
         </div>
 
         {/* Story */}
         <div style={{ background: "rgba(13,33,55,0.55)", border: "1px solid rgba(212,160,23,0.12)", borderRadius: "20px", padding: "2rem", marginBottom: "1.5rem", backdropFilter: "blur(16px)" }}>
-          <h2 style={{ fontWeight: 800, color: "#ffffff", marginBottom: "1.25rem", fontSize: "1.1rem" }}>About This Initiative</h2>
-          <p style={{ color: "#94a3b8", lineHeight: 1.8, marginBottom: "1rem", fontSize: "0.95rem" }}>{dev.longStory}</p>
+          <h2 style={{ fontWeight: 800, color: "#ffffff", marginBottom: "1.25rem", fontSize: "1.1rem" }}>
+            {isTe ? "ఈ ప్రయత్నం గురించి" : "About This Initiative"}
+          </h2>
+          <p style={{ color: "#94a3b8", lineHeight: 1.8, marginBottom: "1rem", fontSize: "0.95rem" }}>
+            {isTe ? "శ్రీకాళహస్తి పౌరులు తమ సమస్యలను నివేదించడానికి మరియు ప్రజా పారదర్శకతను పెంచడానికి ఈ ప్లాట్‌ఫారమ్ అభివృద్ధి చేయబడింది." : dev.longStory}
+          </p>
           <div style={{ background: "rgba(4,9,26,0.5)", borderRadius: "12px", padding: "1rem", border: "1px solid rgba(255,255,255,0.04)" }}>
-            <div style={{ fontSize: "0.65rem", color: "#475569", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: "0.5rem" }}>Disclaimer</div>
+            <div style={{ fontSize: "0.65rem", color: "#475569", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: "0.5rem" }}>
+              {isTe ? "గమనిక" : "Disclaimer"}
+            </div>
             <p style={{ color: "#475569", fontSize: "0.8rem", lineHeight: 1.6, margin: 0 }}>
-              This is a proposed civic-technology initiative. It is not an official government portal and has not been formally authorized by any elected representative or government body.
-              All content referencing political leaders is presentational and does not imply endorsement.
+              {t("common.proposedNotice")}
             </p>
           </div>
         </div>
@@ -59,32 +69,18 @@ export default function DeveloperPage() {
         {/* Values */}
         {dev.values.length > 0 && (
           <div style={{ background: "rgba(13,33,55,0.4)", border: "1px solid rgba(212,160,23,0.1)", borderRadius: "16px", padding: "1.75rem", marginBottom: "1.5rem" }}>
-            <h2 style={{ fontWeight: 800, color: "#ffffff", marginBottom: "1.25rem", fontSize: "1rem" }}>Platform Values</h2>
+            <h2 style={{ fontWeight: 800, color: "#ffffff", marginBottom: "1.25rem", fontSize: "1rem" }}>
+              {t("developerPopup.valuesLabel", "Platform Values")}
+            </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               {dev.values.map((v, i) => (
                 <div key={i} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                   <span style={{ color: "#D4A017", flexShrink: 0, marginTop: "2px" }}>◆</span>
-                  <span style={{ color: "#94a3b8", fontSize: "0.9rem", lineHeight: 1.5 }}>{v}</span>
+                  <span style={{ color: "#94a3b8", fontSize: "0.9rem", lineHeight: 1.5 }}>
+                    {isTe ? (i === 0 ? "పౌర గోప్యత ప్రథమ ప్రాధాన్యం" : i === 1 ? "పారదర్శక AI అంచనాలు" : i === 2 ? "రక్షిత ప్రజా సేవా నిర్వహణ" : v) : v}
+                  </span>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        {/* What was built */}
-        {dev.approvedFacts.length > 0 && (
-          <div style={{ background: "rgba(13,33,55,0.4)", border: "1px solid rgba(96,165,250,0.1)", borderRadius: "16px", padding: "1.75rem", marginBottom: "1.5rem" }}>
-            <h2 style={{ fontWeight: 800, color: "#ffffff", marginBottom: "1.25rem", fontSize: "1rem" }}>What Was Built</h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-              {dev.approvedFacts.map((f, i) => (
-                <div key={i} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
-                  <span style={{ color: "#22c55e", flexShrink: 0, marginTop: "3px", fontSize: "0.8rem" }}>✓</span>
-                  <span style={{ color: "#94a3b8", fontSize: "0.88rem", lineHeight: 1.5 }}>{f}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ marginTop: "1rem", fontSize: "0.72rem", color: "#334155", lineHeight: 1.6 }}>
-              ℹ Only approved, verifiable facts are listed here. No biographical details, work history, awards or credentials have been invented or assumed.
             </div>
           </div>
         )}
@@ -106,10 +102,10 @@ export default function DeveloperPage() {
         {/* CTA */}
         <div style={{ textAlign: "center" }}>
           <Link href="/submit" style={{ display: "inline-block", background: "linear-gradient(135deg, #D4A017, #F3E5AB)", color: "#04091A", fontWeight: 700, padding: "0.875rem 2rem", borderRadius: "9999px", textDecoration: "none", marginRight: "1rem" }}>
-            Try the Platform →
+            {t("home.submitGrievance")}
           </Link>
           <Link href="/" style={{ display: "inline-block", border: "1px solid rgba(212,160,23,0.25)", color: "#D4A017", fontWeight: 600, padding: "0.875rem 2rem", borderRadius: "9999px", textDecoration: "none" }}>
-            ← Back Home
+            {t("nav.backHome")}
           </Link>
         </div>
       </div>

@@ -1,21 +1,27 @@
+"use client";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
-
-export const metadata = {
-  title: "Citizen Education Centre | Srikalahasti Praja Seva",
-  description: "Learn how to report public issues, understand departments, submit useful complaints, and protect your information.",
-};
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function LearnPage() {
+  const { language, t } = useLanguage();
+  const isTe = language === "te";
+
   return (
     <main style={{ minHeight: "100vh", background: "#060f1a", color: "#f0f4f8" }}>
       <Navbar />
 
       <section style={{ background: "linear-gradient(135deg, #060f1a 0%, #0D2137 100%)", padding: "5rem 1.5rem" }}>
         <div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
-          <div style={{ fontSize: "0.7rem", color: "#D4A017", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.5rem" }}>Citizen Education Centre</div>
-          <h1 style={{ fontSize: "3rem", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.03em", marginBottom: "1.25rem" }}>Know Your Rights. Report Effectively.</h1>
-          <p style={{ color: "#94a3b8", fontSize: "1.1rem", lineHeight: 1.7 }}>Understanding how to report an issue, what evidence is useful, and which department to approach makes every complaint more likely to be acted upon.</p>
+          <div style={{ fontSize: "0.7rem", color: "#D4A017", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
+            {isTe ? "పౌర విద్యా కేంద్రం" : "Citizen Education Centre"}
+          </div>
+          <h1 style={{ fontSize: "3rem", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.03em", marginBottom: "1.25rem" }}>
+            {t("learn.title")}
+          </h1>
+          <p style={{ color: "#94a3b8", fontSize: "1.1rem", lineHeight: 1.7 }}>
+            {t("learn.subtitle")}
+          </p>
         </div>
       </section>
 
@@ -24,39 +30,43 @@ export default function LearnPage() {
           {[
             {
               icon: "📝",
-              title: "How to Submit an Effective Complaint",
-              desc: "A clear, factual complaint with date, location and evidence is far more effective than a vague allegation. Learn what to include.",
+              title: t("learn.howToTitle"),
+              desc: t("learn.howToDesc"),
               href: "/learn/how-to-complain",
-              cta: "Read Guide →",
+              cta: isTe ? "మార్గదర్శిని చదవండి →" : "Read Guide →",
             },
             {
               icon: "📸",
-              title: "Evidence Guide",
-              desc: "What evidence is useful, how to preserve it, and what NOT to upload. Your safety and the quality of the report both matter.",
+              title: t("learn.evidenceTitle"),
+              desc: t("learn.evidenceDesc"),
               href: "/learn/evidence",
-              cta: "Read Guide →",
+              cta: isTe ? "మార్గదర్శిని చదవండి →" : "Read Guide →",
             },
             {
-              icon: "🏛️",
-              title: "Department Directory",
-              desc: "Which government department handles which type of issue? Find the right office before you submit.",
+              icon: "🏢",
+              title: t("learn.deptsTitle"),
+              desc: t("learn.deptsDesc"),
               href: "/learn/departments",
-              cta: "View Directory →",
+              cta: isTe ? "విభాగాలను చూడండి →" : "View Directory →",
             },
             {
-              icon: "💰",
-              title: "Government Welfare Schemes",
-              desc: "Understand what benefits and schemes you may be entitled to, and what to do if they are not reaching you.",
+              icon: "🤝",
+              title: t("learn.welfareTitle"),
+              desc: t("learn.welfareDesc"),
               href: "/learn/welfare",
-              cta: "Learn More →",
+              cta: isTe ? "పథకాలను చూడండి →" : "Explore Schemes →",
             },
-          ].map(c => (
-            <Link key={c.href} href={c.href} style={{ background: "rgba(13,33,55,0.5)", border: "1px solid rgba(212,160,23,0.12)", borderRadius: "16px", padding: "2rem", textDecoration: "none", display: "block", transition: "border-color 0.2s" }}>
-              <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>{c.icon}</div>
-              <h3 style={{ fontWeight: 700, color: "#ffffff", marginBottom: "0.75rem", fontSize: "1.1rem" }}>{c.title}</h3>
-              <p style={{ color: "#94a3b8", lineHeight: 1.6, fontSize: "0.9rem", marginBottom: "1.5rem" }}>{c.desc}</p>
-              <span style={{ color: "#D4A017", fontWeight: 700, fontSize: "0.85rem" }}>{c.cta}</span>
-            </Link>
+          ].map(item => (
+            <div key={item.href} style={{ background: "rgba(13,33,55,0.5)", border: "1px solid rgba(212,160,23,0.12)", borderRadius: "16px", padding: "2rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+              <div>
+                <div style={{ fontSize: "2.25rem", marginBottom: "1rem" }}>{item.icon}</div>
+                <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#ffffff", marginBottom: "0.75rem" }}>{item.title}</h2>
+                <p style={{ color: "#64748b", fontSize: "0.9rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>{item.desc}</p>
+              </div>
+              <Link href={item.href} style={{ color: "#D4A017", fontWeight: 700, textDecoration: "none", fontSize: "0.88rem" }}>
+                {item.cta}
+              </Link>
+            </div>
           ))}
         </div>
       </section>

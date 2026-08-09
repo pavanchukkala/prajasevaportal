@@ -40,10 +40,28 @@
     "howItWorksTitle": "From Citizen Voice to Responsible Action",
     "howItWorksSub": "A transparent, predictable process for every submission.",
     "step1": "Citizen Submits",
+    "step1Desc": "Secure text, audio, or image submission. Identity optional.",
     "step2": "Secure Storage",
+    "step2Desc": "Unique ID generated. Evidence encrypted. Tracking code issued.",
     "step3": "AI Processing",
+    "step3Desc": "Classification, credibility indicators, department routing.",
     "step4": "Human Review",
-    "step5": "Authority Notified"
+    "step4Desc": "Authorized reviewer validates AI assessment.",
+    "step5": "Authority Notified",
+    "step5Desc": "Department receives brief. MLA office monitors SLA.",
+    "leadershipBadge": "Technology in Service of Public Responsibility",
+    "leadershipQuote": "Our commitment is to bring transparent, accountable, and accessible governance to every citizen of Srikalahasti.",
+    "constituencyBadge": "Constituency No. 168",
+    "electedBadge": "Elected 2024",
+    "partyBadge": "TDP",
+    "memoriamBadge": "In Memoriam",
+    "legacyQuote": "A legacy remembered. A constituency reimagined.",
+    "securityTitle": "Designed to Protect Citizens",
+    "securityDesc": "Built with strict privacy, authentication, and role permissions.",
+    "securityItem1": "Your complaint is visible only to authorized personnel assigned to review or act on it.",
+    "securityItem2": "Access is protected by authentication, role permissions and audit logging.",
+    "securityItem3": "Political branding does not control complaint priority, access or routing.",
+    "securityItem4": "Uploaded evidence is not publicly displayed."
   },
   "submit": {
     "badge": "Secure Submission · Anonymous Option Available",
@@ -100,6 +118,50 @@
     "historyLabel": "Status History",
     "aiLabel": "AI Preliminary Assessment",
     "privacyNote": "Only safe status information is shown here. Mobile numbers, reviewer identities and internal notes are never displayed."
+  },
+  "about": {
+    "title": "A Civic-Technology Initiative for Srikalahasti",
+    "subtitle": "This platform was designed and built as a proposed civic-technology initiative to connect citizen evidence, responsible AI analysis, and constituency-level public service coordination.",
+    "visionTitle": "Product Vision",
+    "visionDesc": "An AI-assisted citizen grievance and constituency intelligence platform for Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh.",
+    "aiRoleTitle": "AI Role",
+    "aiRoleDesc": "The AI layer structures, classifies and prioritizes. It does not judge. All AI outputs are preliminary assessments that require qualified human review before any action is taken.",
+    "privacyTitle": "Privacy First",
+    "privacyDesc": "Citizens may submit anonymously. Evidence is not publicly displayed. Access is controlled by authentication, role permissions and audit logging.",
+    "safetyTitle": "AI Safety",
+    "safetyDesc": "AI outputs must never declare guilt, accuse individuals, replace police investigation, or replace courts. Language is deliberately careful: credibility indicators, not truth determinations."
+  },
+  "learn": {
+    "title": "Know Your Rights. Report Effectively.",
+    "subtitle": "Understanding how to report an issue, what evidence is useful, and which department to approach makes every complaint more likely to be acted upon.",
+    "howToTitle": "How to Submit an Effective Complaint",
+    "howToDesc": "A clear, factual complaint with date, location and evidence is far more effective than a vague allegation.",
+    "evidenceTitle": "Evidence Guide",
+    "evidenceDesc": "What evidence is useful, how to preserve it, and what NOT to upload.",
+    "deptsTitle": "Which Department Handles What?",
+    "deptsDesc": "Directory of active constituency departments and their responsibilities.",
+    "welfareTitle": "Welfare Schemes & Eligibility",
+    "welfareDesc": "Key public welfare programs, eligibility criteria, and grievance paths."
+  },
+  "constituency": {
+    "title": "Srikalahasti Assembly Constituency No. 168",
+    "subtitle": "Comprising four mandals in Tirupati District, Andhra Pradesh with 3.13 lakh citizens.",
+    "mandalsTitle": "Four Assembly Mandals",
+    "mandalsDesc": "Srikalahasti, Renigunta, Yerpedu, and Thottambedu.",
+    "servicesTitle": "Constituency Services Directory",
+    "servicesDesc": "Key departments and public infrastructure active across Srikalahasti."
+  },
+  "contact": {
+    "title": "Contact & Assistance",
+    "subtitle": "For platform assistance, feedback, or technical queries."
+  },
+  "privacyPage": {
+    "title": "Privacy & Data Protection Policy",
+    "subtitle": "How citizen data, uploaded evidence, and mobile numbers are stored securely and masked."
+  },
+  "securityPage": {
+    "title": "Security Architecture & Controls",
+    "subtitle": "Role-based access, audit trails, and strict data protection standards."
   },
   "developerPopup": {
     "btn": "👨‍💻 Meet the Developer",
