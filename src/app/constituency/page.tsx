@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Navbar from "@/components/layout/Navbar";
 import { geographyConfig } from "@/config/geography";
 
 export const metadata = {
@@ -16,13 +17,7 @@ const MANDAL_DATA = [
 export default function ConstituencyPage() {
   return (
     <main style={{ minHeight: "100vh", background: "#060f1a", color: "#f0f4f8" }}>
-      <nav style={{ background: "rgba(6,15,26,0.95)", borderBottom: "1px solid rgba(212,160,23,0.15)", backdropFilter: "blur(20px)", position: "sticky", top: 0, zIndex: 50, padding: "1rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link href="/" style={{ color: "#D4A017", textDecoration: "none", fontWeight: 700 }}>← Praja Seva</Link>
-        <div style={{ display: "flex", gap: "1.5rem" }}>
-          <Link href="/constituency/mandals" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.85rem" }}>Mandals</Link>
-          <Link href="/constituency/services" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.85rem" }}>Services</Link>
-        </div>
-      </nav>
+      <Navbar />
 
       <section style={{ background: "linear-gradient(135deg, #060f1a 0%, #0D2137 100%)", padding: "5rem 1.5rem" }}>
         <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>

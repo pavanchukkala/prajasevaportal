@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Navbar from "@/components/layout/Navbar";
 
 export const metadata = {
   title: "Security | Srikalahasti Praja Seva Intelligence Platform",
@@ -7,9 +8,7 @@ export const metadata = {
 export default function SecurityPage() {
   return (
     <main style={{ minHeight: "100vh", background: "#060f1a", color: "#f0f4f8" }}>
-      <nav style={{ background: "rgba(6,15,26,0.95)", borderBottom: "1px solid rgba(212,160,23,0.15)", backdropFilter: "blur(20px)", position: "sticky", top: 0, zIndex: 50, padding: "1rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link href="/" style={{ color: "#D4A017", textDecoration: "none", fontWeight: 700 }}>← Praja Seva</Link>
-      </nav>
+      <Navbar />
 
       <section style={{ background: "linear-gradient(135deg, #060f1a 0%, #0D2137 100%)", padding: "4rem 1.5rem" }}>
         <div style={{ maxWidth: "700px", margin: "0 auto", textAlign: "center" }}>
