@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="tdpYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFEB3B"/>
+      <stop offset="100%" stop-color="#FBC02D"/>
+    </linearGradient>
+    <linearGradient id="tdpRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E53935"/>
+      <stop offset="100%" stop-color="#B71C1C"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="95" fill="url(#tdpYellow)" stroke="#F57F17" stroke-width="4"/>
+  <circle cx="100" cy="100" r="86" fill="none" stroke="url(#tdpRed)" stroke-width="3" stroke-dasharray="8 4"/>
+  <!-- Bicycle Frame -->
+  <g stroke="url(#tdpRed)" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Rear Wheel -->
+    <circle cx="55" cy="125" r="28" stroke-width="6"/>
+    <circle cx="55" cy="125" r="3" fill="#B71C1C"/>
+    <!-- Front Wheel -->
+    <circle cx="145" cy="125" r="28" stroke-width="6"/>
+    <circle cx="145" cy="125" r="3" fill="#B71C1C"/>
+    <!-- Frame Triangles -->
+    <polygon points="55,125 90,125 72,80"/>
+    <polygon points="90,125 140,85 72,80"/>
+    <!-- Seat Post & Saddle -->
+    <line x1="72" y1="80" x2="68" y2="68"/>
+    <path d="M 58 68 L 78 68" stroke-width="8"/>
+    <!-- Handlebars -->
+    <line x1="140" y1="85" x2="135" y2="60"/>
+    <path d="M 125 60 L 145 60 L 150 68" stroke-width="6"/>
+    <!-- Chain & Pedal -->
+    <circle cx="90" cy="125" r="10" stroke-width="3"/>
+  </g>
+  <!-- Party Label -->
+  <text x="100" y="175" text-anchor="middle" font-family="'Inter', sans-serif" font-weight="900" font-size="16" fill="#B71C1C" letter-spacing="1">TELUGU DESAM</text>
+</svg>

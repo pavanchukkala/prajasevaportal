@@ -6,8 +6,8 @@ import { useLanguage } from "@/context/LanguageContext";
 
 export default function HomePage() {
   const rep = leadershipConfig.currentRepresentative;
+  const leaders = leadershipConfig.stateAndNationalLeaders;
   const { language, t } = useLanguage();
-
   const isTe = language === "te";
 
   return (
@@ -16,21 +16,26 @@ export default function HomePage() {
       {/* ── NAVBAR ── */}
       <Navbar />
 
-      {/* ── TRICOLOR BAR ── */}
-      <div style={{ height: "3px", background: "linear-gradient(90deg, #FF9933 0%, #FF9933 33.3%, #ffffff 33.3%, #ffffff 66.6%, #138808 66.6%, #138808 100%)" }} />
+      {/* ── 1. PRESENTATION RIBBON (INDIAN TRICOLOR MOTIF) ── */}
+      <div style={{ height: "4px", background: "linear-gradient(90deg, #FF9933 0%, #FF9933 33.3%, #ffffff 33.3%, #ffffff 66.6%, #138808 66.6%, #138808 100%)" }} />
 
-      {/* ── HERO ── */}
+      {/* ── 2. HOMEPAGE HERO WITH SRIKALAHASTI TEMPLE VISUAL & CIVIC EMBLEM ── */}
       <section style={{ position: "relative", minHeight: "90vh", display: "flex", flexDirection: "column", justifyContent: "center", overflow: "hidden", background: "linear-gradient(135deg, #060f1a 0%, #0D2137 50%, #081424 100%)" }}>
 
         {/* Background ambient glows */}
         <div style={{ position: "absolute", top: "20%", left: "10%", width: "500px", height: "500px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,160,23,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: "20%", right: "10%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(30,136,229,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
 
+        {/* Decorative Civic Emblem Watermark */}
+        <div style={{ position: "absolute", right: "5%", top: "15%", opacity: 0.08, pointerEvents: "none", width: "400px", height: "400px" }}>
+          <img src={leadershipConfig.branding.civicEmblem} alt="Civic Emblem" style={{ width: "100%", height: "100%" }} />
+        </div>
+
         <div style={{ position: "relative", zIndex: 10, maxWidth: "1280px", margin: "0 auto", padding: "6rem 1.5rem 8rem" }}>
 
           {/* Platform badge */}
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.4rem 1rem", borderRadius: "9999px", border: "1px solid rgba(212,160,23,0.25)", background: "rgba(212,160,23,0.08)", marginBottom: "2rem" }}>
-            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#D4A017", boxShadow: "0 0 8px #D4A017" }} />
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.75rem", padding: "0.4rem 1.2rem", borderRadius: "9999px", border: "1px solid rgba(212,160,23,0.3)", background: "rgba(212,160,23,0.08)", marginBottom: "2rem" }}>
+            <img src={leadershipConfig.branding.civicEmblem} alt="Emblem" style={{ width: "20px", height: "20px" }} />
             <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#D4A017", letterSpacing: "0.15em", textTransform: "uppercase" }}>
               {t("common.proposedNotice", "Proposed Civic Technology · Not an Official Government Portal")}
             </span>
@@ -158,7 +163,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── LEADERSHIP SECTION ── */}
+      {/* ── 3. LEADERSHIP SECTION (MLA + TDP EMBLEM) ── */}
       <section style={{ padding: "6rem 1.5rem", backgroundColor: "#060f1a", borderTop: "1px solid rgba(212,160,23,0.08)" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6rem", alignItems: "center" }}>
           <div>
@@ -166,23 +171,24 @@ export default function HomePage() {
               {t("home.leadershipBadge", "Technology in Service of Public Responsibility")}
             </div>
             <h2 style={{ fontSize: "2.8rem", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.03em", marginBottom: "1.5rem", lineHeight: 1.1 }}>
-              {isTe ? "బొజ్జల సుధీర్ రెడ్డి" : rep.name}
+              {isTe ? rep.nameTe : rep.name}
             </h2>
             <p style={{ color: "#64748b", fontSize: "1rem", marginBottom: "1rem" }}>
-              {isTe ? "శాసనసభ్యులు (MLA)" : rep.title} · {isTe ? "తెలుగుదేశం పార్టీ" : rep.party}
+              {isTe ? rep.titleTe : rep.title} · {isTe ? "తెలుగుదేశం పార్టీ" : rep.party}
             </p>
             <blockquote style={{ borderLeft: "2px solid #D4A017", paddingLeft: "1.5rem", color: "#94a3b8", fontSize: "1.1rem", fontStyle: "italic", lineHeight: 1.7, margin: "2rem 0" }}>
               "{t("home.leadershipQuote")}"
             </blockquote>
-            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
               <div style={{ padding: "0.5rem 1rem", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "8px", fontSize: "0.8rem", color: "#94a3b8" }}>
                 {t("home.constituencyBadge", "Constituency No. 168")}
               </div>
               <div style={{ padding: "0.5rem 1rem", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "8px", fontSize: "0.8rem", color: "#94a3b8" }}>
                 {t("home.electedBadge", "Elected 2024")}
               </div>
-              <div style={{ padding: "0.5rem 1rem", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "8px", fontSize: "0.8rem", color: "#94a3b8" }}>
-                {t("home.partyBadge", "TDP")}
+              <div style={{ padding: "0.5rem 1rem", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "8px", fontSize: "0.8rem", color: "#94a3b8", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <img src={rep.partySymbol} alt="TDP Symbol" style={{ width: "16px", height: "16px" }} />
+                <span>{t("home.partyBadge", "TDP")}</span>
               </div>
             </div>
           </div>
@@ -191,26 +197,28 @@ export default function HomePage() {
             <div style={{ position: "relative", width: "320px" }}>
               <div style={{ position: "absolute", inset: 0, background: "#D4A017", borderRadius: "16px", transform: "translate(8px, 8px)", opacity: 0.1, filter: "blur(20px)" }} />
               <div style={{ position: "absolute", inset: 0, border: "1px solid rgba(212,160,23,0.3)", borderRadius: "16px", transform: "translate(-6px, -6px)" }} />
-              <div style={{ position: "relative", width: "320px", height: "420px", background: "#0D2137", borderRadius: "16px", border: "1px solid rgba(212,160,23,0.4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
-                <div style={{ fontSize: "4rem" }}>👤</div>
+              <div style={{ position: "relative", width: "320px", height: "420px", background: "#0D2137", borderRadius: "16px", border: "1px solid rgba(212,160,23,0.4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem", overflow: "hidden" }}>
+                <div style={{ width: "140px", height: "140px", borderRadius: "50%", border: "2px solid rgba(212,160,23,0.4)", padding: "1rem", background: "rgba(255,255,255,0.03)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <img src={leadershipConfig.branding.civicEmblem} alt="Civic Avatar" style={{ width: "100%", height: "100%" }} />
+                </div>
                 <div style={{ textAlign: "center", padding: "0 1.5rem" }}>
-                  <div style={{ color: "#D4A017", fontWeight: 700, fontSize: "0.85rem" }}>
-                    {isTe ? "బొజ్జల సుధీర్ రెడ్డి" : rep.name}
+                  <div style={{ color: "#D4A017", fontWeight: 700, fontSize: "0.95rem" }}>
+                    {isTe ? rep.nameTe : rep.name}
                   </div>
-                  <div style={{ color: "#64748b", fontSize: "0.75rem", marginTop: "0.25rem" }}>
+                  <div style={{ color: "#64748b", fontSize: "0.78rem", marginTop: "0.25rem" }}>
                     {isTe ? "శ్రీకాళహస్తి ఎమ్మెల్యే" : "MLA Srikalahasti"}
                   </div>
                 </div>
-                <div style={{ position: "absolute", bottom: "-20px", right: "-20px", background: "#0D2137", border: "1px solid rgba(212,160,23,0.4)", borderRadius: "12px", padding: "1rem", boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}>
-                  <div style={{ fontSize: "0.65rem", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>
+                <div style={{ position: "absolute", bottom: "15px", right: "15px", background: "#0D2137", border: "1px solid rgba(212,160,23,0.4)", borderRadius: "12px", padding: "0.875rem", boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}>
+                  <div style={{ fontSize: "0.6rem", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "2px" }}>
                     {isTe ? "మొత్తం ఓట్లు" : "Total Votes"}
                   </div>
-                  <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "#D4A017" }}>1,21,565</div>
-                  <div style={{ height: "1px", background: "rgba(212,160,23,0.3)", margin: "8px 0" }} />
-                  <div style={{ fontSize: "0.65rem", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>
+                  <div style={{ fontSize: "1.3rem", fontWeight: 900, color: "#D4A017" }}>1,21,565</div>
+                  <div style={{ height: "1px", background: "rgba(212,160,23,0.3)", margin: "6px 0" }} />
+                  <div style={{ fontSize: "0.6rem", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "2px" }}>
                     {isTe ? "మెజారిటీ" : "Winning Margin"}
                   </div>
-                  <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "#ffffff" }}>43,304</div>
+                  <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#ffffff" }}>43,304</div>
                 </div>
               </div>
             </div>
@@ -218,20 +226,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── LEGACY SECTION ── */}
+      {/* ── 4. LEGACY SECTION ── */}
       {rep.father && (
         <section style={{ padding: "6rem 1.5rem", background: "linear-gradient(to bottom, #081424, #060f1a)", textAlign: "center", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
           <div style={{ maxWidth: "800px", margin: "0 auto" }}>
             <div style={{ fontSize: "0.7rem", color: "#D4A017", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "2rem" }}>
               {t("home.memoriamBadge", "In Memoriam")}
             </div>
-            <div style={{ width: "160px", height: "160px", borderRadius: "50%", border: "3px solid rgba(212,160,23,0.4)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem", background: "#0D2137", fontSize: "3rem", boxShadow: "0 0 40px rgba(212,160,23,0.15)" }}>
-              👤
+            <div style={{ width: "140px", height: "140px", borderRadius: "50%", border: "3px solid rgba(212,160,23,0.4)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem", background: "#0D2137", boxShadow: "0 0 40px rgba(212,160,23,0.15)", padding: "1rem" }}>
+              <img src={leadershipConfig.branding.civicEmblem} alt="Memorial Emblem" style={{ width: "100%", height: "100%", filter: "grayscale(50%)" }} />
             </div>
             <h2 style={{ fontSize: "2rem", fontWeight: 800, color: "#ffffff", marginBottom: "0.5rem" }}>
-              {isTe ? "లేట్ శ్రీ బొజ్జల గోపాలకృష్ణారెడ్డి" : rep.father.name}
+              {isTe ? rep.father.nameTe : rep.father.name}
             </h2>
-            <div style={{ color: "#D4A017", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.1em", marginBottom: "2rem" }}>1949 — 2022</div>
+            <div style={{ color: "#D4A017", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.1em", marginBottom: "2rem" }}>{rep.father.years}</div>
             <p style={{ fontSize: "1.1rem", color: "#94a3b8", lineHeight: 1.8, fontStyle: "italic", marginBottom: "3rem" }}>
               "{isTe ? "ప్రజాసేవే పరమావధిగా శ్రీకాళహస్తి నియోజకవర్గ అభివృద్ధికై నిరంతరం శ్రమించిన ప్రజా నాయకుడు." : rep.father.legacyText}"
             </p>
@@ -241,6 +249,42 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      {/* ── 5. CONSTITUENCY VISION & STATE/NATIONAL LEADERSHIP GRID ── */}
+      <section style={{ padding: "6rem 1.5rem", backgroundColor: "#081424", borderTop: "1px solid rgba(212,160,23,0.1)" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+            <div style={{ fontSize: "0.7rem", color: "#D4A017", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1rem" }}>
+              {isTe ? "నాయకత్వ దృక్పథం" : "Leadership & Vision Framework"}
+            </div>
+            <h2 style={{ fontSize: "2.5rem", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em" }}>
+              {isTe ? "డిజిటల్ పరిపాలన మరియు ప్రజా సేవ" : "Digital Governance & Public Leadership"}
+            </h2>
+            <p style={{ color: "#64748b", marginTop: "0.75rem", fontSize: "1rem" }}>
+              {isTe ? "ప్రజా సమస్యల పరిష్కారానికి వినూత్న డిజిటల్ వ్యవస్థల అనుసంధానం." : "Configuration-driven leadership framework for public technology and constituency administration."}
+            </p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.5rem" }}>
+            {leaders.map((leader) => (
+              <div key={leader.id} style={{ background: "rgba(13,33,55,0.6)", border: "1px solid rgba(212,160,23,0.15)", borderRadius: "16px", padding: "1.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ fontSize: "0.65rem", color: "#D4A017", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
+                    {leader.role}
+                  </div>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#ffffff", marginBottom: "0.25rem" }}>{leader.name}</h3>
+                  <div style={{ fontSize: "0.75rem", color: "#64748b", marginBottom: "1rem" }}>{leader.title}</div>
+                  {leader.quote && (
+                    <blockquote style={{ fontSize: "0.82rem", color: "#94a3b8", fontStyle: "italic", borderLeft: "2px solid rgba(212,160,23,0.3)", paddingLeft: "0.75rem", margin: "1rem 0 0" }}>
+                      "{leader.quote}"
+                    </blockquote>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── SECURITY SECTION ── */}
       <section style={{ padding: "5rem 1.5rem", backgroundColor: "#0a1e35" }}>
@@ -274,8 +318,9 @@ export default function HomePage() {
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "3rem", marginBottom: "2rem" }}>
             <div>
-              <div style={{ fontWeight: 800, color: "#D4A017", fontSize: "1.1rem", marginBottom: "0.75rem" }}>
-                {t("nav.title", "Srikalahasti Praja Seva")}
+              <div style={{ fontWeight: 800, color: "#D4A017", fontSize: "1.1rem", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <img src={leadershipConfig.branding.civicEmblem} alt="Logo" style={{ width: "22px", height: "22px" }} />
+                <span>{t("nav.title", "Srikalahasti Praja Seva")}</span>
               </div>
               <p style={{ fontSize: "0.8rem", color: "#475569", lineHeight: 1.7, maxWidth: "360px" }}>
                 {t("common.proposedNotice")}
