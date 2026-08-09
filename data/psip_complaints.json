@@ -33,6 +33,57 @@
     "mobileNumberMasked": "+91 ******3210",
     "mobileVerified": false,
     "consentGiven": true,
+    "consentTimestamp": "2026-08-09T17:21:39.429Z",
+    "consentPurpose": "Complaint status updates only",
+    "notificationPreference": "sms",
+    "id": "SKT-2026-65823",
+    "trackingToken": "TKN-65823-E4OWXP",
+    "createdAt": "2026-08-09T17:21:39.433Z",
+    "updatedAt": "2026-08-09T17:21:39.433Z",
+    "status": "New",
+    "auditLog": [
+      {
+        "timestamp": "2026-08-09T17:21:39.433Z",
+        "action": "Complaint received via public portal",
+        "actor": "system"
+      }
+    ],
+    "notificationLog": []
+  },
+  {
+    "description": "Severe drinking water contamination in Srikalahasti ward 12. Water smells foul and sewage pipeline leak reported near primary school.",
+    "mandal": "Srikalahasti",
+    "village": "Ward 12",
+    "department": "Municipal Administration",
+    "incidentDate": "2026-08-09",
+    "mediaUrls": [],
+    "aiAnalysis": {
+      "title": "Infrastructure — Water Supply reported in Srikalahasti (Ward 12)",
+      "category": "Infrastructure — Water Supply",
+      "subcategory": "Water Pipeline / Supply",
+      "department": "Municipal Administration",
+      "urgency": "Emergency",
+      "safetyCategory": "None",
+      "safetyEscalationRequired": false,
+      "evidenceCompleteness": "Partial",
+      "credibilityBand": "Medium preliminary confidence",
+      "confidenceScore": 78,
+      "missingInformation": [
+        "No audio recording provided"
+      ],
+      "duplicateLikelihood": "Unknown — local mode",
+      "recommendedAction": "Forward report to Municipal Administration officer in Srikalahasti Mandal for preliminary verification. Human review required.",
+      "humanReviewRequired": true,
+      "analysisMode": "local_fallback",
+      "legalDisclaimer": "AI-generated preliminary assessment for human review. This is not a legal finding, factual determination, finding of guilt, or replacement for official investigation or judicial process."
+    },
+    "dataSource": "citizen_submission",
+    "isSample": false,
+    "isAnonymous": false,
+    "mobileNumber": "9876543210",
+    "mobileNumberMasked": "+91 ******3210",
+    "mobileVerified": false,
+    "consentGiven": true,
     "consentTimestamp": "2026-08-09T17:18:10.616Z",
     "consentPurpose": "Complaint status updates only",
     "notificationPreference": "sms",
