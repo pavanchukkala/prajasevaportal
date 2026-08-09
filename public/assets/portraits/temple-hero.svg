@@ -1,30 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="100%" height="100%">
   <defs>
     <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#060f1a"/>
-      <stop offset="60%" stop-color="#0d2137"/>
-      <stop offset="100%" stop-color="#162f4a"/>
+      <stop offset="0%" stop-color="var(--bg-main, #060f1a)" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="var(--bg-surface, #0d2137)" stop-opacity="0.4"/>
     </linearGradient>
-    <linearGradient id="gopuramGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#fbbf24"/>
-      <stop offset="100%" stop-color="#b45309"/>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4A017" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#B8860B" stop-opacity="0.1"/>
     </linearGradient>
   </defs>
   <rect width="1200" height="600" fill="url(#skyGrad)"/>
-  <!-- Decorative stars / glowing accents -->
-  <circle cx="200" cy="100" r="1.5" fill="#fbbf24" opacity="0.6"/>
-  <circle cx="800" cy="80" r="2" fill="#fbbf24" opacity="0.8"/>
-  <circle cx="1050" cy="140" r="1" fill="#ffffff" opacity="0.5"/>
-  <!-- Gopuram skyline silhouette -->
-  <path d="M 500 500 L 520 400 L 535 320 L 550 250 L 565 180 L 580 130 L 600 80 L 620 130 L 635 180 L 650 250 L 665 320 L 680 400 L 700 500 Z" fill="url(#gopuramGrad)" opacity="0.85"/>
-  <!-- Kalasam apex -->
-  <polygon points="600,50 595,75 605,75" fill="#fbbf24"/>
-  <!-- Side temple structures -->
-  <rect x="350" y="420" width="130" height="80" fill="#0d2137" stroke="#d4a017" stroke-width="1.5"/>
-  <rect x="720" y="420" width="130" height="80" fill="#0d2137" stroke="#d4a017" stroke-width="1.5"/>
-  <!-- River Swarnamukhi reflection wave -->
-  <path d="M 0 500 Q 300 480 600 510 T 1200 490 L 1200 600 L 0 600 Z" fill="#060f1a" opacity="0.95"/>
-  <path d="M 0 530 Q 300 510 600 540 T 1200 520" stroke="#d4a017" stroke-width="1" fill="none" opacity="0.4"/>
-  <!-- Text Label -->
-  <text x="600" y="570" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fbbf24" text-anchor="middle" letter-spacing="0.1em">SRIKALAHASTEESWARA TEMPLE GOPURAM &amp; SWARNAMUKHI RIVER HERITAGE</text>
+  <!-- Ambient Gold Ray Lines -->
+  <line x1="600" y1="0" x2="200" y2="600" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.4"/>
+  <line x1="600" y1="0" x2="1000" y2="600" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.4"/>
+  <line x1="600" y1="0" x2="400" y2="600" stroke="url(#goldGrad)" stroke-width="1" opacity="0.3"/>
+  <line x1="600" y1="0" x2="800" y2="600" stroke="url(#goldGrad)" stroke-width="1" opacity="0.3"/>
+  <!-- Smooth Swarnamukhi River Wave at Base -->
+  <path d="M 0 520 Q 300 490 600 530 T 1200 500 L 1200 600 L 0 600 Z" fill="url(#goldGrad)" opacity="0.15"/>
 </svg>

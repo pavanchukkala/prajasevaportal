@@ -66,31 +66,36 @@ export default function HomePage() {
         borderBottom: "1px solid var(--border-main)",
         transition: "background-color 0.25s ease",
       }}>
-        {/* Gopuram Background Image Overlay */}
-        <div style={{ position: "absolute", inset: 0, opacity: 0.12, zIndex: 0, pointerEvents: "none" }}>
-          <Image
-            src={ASSET_MANIFEST.templeHero.imagePath}
-            alt="Srikalahasteeswara Temple Gopuram Skyline"
-            fill
-            priority
-            style={{ objectFit: "cover", objectPosition: "center top" }}
-          />
-        </div>
-
-        {/* Official Praja Seva Emblem Watermark Logo */}
-        <div style={{ position: "absolute", top: "50%", right: "5%", transform: "translateY(-50%)", width: "480px", height: "480px", opacity: 0.14, zIndex: 0, pointerEvents: "none" }}>
+        {/* Extended Praja Seva Emblem Logo Watermark Background */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            right: "2%",
+            transform: "translateY(-50%)",
+            width: "clamp(380px, 45vw, 650px)",
+            height: "clamp(380px, 45vw, 650px)",
+            opacity: 0.12,
+            zIndex: 0,
+            pointerEvents: "none",
+          }}
+        >
           <Image
             src="/assets/symbols/civic-emblem.svg"
             alt="Praja Seva Official Emblem Watermark"
-            width={480}
-            height={480}
-            style={{ objectFit: "contain", filter: "drop-shadow(0 0 20px var(--accent-teal))" }}
+            width={650}
+            height={650}
+            priority
+            style={{
+              objectFit: "contain",
+              filter: "drop-shadow(0 0 30px var(--accent-teal))",
+            }}
           />
         </div>
 
-        {/* Accent Aura Background */}
-        <div style={{ position: "absolute", top: "10%", left: "5%", width: "500px", height: "500px", borderRadius: "50%", background: "radial-gradient(circle, rgba(13,148,136,0.12) 0%, transparent 70%)", pointerEvents: "none", zIndex: 1 }} />
-        <div style={{ position: "absolute", bottom: "10%", right: "5%", width: "450px", height: "450px", borderRadius: "50%", background: "radial-gradient(circle, rgba(245,158,11,0.1) 0%, transparent 70%)", pointerEvents: "none", zIndex: 1 }} />
+        {/* Extended Ambient Teal & Gold Glow Auras */}
+        <div style={{ position: "absolute", top: "15%", left: "5%", width: "550px", height: "550px", borderRadius: "50%", background: "radial-gradient(circle, rgba(13,148,136,0.12) 0%, transparent 70%)", pointerEvents: "none", zIndex: 1 }} />
+        <div style={{ position: "absolute", bottom: "10%", right: "8%", width: "500px", height: "500px", borderRadius: "50%", background: "radial-gradient(circle, rgba(180,83,9,0.1) 0%, transparent 70%)", pointerEvents: "none", zIndex: 1 }} />
 
         <div style={{ position: "relative", zIndex: 10, maxWidth: "1280px", margin: "0 auto", padding: "4.5rem 1.5rem 5.5rem", width: "100%", boxSizing: "border-box" }}>
           {/* Badge */}
