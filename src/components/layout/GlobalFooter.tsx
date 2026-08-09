@@ -41,23 +41,9 @@ export default function GlobalFooter() {
               }}
             >
               {isTe
-                ? "శ్రీకాళహస్తి అసెంబ్లీ నియోజకవర్గం పౌరుల కోసం ప్రతిపాదించిన ప్రజా సేవా ప్లాట్‌ఫారమ్."
-                : "Proposed civic-technology and public grievance intelligence platform for Srikalahasti Assembly Constituency No. 168, Tirupati District, Andhra Pradesh."}
+                ? "శ్రీకాళహస్తి అసెంబ్లీ నియోజకవర్గం (సంఖ్య 168), తిరుపతి జిల్లా, ఆంధ్రప్రదేశ్."
+                : "Civic-technology and public grievance intelligence platform for Srikalahasti Assembly Constituency No. 168, Tirupati District, Andhra Pradesh."}
             </p>
-            <div
-              style={{
-                display: "inline-block",
-                padding: "0.35rem 0.85rem",
-                borderRadius: "6px",
-                background: "rgba(180,83,9,0.12)",
-                border: "1px solid var(--accent-gold)",
-                color: "var(--accent-gold)",
-                fontSize: "0.75rem",
-                fontWeight: 700,
-              }}
-            >
-              {isTe ? "ప్రతిపాదిత వేదిక · అధికారిక పోర్టల్ కాదు" : "Proposed Civic Technology · Not Official Government Portal"}
-            </div>
           </div>
 
           {/* Navigation Links */}
