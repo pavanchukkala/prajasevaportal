@@ -155,3 +155,19 @@
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
+
+/* Accessibility: Focus outlines for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #0D9488 !important;
+  outline-offset: 2px !important;
+}
+
+/* Accessibility: Reduced motion media query */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

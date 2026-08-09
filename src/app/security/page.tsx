@@ -9,34 +9,34 @@ export default function SecurityPage() {
   const isTe = language === "te";
 
   return (
-    <main style={{ minHeight: "100vh", background: "#060f1a", color: "#f0f4f8" }}>
+    <main style={{ minHeight: "100vh", background: "#022C22", color: "#F0FDF4", fontFamily: "system-ui, sans-serif" }}>
       <Navbar />
       <Breadcrumb />
 
-      <section style={{ background: "linear-gradient(135deg, #060f1a 0%, #0D2137 100%)", padding: "4rem 1.5rem" }}>
+      <section style={{ background: "linear-gradient(135deg, #022C22 0%, #064E3B 100%)", padding: "4.5rem 1.5rem", borderBottom: "1px solid rgba(16,185,129,0.3)" }}>
         <div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
-          <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔒</div>
-          <h1 style={{ fontSize: "2.5rem", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.03em", marginBottom: "1rem" }}>
+          <div style={{ fontSize: "3.2rem", marginBottom: "1rem" }}>🛡️</div>
+          <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", fontWeight: 900, color: "#F0FDF4", letterSpacing: "-0.03em", marginBottom: "1rem" }}>
             {t("securityPage.title")}
           </h1>
-          <p style={{ color: "#94a3b8", fontSize: "1.05rem", lineHeight: 1.7 }}>
+          <p style={{ color: "#A7F3D0", fontSize: "1.05rem", lineHeight: 1.7 }}>
             {t("securityPage.subtitle")}
           </p>
         </div>
       </section>
 
-      <section style={{ padding: "4rem 1.5rem" }}>
+      <section style={{ padding: "4.5rem 1.5rem", backgroundColor: "#064E3B" }}>
         <div style={{ maxWidth: "900px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "2.5rem" }}>
 
           {/* 1. Implemented in Current Deployment */}
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
-              <span style={{ color: "#22c55e", fontSize: "1.2rem" }}>✓</span>
-              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#22c55e" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1.25rem" }}>
+              <span style={{ color: "#34D399", fontSize: "1.3rem" }}>✓</span>
+              <h2 style={{ fontSize: "1.35rem", fontWeight: 900, color: "#34D399" }}>
                 {isTe ? "ప్రస్తుత డిప్లాయ్‌మెంట్‌లో అమలవుతున్న భద్రత" : "Implemented in Current Deployment"}
               </h2>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
               {[
                 {
                   title: isTe ? "రోల్-బేస్డ్ యాక్సెస్ నియంత్రణ" : "Role-Based Access Control (RBAC)",
@@ -55,9 +55,9 @@ export default function SecurityPage() {
                   desc: isTe ? "పబ్లిక్ ట్రాకింగ్ పేజీలో అంతర్గత వ్యాఖ్యలు లేదా మొబైల్ నంబర్లు చూపబడవు." : "Public tracking (`/track`) strips internal notes, raw contact info, and reviewer identity."
                 }
               ].map(card => (
-                <div key={card.title} style={{ background: "rgba(13,33,55,0.5)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: "14px", padding: "1.5rem" }}>
-                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#ffffff", marginBottom: "0.5rem" }}>{card.title}</h3>
-                  <p style={{ color: "#94a3b8", lineHeight: 1.6, fontSize: "0.88rem" }}>{card.desc}</p>
+                <div key={card.title} style={{ background: "rgba(2,44,34,0.85)", border: "1.5px solid #10B981", borderRadius: "16px", padding: "1.5rem", boxShadow: "0 10px 25px rgba(0,0,0,0.3)" }}>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#34D399", marginBottom: "0.5rem" }}>{card.title}</h3>
+                  <p style={{ color: "#E2E8F0", lineHeight: 1.6, fontSize: "0.9rem" }}>{card.desc}</p>
                 </div>
               ))}
             </div>
@@ -65,13 +65,13 @@ export default function SecurityPage() {
 
           {/* 2. Foundation Only */}
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
-              <span style={{ color: "#eab308", fontSize: "1.2rem" }}>⚡</span>
-              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#eab308" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1.25rem" }}>
+              <span style={{ color: "#FBBF24", fontSize: "1.3rem" }}>⚡</span>
+              <h2 style={{ fontSize: "1.35rem", fontWeight: 900, color: "#FBBF24" }}>
                 {isTe ? "ప్రాథమిక మూలాధారాలు (ప్రోటోటైప్ మోడ్)" : "Foundation Only (Prototype Mode)"}
               </h2>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
               {[
                 {
                   title: isTe ? "ఇన్-మెమరీ డేటా స్టోర్" : "In-Memory Prototype Store",
@@ -82,9 +82,9 @@ export default function SecurityPage() {
                   desc: isTe ? "సమర్పణలను వర్గీకరించడానికి స్థానిక కీవర్డ్ రూల్స్ విశ్లేషణ ఉపయోగించబడుతుంది." : "Rule-based structural analyzer runs locally to categorize complaints and assign urgency metrics."
                 }
               ].map(card => (
-                <div key={card.title} style={{ background: "rgba(13,33,55,0.5)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: "14px", padding: "1.5rem" }}>
-                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#ffffff", marginBottom: "0.5rem" }}>{card.title}</h3>
-                  <p style={{ color: "#94a3b8", lineHeight: 1.6, fontSize: "0.88rem" }}>{card.desc}</p>
+                <div key={card.title} style={{ background: "rgba(2,44,34,0.85)", border: "1.5px solid #F59E0B", borderRadius: "16px", padding: "1.5rem", boxShadow: "0 10px 25px rgba(0,0,0,0.3)" }}>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#FBBF24", marginBottom: "0.5rem" }}>{card.title}</h3>
+                  <p style={{ color: "#E2E8F0", lineHeight: 1.6, fontSize: "0.9rem" }}>{card.desc}</p>
                 </div>
               ))}
             </div>
@@ -92,13 +92,13 @@ export default function SecurityPage() {
 
           {/* 3. Required Before Public Launch */}
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
-              <span style={{ color: "#ef4444", fontSize: "1.2rem" }}>🛡️</span>
-              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#ef4444" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1.25rem" }}>
+              <span style={{ color: "#F87171", fontSize: "1.3rem" }}>🔒</span>
+              <h2 style={{ fontSize: "1.35rem", fontWeight: 900, color: "#F87171" }}>
                 {isTe ? "అధికారిక ప్రారంభానికి ముందు అవసరమైనవి" : "Required Before Public Launch"}
               </h2>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
               {[
                 {
                   title: isTe ? "క్లౌడ్ ఫైల్ ఎన్‌క్రిప్షన్" : "End-to-End Evidence Encryption",
@@ -117,9 +117,9 @@ export default function SecurityPage() {
                   desc: isTe ? "అధికారిక భద్రతా ఆడిట్ మరియు సర్టిఫికేషన్." : "Formal penetration testing and compliance audit prior to official government deployment."
                 }
               ].map(card => (
-                <div key={card.title} style={{ background: "rgba(13,33,55,0.5)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "14px", padding: "1.5rem" }}>
-                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#ffffff", marginBottom: "0.5rem" }}>{card.title}</h3>
-                  <p style={{ color: "#94a3b8", lineHeight: 1.6, fontSize: "0.88rem" }}>{card.desc}</p>
+                <div key={card.title} style={{ background: "rgba(2,44,34,0.85)", border: "1.5px solid #EF4444", borderRadius: "16px", padding: "1.5rem", boxShadow: "0 10px 25px rgba(0,0,0,0.3)" }}>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#F87171", marginBottom: "0.5rem" }}>{card.title}</h3>
+                  <p style={{ color: "#E2E8F0", lineHeight: 1.6, fontSize: "0.9rem" }}>{card.desc}</p>
                 </div>
               ))}
             </div>

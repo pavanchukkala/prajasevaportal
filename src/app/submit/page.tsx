@@ -236,52 +236,53 @@ export default function SubmitPage() {
 
   const inp: React.CSSProperties = {
     width: "100%",
-    background: "rgba(4,9,26,0.7)",
-    border: "1px solid rgba(212,160,23,0.2)",
+    background: "#FFFFFF",
+    border: "1.5px solid #CBD5E1",
     borderRadius: "12px",
     padding: "0.875rem 1rem",
-    color: "#f0f4f8",
+    color: "#0F172A",
     fontSize: "0.95rem",
     outline: "none",
     boxSizing: "border-box",
     fontFamily: "'Inter','Noto Sans Telugu',sans-serif",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
   };
 
   const lbl: React.CSSProperties = {
     display: "block",
-    fontSize: "0.72rem",
-    fontWeight: 700,
-    color: "#94a3b8",
+    fontSize: "0.75rem",
+    fontWeight: 800,
+    color: "#334155",
     marginBottom: "0.5rem",
     textTransform: "uppercase",
     letterSpacing: "0.07em",
   };
 
   const card: React.CSSProperties = {
-    background: "rgba(13,33,55,0.6)",
-    border: "1px solid rgba(212,160,23,0.15)",
+    background: "#FFFFFF",
+    border: "1px solid #E2E8F0",
     borderRadius: "20px",
-    padding: "2rem",
-    backdropFilter: "blur(24px)",
+    padding: "2.25rem",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
   };
 
   const btnPrimary: React.CSSProperties = {
-    background: "linear-gradient(135deg, #D4A017, #F3E5AB)",
-    color: "#04091A",
-    fontWeight: 700,
+    background: "linear-gradient(135deg, #0D9488 0%, #14B8A6 100%)",
+    color: "#FFFFFF",
+    fontWeight: 800,
     fontSize: "0.95rem",
     padding: "0.875rem 2rem",
     borderRadius: "9999px",
     border: "none",
     cursor: "pointer",
-    boxShadow: "0 0 20px rgba(212,160,23,0.25)",
+    boxShadow: "0 4px 15px rgba(13,148,136,0.3)",
   };
 
   const btnSecondary: React.CSSProperties = {
-    border: "1px solid rgba(212,160,23,0.3)",
-    color: "#D4A017",
-    background: "transparent",
-    fontWeight: 600,
+    border: "1.5px solid #0D9488",
+    color: "#0D9488",
+    background: "#FFFFFF",
+    fontWeight: 700,
     padding: "0.875rem 1.5rem",
     borderRadius: "9999px",
     cursor: "pointer",
@@ -416,13 +417,7 @@ export default function SubmitPage() {
 
   // ── Main form ───────────────────────────────────────────────────────────────
   return (
-    <main style={{ minHeight: "100vh", background: "#04091A", color: "#f0f4f8" }}>
-      {/* Ambient bg */}
-      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-        <div style={{ position: "absolute", top: "20%", left: "10%", width: "500px", height: "500px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,160,23,0.04) 0%, transparent 70%)" }} />
-        <div style={{ position: "absolute", bottom: "20%", right: "10%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(30,136,229,0.04) 0%, transparent 70%)" }} />
-      </div>
-
+    <main style={{ minHeight: "100vh", background: "#F8FAFC", color: "#0F172A" }}>
       {/* Nav */}
       <Navbar />
       <Breadcrumb />
@@ -431,27 +426,27 @@ export default function SubmitPage() {
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.35rem 1rem", borderRadius: "9999px", background: "rgba(34,197,94,0.07)", border: "1px solid rgba(34,197,94,0.2)", marginBottom: "1.25rem" }}>
-            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 8px #22c55e" }} />
-            <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#22c55e", textTransform: "uppercase", letterSpacing: "0.12em" }}>{tx.badge}</span>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.4rem 1.1rem", borderRadius: "9999px", background: "rgba(13,148,136,0.1)", border: "1px solid rgba(13,148,136,0.25)", marginBottom: "1.25rem" }}>
+            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#0D9488", boxShadow: "0 0 8px #0D9488" }} />
+            <span style={{ fontSize: "0.68rem", fontWeight: 800, color: "#0D9488", textTransform: "uppercase", letterSpacing: "0.12em" }}>{tx.badge}</span>
           </div>
-          <h1 style={{ fontSize: "clamp(1.5rem, 4vw, 2.25rem)", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.025em", marginBottom: "0.5rem" }}>{tx.title}</h1>
-          <p style={{ color: "#64748b", fontSize: "0.95rem" }}>{tx.subtitle}</p>
+          <h1 style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.025em", marginBottom: "0.5rem" }}>{tx.title}</h1>
+          <p style={{ color: "#475569", fontSize: "0.98rem" }}>{tx.subtitle}</p>
         </div>
 
         {/* Step indicators */}
         <div style={{ display: "flex", justifyContent: "center", gap: "0", marginBottom: "2.5rem", position: "relative" }}>
-          <div style={{ position: "absolute", top: "50%", left: "5%", right: "5%", height: "1px", background: "rgba(212,160,23,0.12)", transform: "translateY(-50%)", zIndex: 0 }} />
+          <div style={{ position: "absolute", top: "50%", left: "5%", right: "5%", height: "2px", background: "#E2E8F0", transform: "translateY(-50%)", zIndex: 0 }} />
           {STEPS.map((s, i) => {
             const n = i + 1;
             const active = n === step;
             const done = n < step;
             return (
               <button key={i} onClick={() => n < step && setStep(n)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.35rem", background: "none", border: "none", cursor: n < step ? "pointer" : "default", padding: "0 0.75rem", position: "relative", zIndex: 1 }}>
-                <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: done ? "rgba(34,197,94,0.12)" : active ? "rgba(212,160,23,0.15)" : "rgba(255,255,255,0.03)", border: `1px solid ${done ? "rgba(34,197,94,0.5)" : active ? "rgba(212,160,23,0.6)" : "rgba(255,255,255,0.08)"}`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "0.75rem", color: done ? "#22c55e" : active ? "#D4A017" : "#475569", transition: "all 0.3s" }}>
+                <div style={{ width: "34px", height: "34px", borderRadius: "50%", background: done ? "#0F766E" : active ? "#0D9488" : "#FFFFFF", border: `2px solid ${done ? "#0F766E" : active ? "#0D9488" : "#CBD5E1"}`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "0.8rem", color: done || active ? "#FFFFFF" : "#64748B", transition: "all 0.3s" }}>
                   {done ? "✓" : n}
                 </div>
-                <span style={{ fontSize: "0.58rem", color: active ? "#D4A017" : done ? "#22c55e" : "#475569", fontWeight: active ? 700 : 500, whiteSpace: "nowrap" }}>{s}</span>
+                <span style={{ fontSize: "0.62rem", color: active ? "#0D9488" : done ? "#0F766E" : "#64748B", fontWeight: active ? 800 : 500, whiteSpace: "nowrap" }}>{s}</span>
               </button>
             );
           })}
@@ -469,7 +464,7 @@ export default function SubmitPage() {
           {/* ── STEP 1: Description ── */}
           {step === 1 && (
             <div style={card}>
-              <h2 style={{ fontWeight: 700, color: "#ffffff", marginBottom: "1.25rem" }}>{tx.step1}</h2>
+              <h2 style={{ fontWeight: 800, color: "#0F172A", marginBottom: "1.25rem" }}>{tx.step1}</h2>
               <label style={lbl}>{tx.descLabel}</label>
               <textarea
                 value={description}
@@ -480,11 +475,11 @@ export default function SubmitPage() {
                 style={{ ...inp, resize: "vertical", minHeight: "160px" }}
               />
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.5rem", marginBottom: "1.5rem" }}>
-                <span style={{ fontSize: "0.72rem", color: description.length >= 20 ? "#22c55e" : "#ef4444" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: description.length >= 20 ? "#0F766E" : "#EF4444" }}>
                   {description.length < 20 ? `${20 - description.length} more characters needed` : `${description.length} characters ✓`}
                 </span>
               </div>
-              <div style={{ background: "rgba(30,136,229,0.05)", border: "1px solid rgba(30,136,229,0.15)", borderRadius: "10px", padding: "0.875rem", marginBottom: "1.5rem", fontSize: "0.8rem", color: "#94a3b8", lineHeight: 1.6 }}>
+              <div style={{ background: "#F1F5F9", border: "1px solid #CBD5E1", borderRadius: "10px", padding: "0.875rem", marginBottom: "1.5rem", fontSize: "0.82rem", color: "#334155", lineHeight: 1.6 }}>
                 💡 {lang === "en" ? "Specific, verifiable information helps identify the correct department and helps human reviewers understand the case." : "నిర్దిష్ట, ధృవీకరించదగిన సమాచారం సరైన విభాగాన్ని గుర్తించడానికి సహాయపడుతుంది."}
               </div>
               <button type="button" onClick={() => { if (description.length >= 20) { setError(""); setStep(2); } else setError(lang === "en" ? "Please write at least 20 characters." : "కనీసం 20 అక్షరాలు రాయండి."); }} style={btnPrimary}>{tx.next}</button>
@@ -494,10 +489,10 @@ export default function SubmitPage() {
           {/* ── STEP 2: Location ── */}
           {step === 2 && (
             <div style={card}>
-              <h2 style={{ fontWeight: 700, color: "#ffffff", marginBottom: "1.25rem" }}>{tx.step2}</h2>
+              <h2 style={{ fontWeight: 800, color: "#0F172A", marginBottom: "1.25rem" }}>{tx.step2}</h2>
               <div style={{ display: "grid", gap: "1.25rem" }}>
                 <div>
-                  <label style={lbl}>{tx.mandal} <span style={{ color: "#ef4444" }}>*</span></label>
+                  <label style={lbl}>{tx.mandal} <span style={{ color: "#EF4444" }}>*</span></label>
                   <select value={mandal} onChange={(e) => setMandal(e.target.value)} required style={{ ...inp, cursor: "pointer" }}>
                     <option value="">{tx.selectMandal}</option>
                     {tx.mandals.map((m) => <option key={m} value={m}>{m}</option>)}
@@ -531,25 +526,25 @@ export default function SubmitPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
               {/* Anonymous toggle */}
               <div style={card}>
-                <h2 style={{ fontWeight: 700, color: "#ffffff", marginBottom: "1.25rem" }}>{tx.step3}</h2>
+                <h2 style={{ fontWeight: 800, color: "#0F172A", marginBottom: "1.25rem" }}>{tx.step3}</h2>
 
                 <label style={{ display: "flex", alignItems: "flex-start", gap: "0.875rem", cursor: "pointer", marginBottom: "1.5rem" }}>
                   <div
                     onClick={() => setIsAnonymous((a) => !a)}
-                    style={{ width: "22px", height: "22px", borderRadius: "6px", border: `2px solid ${isAnonymous ? "#D4A017" : "rgba(255,255,255,0.2)"}`, background: isAnonymous ? "rgba(212,160,23,0.12)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", marginTop: "2px" }}
+                    style={{ width: "22px", height: "22px", borderRadius: "6px", border: `2px solid ${isAnonymous ? "#0D9488" : "#CBD5E1"}`, background: isAnonymous ? "rgba(13,148,136,0.12)" : "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", marginTop: "2px" }}
                   >
-                    {isAnonymous && <span style={{ color: "#D4A017", fontSize: "0.8rem", fontWeight: 700 }}>✓</span>}
+                    {isAnonymous && <span style={{ color: "#0D9488", fontSize: "0.8rem", fontWeight: 800 }}>✓</span>}
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, color: "#ffffff", fontSize: "0.9rem" }}>{tx.anonymous}</div>
-                    <div style={{ fontSize: "0.78rem", color: "#64748b", marginTop: "2px", lineHeight: 1.5 }}>{tx.anonNote}</div>
+                    <div style={{ fontWeight: 800, color: "#0F172A", fontSize: "0.95rem" }}>{tx.anonymous}</div>
+                    <div style={{ fontSize: "0.82rem", color: "#64748B", marginTop: "2px", lineHeight: 1.5 }}>{tx.anonNote}</div>
                   </div>
                 </label>
 
                 {!isAnonymous && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                     {/* Mobile number */}
-                    <div style={{ background: "rgba(212,160,23,0.04)", border: "1px solid rgba(212,160,23,0.12)", borderRadius: "14px", padding: "1.25rem" }}>
+                    <div style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "14px", padding: "1.25rem" }}>
                       <label style={lbl}>{tx.mobileLabel}</label>
                       <input
                         type="tel"
@@ -558,7 +553,7 @@ export default function SubmitPage() {
                         placeholder={tx.mobilePlaceholder}
                         style={inp}
                       />
-                      <div style={{ marginTop: "0.75rem", fontSize: "0.78rem", color: "#64748b", lineHeight: 1.6 }}>
+                      <div style={{ marginTop: "0.75rem", fontSize: "0.82rem", color: "#475569", lineHeight: 1.6 }}>
                         ℹ️ {tx.mobilePurpose}
                       </div>
 
@@ -567,11 +562,11 @@ export default function SubmitPage() {
                         <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", cursor: "pointer", marginTop: "1rem" }}>
                           <div
                             onClick={() => setConsentGiven((c) => !c)}
-                            style={{ width: "20px", height: "20px", borderRadius: "5px", border: `2px solid ${consentGiven ? "#22c55e" : "rgba(255,255,255,0.2)"}`, background: consentGiven ? "rgba(34,197,94,0.12)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", marginTop: "2px" }}
+                            style={{ width: "20px", height: "20px", borderRadius: "5px", border: `2px solid ${consentGiven ? "#0F766E" : "#CBD5E1"}`, background: consentGiven ? "rgba(15,118,110,0.12)" : "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", marginTop: "2px" }}
                           >
-                            {consentGiven && <span style={{ color: "#22c55e", fontSize: "0.8rem", fontWeight: 700 }}>✓</span>}
+                            {consentGiven && <span style={{ color: "#0F766E", fontSize: "0.8rem", fontWeight: 800 }}>✓</span>}
                           </div>
-                          <span style={{ fontSize: "0.82rem", color: "#94a3b8", lineHeight: 1.6 }}>{tx.consentLabel}</span>
+                          <span style={{ fontSize: "0.85rem", color: "#334155", lineHeight: 1.6, fontWeight: 600 }}>{tx.consentLabel}</span>
                         </label>
                       )}
 
@@ -585,7 +580,7 @@ export default function SubmitPage() {
                                 key={ch}
                                 type="button"
                                 onClick={() => setNotificationPreference(ch)}
-                                style={{ padding: "0.4rem 1rem", borderRadius: "9999px", border: "1px solid", fontSize: "0.8rem", fontWeight: 700, cursor: "pointer", background: notificationPreference === ch ? "rgba(212,160,23,0.15)" : "transparent", borderColor: notificationPreference === ch ? "#D4A017" : "rgba(255,255,255,0.1)", color: notificationPreference === ch ? "#D4A017" : "#64748b" }}
+                                style={{ padding: "0.4rem 1rem", borderRadius: "9999px", border: "1.5px solid", fontSize: "0.8rem", fontWeight: 800, cursor: "pointer", background: notificationPreference === ch ? "rgba(13,148,136,0.15)" : "#FFFFFF", borderColor: notificationPreference === ch ? "#0D9488" : "#CBD5E1", color: notificationPreference === ch ? "#0D9488" : "#64748B" }}
                               >
                                 {ch === "sms" ? tx.notifSMS : tx.notifWhatsApp}
                               </button>
@@ -614,30 +609,28 @@ export default function SubmitPage() {
           {/* ── STEP 4: Evidence ── */}
           {step === 4 && (
             <div style={card}>
-              <h2 style={{ fontWeight: 700, color: "#ffffff", marginBottom: "1.25rem" }}>{tx.step4}</h2>
+              <h2 style={{ fontWeight: 800, color: "#0F172A", marginBottom: "1.25rem" }}>{tx.step4}</h2>
               <label style={lbl}>{tx.evidenceLabel}</label>
               <div
                 onClick={() => fileRef.current?.click()}
-                onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(212,160,23,0.5)")}
-                onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(212,160,23,0.2)")}
-                style={{ border: "2px dashed rgba(212,160,23,0.2)", borderRadius: "16px", padding: "2rem", textAlign: "center", cursor: "pointer", background: "rgba(4,9,26,0.4)", transition: "border-color 0.2s" }}
+                style={{ border: "2px dashed #0D9488", borderRadius: "16px", padding: "2rem", textAlign: "center", cursor: "pointer", background: "#F8FAFC", transition: "border-color 0.2s" }}
               >
                 <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>📎</div>
-                <div style={{ color: "#D4A017", fontWeight: 600, marginBottom: "0.3rem", fontSize: "0.9rem" }}>{lang === "en" ? "Click to upload files" : "ఫైళ్ళు అప్లోడ్ చేయండి"}</div>
-                <div style={{ color: "#475569", fontSize: "0.78rem" }}>Photos, videos, audio, documents (max 5 files)</div>
+                <div style={{ color: "#0D9488", fontWeight: 800, marginBottom: "0.3rem", fontSize: "0.95rem" }}>{lang === "en" ? "Click to upload files" : "ఫైళ్ళు అప్లోడ్ చేయండి"}</div>
+                <div style={{ color: "#64748B", fontSize: "0.82rem" }}>Photos, videos, audio, documents (max 5 files)</div>
               </div>
               <input ref={fileRef} type="file" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx" style={{ display: "none" }} onChange={(e) => { const f = Array.from(e.target.files ?? []); setFiles((prev) => [...prev, ...f].slice(0, 5)); }} />
               {files.length > 0 && (
                 <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                   {files.map((f, i) => (
-                    <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(34,197,94,0.05)", border: "1px solid rgba(34,197,94,0.15)", borderRadius: "8px", padding: "0.6rem 0.875rem" }}>
-                      <span style={{ color: "#94a3b8", fontSize: "0.82rem" }}>📎 {f.name}</span>
-                      <button type="button" onClick={() => setFiles((prev) => prev.filter((_, j) => j !== i))} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }}>✕</button>
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#F1F5F9", border: "1px solid #CBD5E1", borderRadius: "8px", padding: "0.6rem 0.875rem" }}>
+                      <span style={{ color: "#0F172A", fontSize: "0.85rem", fontWeight: 600 }}>📎 {f.name}</span>
+                      <button type="button" onClick={() => setFiles((prev) => prev.filter((_, j) => j !== i))} style={{ background: "none", border: "none", color: "#EF4444", cursor: "pointer", fontWeight: 800 }}>✕</button>
                     </div>
                   ))}
                 </div>
               )}
-              <p style={{ marginTop: "1rem", fontSize: "0.75rem", color: "#475569", lineHeight: 1.6 }}>⚠ {tx.evidenceNote}</p>
+              <p style={{ marginTop: "1rem", fontSize: "0.78rem", color: "#64748B", lineHeight: 1.6 }}>⚠ {tx.evidenceNote}</p>
               <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem" }}>
                 <button type="button" onClick={() => setStep(3)} style={btnSecondary}>{tx.back2}</button>
                 <button type="button" onClick={() => { setError(""); setStep(5); }} style={btnPrimary}>{tx.review}</button>
@@ -649,7 +642,7 @@ export default function SubmitPage() {
           {step === 5 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
               <div style={card}>
-                <h2 style={{ fontWeight: 700, color: "#ffffff", marginBottom: "1.25rem" }}>{tx.step5}</h2>
+                <h2 style={{ fontWeight: 800, color: "#0F172A", marginBottom: "1.25rem" }}>{tx.step5}</h2>
                 <div style={{ display: "grid", gap: "0.6rem" }}>
                   {[
                     [lang === "en" ? "Mandal" : "మండలం", mandal],
@@ -659,22 +652,22 @@ export default function SubmitPage() {
                     [lang === "en" ? "Confidential mode" : "రహస్య మోడ్", isAnonymous ? (lang === "en" ? "Yes — no contact stored" : "అవును") : (lang === "en" ? "No — contact provided" : "కాదు")],
                     ...(!isAnonymous && consentGiven && mobileNumber ? [[lang === "en" ? "Notification consent" : "నోటిఫికేషన్ అంగీకారం", `${notificationPreference.toUpperCase()} · +91 ******${mobileNumber.replace(/\D/g, "").slice(-4)}`]] : []),
                   ].map(([k, v]) => (
-                    <div key={k as string} style={{ display: "flex", justifyContent: "space-between", padding: "0.5rem 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                      <span style={{ color: "#64748b", fontSize: "0.82rem" }}>{k}</span>
-                      <span style={{ color: "#ffffff", fontWeight: 600, fontSize: "0.82rem", textAlign: "right", maxWidth: "60%" }}>{v}</span>
+                    <div key={k as string} style={{ display: "flex", justifyContent: "space-between", padding: "0.5rem 0", borderBottom: "1px solid #E2E8F0" }}>
+                      <span style={{ color: "#64748B", fontSize: "0.85rem" }}>{k}</span>
+                      <span style={{ color: "#0F172A", fontWeight: 700, fontSize: "0.85rem", textAlign: "right", maxWidth: "60%" }}>{v}</span>
                     </div>
                   ))}
                 </div>
-                <div style={{ marginTop: "1rem", padding: "0.875rem", background: "rgba(4,9,26,0.5)", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                  <div style={{ fontSize: "0.62rem", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", fontWeight: 700 }}>Description</div>
-                  <p style={{ color: "#94a3b8", fontSize: "0.82rem", lineHeight: 1.6 }}>{description}</p>
+                <div style={{ marginTop: "1rem", padding: "0.875rem", background: "#F8FAFC", borderRadius: "10px", border: "1px solid #E2E8F0" }}>
+                  <div style={{ fontSize: "0.68rem", color: "#64748B", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", fontWeight: 800 }}>Description</div>
+                  <p style={{ color: "#334155", fontSize: "0.85rem", lineHeight: 1.6 }}>{description}</p>
                 </div>
               </div>
 
               {/* AI disclaimer */}
-              <div style={{ background: "rgba(30,136,229,0.04)", border: "1px solid rgba(30,136,229,0.15)", borderRadius: "12px", padding: "1.25rem", display: "flex", gap: "0.75rem" }}>
+              <div style={{ background: "#F0FDFA", border: "1px solid #99F6E4", borderRadius: "12px", padding: "1.25rem", display: "flex", gap: "0.75rem" }}>
                 <span style={{ flexShrink: 0 }}>🧠</span>
-                <p style={{ color: "#94a3b8", fontSize: "0.8rem", lineHeight: 1.6, margin: 0 }}>{tx.disclaimer}</p>
+                <p style={{ color: "#0F766E", fontSize: "0.82rem", lineHeight: 1.6, margin: 0, fontWeight: 600 }}>{tx.disclaimer}</p>
               </div>
 
               <div style={{ display: "flex", gap: "1rem" }}>
