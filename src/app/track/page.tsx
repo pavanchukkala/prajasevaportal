@@ -91,21 +91,18 @@ const STATUS_COLORS: Record<string, string> = {
   "Closed": "#64748b",
 };
 
+import Navbar from "@/components/layout/Navbar";
+import { useLanguage } from "@/context/LanguageContext";
+
 export default function TrackPage() {
-  const [lang, setLang] = useState<Lang>("en");
+  const { language: lang, setLanguage: setLang } = useLanguage();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<TrackResult | null>(null);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const saved = localStorage.getItem("psip_lang") as Lang | null;
-    if (saved === "en" || saved === "te") setLang(saved);
-  }, []);
-
   function switchLang(l: Lang) {
     setLang(l);
-    localStorage.setItem("psip_lang", l);
   }
 
   const t = T[lang];
@@ -151,17 +148,7 @@ export default function TrackPage() {
       </div>
 
       {/* Nav */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(4,9,26,0.92)", borderBottom: "1px solid rgba(212,160,23,0.12)", backdropFilter: "blur(24px)", padding: "0.875rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link href="/" style={{ color: "#D4A017", textDecoration: "none", fontWeight: 600, fontSize: "0.875rem" }}>{t.back}</Link>
-        <div style={{ fontWeight: 800, color: "#ffffff", fontSize: "0.9rem" }}>Track Complaint</div>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          {(["en", "te"] as Lang[]).map((l) => (
-            <button key={l} onClick={() => switchLang(l)} style={{ padding: "0.3rem 0.65rem", borderRadius: "9999px", border: "1px solid", fontSize: "0.68rem", fontWeight: 700, cursor: "pointer", background: lang === l ? "#D4A017" : "transparent", borderColor: lang === l ? "#D4A017" : "rgba(212,160,23,0.3)", color: lang === l ? "#04091A" : "#D4A017" }}>
-              {l === "en" ? "EN" : "తెలుగు"}
-            </button>
-          ))}
-        </div>
-      </nav>
+      <Navbar />
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: "640px", margin: "0 auto", padding: "3rem 1.5rem 6rem" }}>
 

@@ -137,8 +137,11 @@ interface SubmitResult {
   notificationStatus: string;
 }
 
+import Navbar from "@/components/layout/Navbar";
+import { useLanguage } from "@/context/LanguageContext";
+
 export default function SubmitPage() {
-  const [lang, setLang] = useState<Lang>("en");
+  const { language: lang, setLanguage: setLang } = useLanguage();
   const [step, setStep] = useState(1);
   // Step 1
   const [description, setDescription] = useState("");
@@ -420,17 +423,7 @@ export default function SubmitPage() {
       </div>
 
       {/* Nav */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(4,9,26,0.92)", borderBottom: "1px solid rgba(212,160,23,0.12)", backdropFilter: "blur(24px)", padding: "0.875rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link href="/" style={{ color: "#D4A017", textDecoration: "none", fontWeight: 600, fontSize: "0.875rem" }}>{tx.back}</Link>
-        <div style={{ fontWeight: 800, color: "#ffffff", fontSize: "0.9rem" }}>Submit Grievance</div>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          {(["en", "te"] as Lang[]).map((l) => (
-            <button key={l} onClick={() => switchLang(l)} style={{ padding: "0.3rem 0.75rem", borderRadius: "9999px", border: "1px solid", fontSize: "0.72rem", fontWeight: 700, cursor: "pointer", background: lang === l ? "#D4A017" : "transparent", borderColor: lang === l ? "#D4A017" : "rgba(212,160,23,0.3)", color: lang === l ? "#04091A" : "#D4A017" }}>
-              {l === "en" ? "EN" : "తెలుగు"}
-            </button>
-          ))}
-        </div>
-      </nav>
+      <Navbar />
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: "700px", margin: "0 auto", padding: "2.5rem 1.5rem 5rem" }}>
 

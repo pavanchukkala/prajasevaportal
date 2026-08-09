@@ -1,5 +1,5 @@
+import Navbar from "@/components/layout/Navbar";
 import { developerConfig } from "@/config/developer";
-import Link from "next/link";
 
 export const metadata = {
   title: "Meet the Developer | Srikalahasti Praja Seva",
@@ -19,11 +19,7 @@ export default function DeveloperPage() {
       </div>
 
       {/* Nav */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(4,9,26,0.92)", borderBottom: "1px solid rgba(212,160,23,0.12)", backdropFilter: "blur(24px)", padding: "0.875rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link href="/" style={{ color: "#D4A017", textDecoration: "none", fontWeight: 600, fontSize: "0.875rem" }}>← Home</Link>
-        <div style={{ fontWeight: 800, color: "#ffffff", fontSize: "0.9rem" }}>Meet the Developer</div>
-        <div />
-      </nav>
+      <Navbar />
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: "800px", margin: "0 auto", padding: "3rem 1.5rem 6rem" }}>
 

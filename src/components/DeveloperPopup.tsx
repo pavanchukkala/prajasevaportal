@@ -3,20 +3,20 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { developerConfig } from "@/config/developer";
 
+import { useLanguage } from "@/context/LanguageContext";
+
 // Pages where the popup should NOT appear
 const HIDDEN_PATHS = ["/staff/login", "/mla/", "/reviewer/", "/admin/", "/department/"];
 
 export default function DeveloperPopup() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [lang, setLang] = useState<"en" | "te">("en");
+  const { language } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem("psip_lang");
-    if (saved === "te") setLang("te");
   }, []);
 
   const shouldHide = HIDDEN_PATHS.some((p) => pathname.startsWith(p));
@@ -70,7 +70,7 @@ export default function DeveloperPopup() {
     },
   };
 
-  const t = labels[lang];
+  const t = labels[language];
 
   return (
     <>

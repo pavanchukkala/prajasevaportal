@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import DeveloperPopup from "@/components/DeveloperPopup";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 export const metadata: Metadata = {
   title: {
@@ -39,8 +40,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {children}
-        <DeveloperPopup />
+        <LanguageProvider>
+          {children}
+          <DeveloperPopup />
+        </LanguageProvider>
       </body>
     </html>
   );

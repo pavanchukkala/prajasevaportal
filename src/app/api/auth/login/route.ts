@@ -1,56 +1,69 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// ── Credentials are loaded from environment variables only ─────────────────
-// Set these in your .env.local file (never commit credentials to git):
-//   PSIP_ADMIN_USER=your_username
-//   PSIP_ADMIN_PASS=your_secure_password
-//   PSIP_REVIEWER_USER=your_reviewer_username
-//   PSIP_REVIEWER_PASS=your_reviewer_password
+// ── Credential loader — env vars ONLY ────────────────────────────────────────
+// Required env vars (set in .env.local or Render dashboard):
+//   PSIP_ADMIN_USER, PSIP_ADMIN_PASS
+//   PSIP_REVIEWER_USER, PSIP_REVIEWER_PASS
+//   PSIP_MLA_USER, PSIP_MLA_PASS
+//   PSIP_DEPT_USER, PSIP_DEPT_PASS
 //
-// Development fallback: if env vars are not set, uses randomly-generated
-// ephemeral credentials printed ONLY to server console on startup.
-// These are NEVER exposed via any API response or page.
+// If none are set in dev, fallback credentials are printed ONCE to server
+// console on startup. They are NEVER returned in any API response.
 
-function getUsers() {
-  const adminUser = process.env.PSIP_ADMIN_USER;
-  const adminPass = process.env.PSIP_ADMIN_PASS;
-  const reviewerUser = process.env.PSIP_REVIEWER_USER;
-  const reviewerPass = process.env.PSIP_REVIEWER_PASS;
+type Role = "administrator" | "mla_staff" | "reviewer" | "department_officer";
 
-  // If env vars not configured, use a dev-only fallback
-  // that is printed to the server console (not the browser)
-  const isDev = process.env.NODE_ENV !== "production";
+interface StaffUser {
+  username: string;
+  passwordHash: string; // plaintext in demo — swap for bcrypt in prod
+  role: Role;
+  displayName: string;
+}
 
-  if (!adminUser && isDev) {
-    // Only warn once in development
-    if (!(globalThis as Record<string, unknown>).__psip_credWarnShown) {
-      (globalThis as Record<string, unknown>).__psip_credWarnShown = true;
+function getStaffUsers(): StaffUser[] {
+  const users: StaffUser[] = [];
+
+  const add = (
+    envUser: string | undefined,
+    envPass: string | undefined,
+    role: Role,
+    displayName: string,
+    devUser: string,
+    devPass: string
+  ) => {
+    const u = envUser ?? (process.env.NODE_ENV !== "production" ? devUser : undefined);
+    const p = envPass ?? (process.env.NODE_ENV !== "production" ? devPass : undefined);
+    if (u && p) users.push({ username: u, passwordHash: p, role, displayName });
+  };
+
+  add(process.env.PSIP_ADMIN_USER, process.env.PSIP_ADMIN_PASS, "administrator", "System Administrator", "admin", "dev-admin-2026");
+  add(process.env.PSIP_MLA_USER, process.env.PSIP_MLA_PASS, "mla_staff", "MLA Office Staff", "mla_staff", "dev-mla-2026");
+  add(process.env.PSIP_REVIEWER_USER, process.env.PSIP_REVIEWER_PASS, "reviewer", "Case Reviewer", "reviewer", "dev-reviewer-2026");
+  add(process.env.PSIP_DEPT_USER, process.env.PSIP_DEPT_PASS, "department_officer", "Department Officer", "dept_officer", "dev-dept-2026");
+
+  // Warn once if using dev fallbacks
+  if (!process.env.PSIP_ADMIN_USER && process.env.NODE_ENV !== "production") {
+    const G = globalThis as Record<string, unknown>;
+    if (!G.__psip_credWarn) {
+      G.__psip_credWarn = true;
       console.warn(
-        "\n[PSIP] ⚠ No credentials configured via environment variables.\n" +
-        "[PSIP] Set PSIP_ADMIN_USER, PSIP_ADMIN_PASS, PSIP_REVIEWER_USER, PSIP_REVIEWER_PASS in .env.local\n" +
-        "[PSIP] Using development fallback credentials (visible in server console only).\n" +
-        "[PSIP] Dev login: admin / dev-admin-2026 | reviewer / dev-reviewer-2026\n"
+        "\n[PSIP] ⚠  No credentials configured via environment variables." +
+        "\n[PSIP]    Dev fallback logins (server console only):" +
+        "\n[PSIP]    admin / dev-admin-2026" +
+        "\n[PSIP]    mla_staff / dev-mla-2026" +
+        "\n[PSIP]    reviewer / dev-reviewer-2026" +
+        "\n[PSIP]    dept_officer / dev-dept-2026" +
+        "\n[PSIP]    Set PSIP_*_USER and PSIP_*_PASS in .env.local for production.\n"
       );
     }
-    return [
-      { username: "admin", password: "dev-admin-2026", role: "mla_staff", name: "MLA Office" },
-      { username: "reviewer", password: "dev-reviewer-2026", role: "reviewer", name: "Case Reviewer" },
-    ];
   }
 
-  return [
-    ...(adminUser && adminPass
-      ? [{ username: adminUser, password: adminPass, role: "mla_staff", name: "MLA Office" }]
-      : []),
-    ...(reviewerUser && reviewerPass
-      ? [{ username: reviewerUser, password: reviewerPass, role: "reviewer", name: "Case Reviewer" }]
-      : []),
-  ];
+  return users;
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, password } = await req.json();
+    const body = await req.json();
+    const { username, password } = body;
 
     if (!username || !password) {
       return NextResponse.json(
@@ -59,33 +72,45 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const users = getUsers();
+    const users = getStaffUsers();
     const user = users.find(
-      (u) => u.username === username && u.password === password
+      (u) => u.username === username && u.passwordHash === password
     );
 
     if (!user) {
-      // Generic error — do not reveal whether username or password was wrong
       return NextResponse.json(
         { error: "Invalid credentials. All login attempts are logged." },
         { status: 401 }
       );
     }
 
+    // Role → dashboard redirect
+    const redirectMap: Record<Role, string> = {
+      administrator: "/admin/settings",
+      mla_staff: "/mla/dashboard",
+      reviewer: "/reviewer/cases",
+      department_officer: "/department/workspace",
+    };
+
     const response = NextResponse.json({
       success: true,
       role: user.role,
-      name: user.name,
+      name: user.displayName,
+      redirect: redirectMap[user.role],
       message: "Authenticated successfully.",
     });
 
-    response.cookies.set("psip_session", `${user.username}:${user.role}`, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 60 * 8, // 8 hours
-      path: "/",
-    });
+    response.cookies.set(
+      "psip_session",
+      `${user.username}:${user.role}`,
+      {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 8, // 8 hours
+        path: "/",
+      }
+    );
 
     return response;
   } catch {
