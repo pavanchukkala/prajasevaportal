@@ -1,194 +1,167 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
-import { SAMPLE_COMPLAINTS } from "@/lib/db";
-import { leadershipConfig } from "@/config/leadership";
-import { geographyConfig } from "@/config/geography";
+import React from 'react';
+import { redirect } from 'next/navigation';
+import { getSession } from '@/lib/auth';
+import { db } from '@/lib/db';
+import Link from 'next/link';
 
-export const metadata = {
-  title: "MLA Dashboard | Srikalahasti Praja Seva",
-};
-
-export default async function MLADashboardPage() {
+export default async function MLADashboard({
+  searchParams,
+}: {
+  searchParams: { tab?: string };
+}) {
   const session = await getSession();
-  if (!session) redirect("/staff/login?redirect=/mla/dashboard");
+  if (!session) {
+    redirect('/staff/login');
+  }
 
-  const rep = leadershipConfig.currentRepresentative;
-  const complaints = SAMPLE_COMPLAINTS;
-  const totalCases = complaints.length;
-  const highPriority = complaints.filter(c => c.aiAnalysis?.urgency === "High" || c.aiAnalysis?.urgency === "Emergency").length;
-  const underReview = complaints.filter(c => c.status === "Under Review").length;
-  const resolved = complaints.filter(c => c.status === "Resolved" || c.status === "Closed").length;
+  const allComplaints = await db.complaints.list();
+  
+  const currentTab = searchParams.tab || 'all';
 
-  const card = {
-    background: "rgba(13,33,55,0.6)",
-    border: "1px solid rgba(212,160,23,0.12)",
-    borderRadius: "16px",
-    padding: "1.5rem",
-  } as const;
+  let filteredComplaints = allComplaints;
+  if (currentTab === 'live') {
+    filteredComplaints = allComplaints.filter((c: any) => !c.isSample);
+  } else if (currentTab === 'sample') {
+    filteredComplaints = allComplaints.filter((c: any) => c.isSample);
+  }
+
+  const total = allComplaints.length;
+  const liveCount = allComplaints.filter((c: any) => !c.isSample).length;
+  const sampleCount = allComplaints.filter((c: any) => c.isSample).length;
+  const highPriority = allComplaints.filter((c: any) => c.aiAnalysis?.urgency === 'High').length;
+  const underReview = allComplaints.filter((c: any) => c.status === 'Under Review').length;
 
   return (
-    <main style={{ minHeight: "100vh", background: "#060f1a", color: "#f0f4f8" }}>
-      {/* HEADER */}
-      <header style={{ background: "rgba(13,33,55,0.95)", borderBottom: "1px solid rgba(212,160,23,0.15)", backdropFilter: "blur(20px)", position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", height: "64px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <Link href="/" style={{ color: "#64748b", textDecoration: "none", fontSize: "0.85rem" }}>← Home</Link>
-            <div style={{ width: "1px", height: "20px", background: "rgba(255,255,255,0.1)" }} />
-            <div>
-              <div style={{ fontWeight: 700, color: "#D4A017", fontSize: "0.95rem" }}>Constituency Command Centre</div>
-              <div style={{ fontSize: "0.65rem", color: "#64748b" }}>Srikalahasti No. {geographyConfig.constituency.number} · {session.role.replace("_", " ").toUpperCase()}</div>
-            </div>
-          </div>
-          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-            <div style={{ padding: "0.25rem 0.75rem", background: "rgba(234,179,8,0.15)", border: "1px solid rgba(234,179,8,0.3)", borderRadius: "9999px", fontSize: "0.65rem", fontWeight: 700, color: "#eab308", letterSpacing: "0.1em" }}>
-              SAMPLE PRESENTATION RECORDS
-            </div>
-            <form action="/api/auth/logout" method="POST">
-              <button type="submit" style={{ padding: "0.4rem 0.875rem", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", background: "transparent", color: "#94a3b8", fontSize: "0.8rem", cursor: "pointer" }}>Sign Out</button>
-            </form>
-          </div>
-        </div>
-      </header>
+    <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: '#f8fafc', fontFamily: 'sans-serif' }}>
+      {/* AI Disclaimer Banner */}
+      <div style={{ backgroundColor: '#f59e0b', color: '#000', padding: '12px', textAlign: 'center', fontWeight: 'bold' }}>
+        This dashboard contains AI-processed data. Please review carefully.
+      </div>
 
-      {/* WELCOME BANNER */}
-      <div style={{ background: "linear-gradient(135deg, #0D2137 0%, #162f4a 100%)", borderBottom: "1px solid rgba(212,160,23,0.1)", padding: "1.5rem" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", alignItems: "center", gap: "1.5rem" }}>
-          <div style={{ width: "56px", height: "56px", borderRadius: "50%", border: "2px solid rgba(212,160,23,0.5)", display: "flex", alignItems: "center", justifyContent: "center", background: "#081424", fontSize: "1.5rem", flexShrink: 0 }}>👤</div>
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
+        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
           <div>
-            <div style={{ fontWeight: 800, color: "#ffffff", fontSize: "1.25rem" }}>Welcome, {rep.name}</div>
-            <div style={{ color: "#D4A017", fontSize: "0.85rem" }}>{rep.title}</div>
+            <h1 style={{ color: '#fbbf24', fontSize: '28px', margin: 0 }}>MLA Case Dashboard</h1>
+            <p style={{ color: '#cbd5e1', margin: '8px 0 0' }}>Constituency Intelligence Platform</p>
           </div>
-          <div style={{ marginLeft: "auto", fontSize: "0.75rem", color: "#475569" }}>
-            {new Date().toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <span style={{ color: '#94a3b8' }}>Authorized Staff</span>
           </div>
-        </div>
-      </div>
+        </header>
 
-      {/* AI DISCLAIMER */}
-      <div style={{ maxWidth: "1280px", margin: "1.5rem auto", padding: "0 1.5rem" }}>
-        <div style={{ background: "rgba(30,136,229,0.08)", border: "1px solid rgba(30,136,229,0.25)", borderRadius: "12px", padding: "1rem 1.25rem", display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
-          <span style={{ flexShrink: 0, marginTop: "2px" }}>ℹ️</span>
-          <div style={{ fontSize: "0.85rem", color: "#94a3b8", lineHeight: 1.6 }}>
-            <strong style={{ color: "#60a5fa", display: "block", marginBottom: "2px" }}>AI-Generated Preliminary Assessments</strong>
-            The insights below are generated by an LLM. This is not a finding of fact, a legal conclusion, or a determination of guilt. It is a prioritization tool to assist human review only. All cases require qualified human judgment before any action is taken.
-          </div>
-        </div>
-      </div>
-
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem 3rem", display: "grid", gridTemplateColumns: "320px 1fr", gap: "2rem" }}>
-
-        {/* LEFT COLUMN */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-
-          {/* STATS */}
-          <div style={{ ...card }}>
-            <div style={{ fontWeight: 700, color: "#ffffff", marginBottom: "1rem" }}>Live Overview</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-              {[
-                { n: totalCases, label: "Total Cases", color: "#D4A017" },
-                { n: highPriority, label: "High Priority", color: "#ef4444" },
-                { n: underReview, label: "Under Review", color: "#60a5fa" },
-                { n: resolved, label: "Resolved", color: "#22c55e" },
-              ].map(s => (
-                <div key={s.label} style={{ background: "rgba(6,15,26,0.6)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "10px", padding: "1rem", textAlign: "center" }}>
-                  <div style={{ fontSize: "2rem", fontWeight: 900, color: s.color }}>{s.n}</div>
-                  <div style={{ fontSize: "0.7rem", color: "#64748b", marginTop: "4px" }}>{s.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* CONTEXT */}
-          <div style={{ ...card }}>
-            <div style={{ fontWeight: 700, color: "#ffffff", marginBottom: "1rem" }}>Constituency Context</div>
-            {[
-              ["Mandals", "4"],
-              ["Population (2011)", geographyConfig.constituency.baselinePopulation.toLocaleString()],
-              ["Est. Personnel", `${geographyConfig.workforceEstimate.min}–${geographyConfig.workforceEstimate.max}`],
-              ["District", geographyConfig.constituency.district],
-            ].map(([k, v]) => (
-              <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "0.6rem 0", borderBottom: "1px solid rgba(255,255,255,0.04)", fontSize: "0.85rem" }}>
-                <span style={{ color: "#64748b" }}>{k}</span>
-                <span style={{ color: "#ffffff", fontWeight: 700 }}>{v}</span>
-              </div>
-            ))}
-            <div style={{ marginTop: "0.75rem", fontSize: "0.7rem", color: "#475569", lineHeight: 1.5 }}>{geographyConfig.workforceEstimate.disclaimer}</div>
-          </div>
-
-          {/* DEPT HEATMAP */}
-          <div style={{ ...card }}>
-            <div style={{ fontWeight: 700, color: "#ffffff", marginBottom: "1rem" }}>Department Heatmap</div>
-            {[
-              { dept: "Revenue", count: 42, color: "#ef4444" },
-              { dept: "Municipality", count: 34, color: "#f97316" },
-              { dept: "Police", count: 21, color: "#eab308" },
-              { dept: "Health", count: 18, color: "#60a5fa" },
-              { dept: "Panchayat Raj", count: 14, color: "#22c55e" },
-              { dept: "Electricity", count: 11, color: "#a78bfa" },
-            ].map(d => (
-              <div key={d.dept} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.5rem 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                <span style={{ fontSize: "0.85rem", color: "#94a3b8" }}>{d.dept}</span>
-                <span style={{ padding: "0.2rem 0.6rem", borderRadius: "6px", background: `${d.color}22`, color: d.color, fontSize: "0.75rem", fontWeight: 700 }}>{d.count}</span>
-              </div>
-            ))}
-          </div>
-
-          <Link href="/" style={{ textAlign: "center", color: "#64748b", fontSize: "0.8rem", textDecoration: "none" }}>← Back to Public Site</Link>
+        {/* Stats Row */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+          <StatCard title="Total Cases" value={total} />
+          <StatCard title="Live Submissions" value={liveCount} highlight />
+          <StatCard title="High Priority" value={highPriority} danger />
+          <StatCard title="Under Review" value={underReview} />
+          <StatCard title="Sample Data" value={sampleCount} />
         </div>
 
-        {/* RIGHT COLUMN */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          <div style={{ fontWeight: 800, color: "#ffffff", fontSize: "1.25rem" }}>Recent AI Case Intelligence</div>
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', borderBottom: '1px solid #1e293b', paddingBottom: '12px' }}>
+          <TabLink active={currentTab === 'all'} href="?tab=all" label="All Cases" />
+          <TabLink active={currentTab === 'live'} href="?tab=live" label="Live Submissions" />
+          <TabLink active={currentTab === 'sample'} href="?tab=sample" label="Sample Data" />
+        </div>
 
-          {complaints.map(c => (
-            <div key={c.id} style={{ background: "rgba(13,33,55,0.5)", border: "1px solid rgba(212,160,23,0.12)", borderRadius: "16px", overflow: "hidden" }}>
-              {/* SAMPLE badge */}
-              <div style={{ background: "rgba(234,179,8,0.08)", borderBottom: "1px solid rgba(234,179,8,0.12)", padding: "0.4rem 1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: "0.6rem", fontWeight: 700, color: "#eab308", letterSpacing: "0.12em", textTransform: "uppercase" }}>SAMPLE PRESENTATION RECORD</span>
-                <span style={{ fontSize: "0.7rem", color: "#64748b" }}>{c.createdAt.split("T")[0]}</span>
+        {/* Cases Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
+          {filteredComplaints.map((c: any) => (
+            <div key={c.id} style={{ backgroundColor: '#1e293b', borderRadius: '8px', padding: '20px', border: '1px solid #334155', position: 'relative' }}>
+              {/* Badges */}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                <Badge label={c.status} color="#3b82f6" />
+                {c.isSample && <Badge label="Sample" color="#8b5cf6" />}
+                {(!c.isSample && (c.isAnonymous || c.status === 'New')) && <Badge label="NEW" color="#ef4444" />}
+                {c.aiAnalysis?.urgency && (
+                  <Badge 
+                    label={c.aiAnalysis.urgency} 
+                    color={c.aiAnalysis.urgency === 'High' ? '#ef4444' : c.aiAnalysis.urgency === 'Medium' ? '#f59e0b' : '#10b981'} 
+                  />
+                )}
               </div>
 
-              <div style={{ padding: "1.25rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
-                  <h3 style={{ fontWeight: 700, color: "#ffffff", fontSize: "1rem", lineHeight: 1.4, maxWidth: "70%" }}>{c.aiAnalysis?.title ?? c.description.slice(0, 80)}</h3>
-                  <span style={{ padding: "0.25rem 0.75rem", borderRadius: "9999px", background: c.status === "Under Review" ? "rgba(96,165,250,0.12)" : "rgba(34,197,94,0.12)", color: c.status === "Under Review" ? "#60a5fa" : "#22c55e", fontSize: "0.7rem", fontWeight: 700, whiteSpace: "nowrap" }}>{c.status}</span>
-                </div>
-
-                <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-                  <span style={{ padding: "0.2rem 0.6rem", background: "rgba(255,255,255,0.05)", borderRadius: "6px", fontSize: "0.72rem", color: "#94a3b8" }}>{c.id}</span>
-                  <span style={{ padding: "0.2rem 0.6rem", background: "rgba(255,255,255,0.05)", borderRadius: "6px", fontSize: "0.72rem", color: "#94a3b8" }}>{c.department ?? c.aiAnalysis?.department}</span>
-                  <span style={{ padding: "0.2rem 0.6rem", background: "rgba(255,255,255,0.05)", borderRadius: "6px", fontSize: "0.72rem", color: "#94a3b8" }}>{c.mandal} Mandal</span>
-                </div>
-
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem", background: "rgba(6,15,26,0.5)", borderRadius: "10px", padding: "1rem", border: "1px solid rgba(255,255,255,0.05)" }}>
-                  <div>
-                    <div style={{ fontSize: "0.6rem", color: "#475569", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>AI Credibility</div>
-                    <div style={{ fontWeight: 700, fontSize: "0.9rem", color: c.aiAnalysis?.credibilityBand === "High" ? "#22c55e" : c.aiAnalysis?.credibilityBand === "Medium" ? "#eab308" : "#ef4444" }}>
-                      {c.aiAnalysis?.credibilityBand} ({c.aiAnalysis?.confidenceScore}%)
-                    </div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "0.6rem", color: "#475569", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>Urgency</div>
-                    <div style={{ fontWeight: 700, fontSize: "0.9rem", color: c.aiAnalysis?.urgency === "High" || c.aiAnalysis?.urgency === "Emergency" ? "#ef4444" : "#f97316" }}>
-                      {c.aiAnalysis?.urgency}
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-                    <Link href={`/mla/complaint/${c.id}`} style={{ padding: "0.5rem 1rem", border: "1px solid #D4A017", borderRadius: "8px", color: "#D4A017", textDecoration: "none", fontSize: "0.8rem", fontWeight: 700 }}>
-                      Review Case →
-                    </Link>
-                  </div>
-                </div>
-
-                <div style={{ marginTop: "0.75rem", fontSize: "0.72rem", color: "#475569", lineHeight: 1.5 }}>
-                  {c.aiAnalysis?.legalDisclaimer}
-                </div>
+              <h2 style={{ fontSize: '18px', color: '#fbbf24', margin: '0 0 12px', lineHeight: '1.4' }}>
+                {c.aiAnalysis?.title || (c.description ? c.description.slice(0, 60) + '...' : 'Untitled Case')}
+              </h2>
+              
+              <div style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '16px' }}>
+                <p style={{ margin: '4px 0' }}><strong>ID:</strong> {c.id}</p>
+                <p style={{ margin: '4px 0' }}><strong>Mandal:</strong> {c.mandal || 'N/A'}</p>
+                {c.mobileNumberMasked && (
+                  <p style={{ margin: '4px 0' }}><strong>Contact:</strong> {c.mobileNumberMasked}</p>
+                )}
+                {c.aiAnalysis?.credibilityBand && (
+                  <p style={{ margin: '4px 0' }}><strong>Credibility:</strong> {c.aiAnalysis.credibilityBand}</p>
+                )}
               </div>
+
+              <Link href={`/mla/complaint/${c.id}`} style={{
+                display: 'inline-block',
+                backgroundColor: '#fbbf24',
+                color: '#0f172a',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+                fontSize: '14px',
+              }}>
+                Review Case &rarr;
+              </Link>
             </div>
           ))}
+          {filteredComplaints.length === 0 && (
+            <div style={{ color: '#94a3b8', padding: '24px 0' }}>No cases found for this category.</div>
+          )}
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
+  );
+}
+
+function StatCard({ title, value, highlight, danger }: { title: string, value: number, highlight?: boolean, danger?: boolean }) {
+  return (
+    <div style={{ 
+      backgroundColor: '#1e293b', 
+      padding: '20px', 
+      borderRadius: '8px',
+      borderLeft: `4px solid ${highlight ? '#3b82f6' : danger ? '#ef4444' : '#fbbf24'}`
+    }}>
+      <div style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>{title}</div>
+      <div style={{ color: '#f8fafc', fontSize: '28px', fontWeight: 'bold' }}>{value}</div>
+    </div>
+  );
+}
+
+function TabLink({ active, href, label }: { active: boolean, href: string, label: string }) {
+  return (
+    <Link href={href} style={{
+      padding: '8px 16px',
+      color: active ? '#fbbf24' : '#cbd5e1',
+      backgroundColor: active ? '#1e293b' : 'transparent',
+      borderRadius: '4px',
+      textDecoration: 'none',
+      fontWeight: active ? 'bold' : 'normal',
+      border: active ? '1px solid #334155' : '1px solid transparent',
+    }}>
+      {label}
+    </Link>
+  );
+}
+
+function Badge({ label, color }: { label: string, color: string }) {
+  return (
+    <span style={{
+      backgroundColor: `${color}20`,
+      color: color,
+      border: `1px solid ${color}40`,
+      padding: '2px 8px',
+      borderRadius: '12px',
+      fontSize: '12px',
+      fontWeight: 'bold'
+    }}>
+      {label}
+    </span>
   );
 }

@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  const complaint = await db.complaints.getById(id);
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const token = searchParams.get("token");
 
-  if (!complaint) {
-    return NextResponse.json({ error: "Complaint not found." }, { status: 404 });
+  if (!token) {
+    return NextResponse.json({ error: "Tracking token is required." }, { status: 400 });
   }
 
-  // Public tracking endpoint — return ONLY safe, non-sensitive fields
+  const complaint = await db.complaints.getByTrackingToken(token);
+
+  if (!complaint) {
+    return NextResponse.json({ error: "No complaint found with this tracking token." }, { status: 404 });
+  }
+
+  // Return only public, non-sensitive fields
   return NextResponse.json({
     id: complaint.id,
     status: complaint.status,
@@ -22,7 +25,6 @@ export async function GET(
     createdAt: complaint.createdAt,
     updatedAt: complaint.updatedAt,
     isSample: complaint.isSample,
-    // AI summary — stripped of internal fields
     aiSummary: complaint.aiAnalysis
       ? {
           title: complaint.aiAnalysis.title,
@@ -33,17 +35,15 @@ export async function GET(
           legalDisclaimer: complaint.aiAnalysis.legalDisclaimer,
         }
       : null,
-    // Audit log stripped of internal reviewer notes
     statusHistory: (complaint.auditLog ?? [])
       .filter(
         (e) =>
-          e.action.startsWith("Status changed") ||
-          e.action.startsWith("Complaint received")
+          e.action.startsWith("Status changed") || e.action.startsWith("Complaint received")
       )
       .map((e) => ({ timestamp: e.timestamp, action: e.action })),
     message:
       complaint.status === "Resolved"
-        ? "This complaint has been resolved. If you believe the issue persists, you may submit a new complaint."
+        ? "This complaint has been resolved."
         : complaint.status === "Under Review"
         ? "Your complaint is under active review by authorized staff."
         : complaint.status === "Assigned"
@@ -53,6 +53,5 @@ export async function GET(
         : complaint.status === "More Information Requested"
         ? "Reviewers have requested more information. You may submit a new complaint with additional details."
         : "Your complaint has been received and is in the processing queue.",
-    // Never expose: mobileNumber (raw), internalNotes, assignedTo, full auditLog with reviewer notes
   });
 }

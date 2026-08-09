@@ -1,40 +1,22 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_Telugu } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const notoTelugu = Noto_Sans_Telugu({
-  variable: "--font-noto-telugu",
-  subsets: ["telugu"],
-  display: "swap",
-  weight: ["400", "600", "700"],
-});
+import DeveloperPopup from "@/components/DeveloperPopup";
 
 export const metadata: Metadata = {
   title: {
     default: "Srikalahasti Praja Seva Intelligence Platform",
     template: "%s | Srikalahasti Praja Seva",
   },
-  description: "An AI-assisted citizen grievance and constituency intelligence platform for Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh.",
-  keywords: ["Srikalahasti", "grievance", "citizen portal", "MLA", "Andhra Pradesh", "constituency", "praja seva"],
-  authors: [{ name: "Pavan Chukkala" }],
+  description:
+    "A proposed AI-assisted public service and constituency intelligence platform for Srikalahasti Assembly Constituency No. 168, Tirupati District, Andhra Pradesh. Submit and track public grievances, access department information, and explore constituency data.",
+  keywords: [
+    "Srikalahasti", "constituency", "grievance", "public service", "Tirupati",
+    "Andhra Pradesh", "civic tech", "MLA", "TDP", "complaints", "AI analysis",
+  ],
   openGraph: {
+    title: "Srikalahasti Praja Seva Intelligence Platform",
+    description: "Proposed civic-technology platform for Srikalahasti constituency.",
     type: "website",
-    locale: "en_IN",
-    url: "https://prajasevaportal.vercel.app",
-    siteName: "Srikalahasti Praja Seva Intelligence Platform",
-    title: "Srikalahasti Praja Seva Intelligence Platform",
-    description: "AI-assisted citizen grievance platform for Srikalahasti constituency.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Srikalahasti Praja Seva Intelligence Platform",
-    description: "AI-assisted citizen grievance platform for Srikalahasti constituency.",
   },
   robots: { index: true, follow: true },
 };
@@ -45,11 +27,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${notoTelugu.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#04091A" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>
+        {children}
+        <DeveloperPopup />
+      </body>
     </html>
   );
 }

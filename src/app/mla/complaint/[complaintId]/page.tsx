@@ -1,162 +1,254 @@
-import Link from "next/link";
-import { redirect, notFound } from "next/navigation";
-import { getSession } from "@/lib/auth";
-import { db } from "@/lib/db";
+import React from 'react';
+import { redirect } from 'next/navigation';
+import { getSession } from '@/lib/auth';
+import { db } from '@/lib/db';
+import Link from 'next/link';
 
-export async function generateMetadata({ params }: { params: Promise<{ complaintId: string }> }) {
-  const { complaintId } = await params;
-  return { title: `Case ${complaintId} | MLA Dashboard | Praja Seva` };
-}
-
-export default async function CaseDetailPage({ params }: { params: Promise<{ complaintId: string }> }) {
+export default async function ComplaintDetailPage({
+  params,
+}: {
+  params: { complaintId: string };
+}) {
   const session = await getSession();
-  if (!session) redirect("/staff/login");
+  if (!session) {
+    redirect('/staff/login');
+  }
 
-  const { complaintId } = await params;
+  const { complaintId } = params;
   const complaint = await db.complaints.getById(complaintId);
 
-  if (!complaint) notFound();
+  if (!complaint) {
+    return (
+      <div style={theme.page}>
+        <div style={theme.container}>
+          <h1 style={{ color: '#ef4444' }}>Case Not Found</h1>
+          <Link href="/mla/dashboard" style={theme.backLink}>&larr; Back to Dashboard</Link>
+        </div>
+      </div>
+    );
+  }
 
-  const urgencyColor = complaint.aiAnalysis?.urgency === "High" || complaint.aiAnalysis?.urgency === "Emergency" ? "#ef4444" : complaint.aiAnalysis?.urgency === "Priority" ? "#f97316" : "#22c55e";
-  const credColor = complaint.aiAnalysis?.credibilityBand === "High" ? "#22c55e" : complaint.aiAnalysis?.credibilityBand === "Medium" ? "#eab308" : "#ef4444";
-
-  const card = {
-    background: "rgba(13,33,55,0.6)",
-    border: "1px solid rgba(212,160,23,0.12)",
-    borderRadius: "16px",
-    padding: "1.5rem",
-    marginBottom: "1.5rem",
-  } as const;
+  const ai = complaint.aiAnalysis ?? null;
 
   return (
-    <main style={{ minHeight: "100vh", background: "#060f1a", color: "#f0f4f8", paddingBottom: "4rem" }}>
-      {/* HEADER */}
-      <header style={{ background: "rgba(13,33,55,0.95)", borderBottom: "1px solid rgba(212,160,23,0.15)", backdropFilter: "blur(20px)", position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", height: "60px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <Link href="/mla/dashboard" style={{ color: "#D4A017", textDecoration: "none", fontSize: "0.85rem" }}>← Dashboard</Link>
-            <div style={{ width: "1px", height: "16px", background: "rgba(255,255,255,0.1)" }} />
-            <span style={{ fontWeight: 700, color: "#94a3b8", fontSize: "0.85rem" }}>Case {complaintId}</span>
-          </div>
-          <div style={{ padding: "0.25rem 0.75rem", background: "rgba(234,179,8,0.15)", border: "1px solid rgba(234,179,8,0.3)", borderRadius: "9999px", fontSize: "0.6rem", fontWeight: 700, color: "#eab308", letterSpacing: "0.1em" }}>
-            SAMPLE PRESENTATION RECORD
-          </div>
+    <div style={theme.page}>
+      {complaint.isSample && (
+        <div style={{ backgroundColor: '#8b5cf6', color: '#fff', padding: '12px', textAlign: 'center', fontWeight: 'bold' }}>
+          SAMPLE PRESENTATION RECORD — This is generated sample data, not a live case.
         </div>
-      </header>
-
-      <div style={{ maxWidth: "1100px", margin: "2rem auto", padding: "0 1.5rem" }}>
-
-        {/* TITLE BLOCK */}
-        <div style={{ ...card, border: "1px solid rgba(212,160,23,0.25)" }}>
-          <div style={{ fontSize: "0.65rem", color: "#D4A017", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>AI-Generated Case Summary</div>
-          <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#ffffff", lineHeight: 1.3, letterSpacing: "-0.02em", marginBottom: "1rem" }}>
-            {complaint.aiAnalysis?.title ?? complaint.description.slice(0, 100)}
-          </h1>
-          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-            <span style={{ padding: "0.3rem 0.75rem", borderRadius: "8px", background: "rgba(212,160,23,0.1)", color: "#D4A017", fontSize: "0.8rem", fontWeight: 700 }}>{complaint.id}</span>
-            <span style={{ padding: "0.3rem 0.75rem", borderRadius: "8px", background: `${urgencyColor}22`, color: urgencyColor, fontSize: "0.8rem", fontWeight: 700 }}>🔴 {complaint.aiAnalysis?.urgency} Urgency</span>
-            <span style={{ padding: "0.3rem 0.75rem", borderRadius: "8px", background: `${credColor}22`, color: credColor, fontSize: "0.8rem", fontWeight: 700 }}>Credibility: {complaint.aiAnalysis?.credibilityBand} ({complaint.aiAnalysis?.confidenceScore}%)</span>
-            <span style={{ padding: "0.3rem 0.75rem", borderRadius: "8px", background: "rgba(96,165,250,0.1)", color: "#60a5fa", fontSize: "0.8rem", fontWeight: 700 }}>{complaint.status}</span>
-          </div>
+      )}
+      
+      <div style={theme.container}>
+        <div style={{ marginBottom: '24px' }}>
+          <Link href="/mla/dashboard" style={theme.backLink}>&larr; Back to Dashboard</Link>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-
-          {/* LEFT: Details */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+          {/* Main Content */}
           <div>
-            <div style={card}>
-              <div style={{ fontWeight: 700, color: "#D4A017", marginBottom: "1rem", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>Original Complaint</div>
-              <p style={{ color: "#94a3b8", lineHeight: 1.7, fontSize: "0.95rem" }}>{complaint.description}</p>
-              <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid rgba(255,255,255,0.05)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                {[
-                  ["Mandal", complaint.mandal],
-                  ["Village/Ward", complaint.village ?? "Not specified"],
-                  ["Department", complaint.aiAnalysis?.department ?? complaint.department ?? "To Be Determined"],
-                  ["Category", complaint.aiAnalysis?.category ?? "General"],
-                  ["Submitted", complaint.createdAt.split("T")[0]],
-                  ["Evidence", complaint.mediaUrls.length > 0 ? `${complaint.mediaUrls.length} file(s)` : "None uploaded"],
-                ].map(([k, v]) => (
-                  <div key={k}>
-                    <div style={{ fontSize: "0.65rem", color: "#475569", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2px" }}>{k}</div>
-                    <div style={{ fontSize: "0.9rem", color: "#ffffff", fontWeight: 600 }}>{v}</div>
+            <div style={theme.card}>
+              <h1 style={theme.title}>{ai?.title ?? 'Untitled Case'}</h1>
+              <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '24px' }}>Case ID: {complaint.id}</p>
+              
+              <div style={theme.section}>
+                <h3 style={theme.sectionTitle}>Original Description</h3>
+                <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>{complaint.description}</p>
+              </div>
+
+              <div style={theme.section}>
+                <h3 style={theme.sectionTitle}>Location Details</h3>
+                <p><strong>Mandal:</strong> {complaint.mandal || 'N/A'}</p>
+                <p><strong>Village/Ward:</strong> {complaint.village || 'N/A'}</p>
+              </div>
+
+              <div style={theme.section}>
+                <h3 style={theme.sectionTitle}>Contact & Metadata</h3>
+                {complaint.mobileNumberMasked ? (
+                  <p><strong>Contact:</strong> {complaint.mobileNumberMasked} <span style={{color: '#ef4444', fontSize: '12px'}}>(Masked — full number not accessible via UI)</span></p>
+                ) : (
+                  <p><strong>Contact:</strong> Not provided / Anonymous</p>
+                )}
+                <p><strong>Consent Given:</strong> {complaint.consentGiven ? 'Yes' : 'No'}</p>
+                <p><strong>Created:</strong> {new Date(complaint.createdAt).toLocaleString()}</p>
+                <p><strong>Updated:</strong> {complaint.updatedAt ? new Date(complaint.updatedAt).toLocaleString() : 'N/A'}</p>
+              </div>
+
+              {complaint.internalNotes && (
+                <div style={theme.section}>
+                  <h3 style={theme.sectionTitle}>Internal Notes</h3>
+                  <p style={{ fontStyle: 'italic', color: '#cbd5e1' }}>{Array.isArray(complaint.internalNotes) ? complaint.internalNotes.join('\n') : complaint.internalNotes}</p>
+                </div>
+              )}
+            </div>
+
+            <div style={theme.card}>
+              <h2 style={theme.title}>Audit Log Timeline</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {complaint.auditLog?.map((log: any, i: number) => (
+                  <div key={i} style={{ borderLeft: '2px solid #334155', paddingLeft: '16px' }}>
+                    <p style={{ color: '#94a3b8', fontSize: '12px', margin: '0 0 4px' }}>
+                      {new Date(log.timestamp).toLocaleString()} — {log.actor}
+                    </p>
+                    <p style={{ margin: 0, color: '#f8fafc' }}>
+                      <strong>{log.action}</strong>
+                      {log.details && `: ${log.details}`}
+                    </p>
                   </div>
                 ))}
+                {(!complaint.auditLog || complaint.auditLog.length === 0) && (
+                  <p style={{ color: '#94a3b8' }}>No audit history available.</p>
+                )}
               </div>
-            </div>
-
-            {/* AUDIT TRAIL */}
-            <div style={card}>
-              <div style={{ fontWeight: 700, color: "#D4A017", marginBottom: "1rem", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>Status Timeline</div>
-              {[
-                { time: complaint.createdAt.split("T")[0], action: "Complaint Received", status: "✅" },
-                { time: complaint.createdAt.split("T")[0], action: "AI Preliminary Assessment Generated", status: "🧠" },
-                { time: complaint.createdAt.split("T")[0], action: "Assigned for Human Review", status: "👁" },
-              ].map((e, i) => (
-                <div key={i} style={{ display: "flex", gap: "0.75rem", padding: "0.75rem 0", borderBottom: i < 2 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
-                  <span style={{ fontSize: "1rem" }}>{e.status}</span>
-                  <div>
-                    <div style={{ fontSize: "0.85rem", color: "#ffffff", fontWeight: 600 }}>{e.action}</div>
-                    <div style={{ fontSize: "0.7rem", color: "#64748b", marginTop: "2px" }}>{e.time}</div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
 
-          {/* RIGHT: AI Analysis */}
+          {/* Sidebar */}
           <div>
-            <div style={card}>
-              <div style={{ fontWeight: 700, color: "#D4A017", marginBottom: "1rem", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>AI Preliminary Assessment</div>
-
-              {/* Credibility meter */}
-              <div style={{ marginBottom: "1.25rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", marginBottom: "0.5rem" }}>
-                  <span style={{ color: "#94a3b8" }}>Credibility Score</span>
-                  <span style={{ color: credColor, fontWeight: 700 }}>{complaint.aiAnalysis?.credibilityBand} ({complaint.aiAnalysis?.confidenceScore}%)</span>
-                </div>
-                <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: "9999px", height: "6px", overflow: "hidden" }}>
-                  <div style={{ width: `${complaint.aiAnalysis?.confidenceScore ?? 0}%`, height: "100%", background: `linear-gradient(90deg, ${credColor}88, ${credColor})`, borderRadius: "9999px" }} />
-                </div>
+            <div style={theme.card}>
+              <h2 style={theme.title}>AI Analysis</h2>
+              <div style={{ marginBottom: '16px' }}>
+                <span style={{ 
+                  backgroundColor: ai?.analysisMode === 'local_fallback' ? '#64748b' : '#3b82f6', 
+                  color: '#fff', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' 
+                }}>
+                  {ai?.analysisMode === 'local_fallback' ? 'Local Fallback' : 'LLM Processed'}
+                </span>
               </div>
-
-              {/* Recommended action */}
-              <div style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: "10px", padding: "1rem", marginBottom: "1rem" }}>
-                <div style={{ fontSize: "0.65rem", color: "#22c55e", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", fontWeight: 700 }}>Recommended Human Action</div>
-                <p style={{ color: "#94a3b8", fontSize: "0.9rem", lineHeight: 1.6 }}>{complaint.aiAnalysis?.recommendedAction}</p>
-              </div>
-
-              {/* Missing info */}
-              {(complaint.aiAnalysis?.missingInformation ?? []).length > 0 && (
-                <div style={{ background: "rgba(234,179,8,0.05)", border: "1px solid rgba(234,179,8,0.15)", borderRadius: "10px", padding: "1rem", marginBottom: "1rem" }}>
-                  <div style={{ fontSize: "0.65rem", color: "#eab308", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", fontWeight: 700 }}>Missing Information</div>
-                  <ul style={{ margin: 0, paddingLeft: "1rem" }}>
-                    {complaint.aiAnalysis?.missingInformation.map((m, i) => (
-                      <li key={i} style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "0.25rem" }}>{m}</li>
-                    ))}
+              
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <li><strong>Category:</strong> {ai?.category ?? 'N/A'}</li>
+                <li><strong>Subcategory:</strong> {ai?.subcategory ?? 'N/A'}</li>
+                <li><strong>Urgency:</strong> <span style={{ color: ai?.urgency === 'High' ? '#ef4444' : '#fbbf24' }}>{ai?.urgency ?? 'N/A'}</span></li>
+                <li><strong>Credibility Band:</strong> {ai?.credibilityBand ?? 'N/A'}</li>
+                <li><strong>Confidence Score:</strong> {ai?.confidenceScore ?? 'N/A'}</li>
+                <li><strong>Dept:</strong> {complaint.department || 'Unassigned'}</li>
+                <li><strong>Status:</strong> <span style={{ color: '#10b981' }}>{complaint.status}</span></li>
+              </ul>
+              
+              {ai?.evidenceCompleteness && (
+                <div style={{ marginTop: '16px' }}>
+                  <strong>Evidence Completeness:</strong>
+                  <p style={{ fontSize: '14px', color: '#cbd5e1' }}>{ai.evidenceCompleteness}</p>
+                </div>
+              )}
+              
+              {ai?.missingInformation && ai.missingInformation.length > 0 && (
+                <div style={{ marginTop: '16px' }}>
+                  <strong>Missing Information:</strong>
+                  <ul style={{ fontSize: '14px', color: '#cbd5e1', paddingLeft: '20px' }}>
+                    {ai.missingInformation.map((item: string, i: number) => <li key={i}>{item}</li>)}
                   </ul>
                 </div>
               )}
 
-              {/* Legal disclaimer */}
-              <div style={{ background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.15)", borderRadius: "8px", padding: "0.875rem", fontSize: "0.72rem", color: "#94a3b8", lineHeight: 1.6 }}>
-                ⚠️ {complaint.aiAnalysis?.legalDisclaimer}
-              </div>
+              {ai?.recommendedAction && (
+                <div style={{ marginTop: '16px' }}>
+                  <strong>Recommended Action:</strong>
+                  <p style={{ fontSize: '14px', color: '#fbbf24' }}>{ai.recommendedAction}</p>
+                </div>
+              )}
+
+              {ai?.legalDisclaimer && (
+                <div style={{ marginTop: '24px', fontSize: '11px', color: '#64748b', borderTop: '1px solid #334155', paddingTop: '12px' }}>
+                  {ai.legalDisclaimer}
+                </div>
+              )}
             </div>
 
-            {/* ACTION PANEL */}
-            <div style={card}>
-              <div style={{ fontWeight: 700, color: "#D4A017", marginBottom: "1rem", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>Review Actions</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                <button style={{ padding: "0.75rem 1rem", background: "linear-gradient(135deg, #D4A017, #F3E5AB)", color: "#060f1a", fontWeight: 700, borderRadius: "10px", border: "none", cursor: "pointer", fontSize: "0.9rem" }}>✅ Assign to Department</button>
-                <button style={{ padding: "0.75rem 1rem", background: "rgba(96,165,250,0.1)", color: "#60a5fa", fontWeight: 700, borderRadius: "10px", border: "1px solid rgba(96,165,250,0.3)", cursor: "pointer", fontSize: "0.9rem" }}>📋 Request More Information</button>
-                <button style={{ padding: "0.75rem 1rem", background: "rgba(239,68,68,0.1)", color: "#f87171", fontWeight: 700, borderRadius: "10px", border: "1px solid rgba(239,68,68,0.3)", cursor: "pointer", fontSize: "0.9rem" }}>🚨 Escalate</button>
-                <button style={{ padding: "0.75rem 1rem", background: "rgba(255,255,255,0.05)", color: "#64748b", fontWeight: 700, borderRadius: "10px", border: "1px solid rgba(255,255,255,0.08)", cursor: "pointer", fontSize: "0.9rem" }}>🔒 Close Case</button>
-              </div>
-              <p style={{ marginTop: "1rem", fontSize: "0.72rem", color: "#475569", lineHeight: 1.5 }}>In the demo version, actions are not persisted. In production, these would update the database and generate audit entries.</p>
-            </div>
+            {/* Action Panel */}
+            <LiveActionPanel 
+              complaintId={complaint.id} 
+              currentStatus={complaint.status} 
+              currentDept={complaint.department} 
+              currentNotes={complaint.internalNotes} 
+            />
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
+
+// Client Component for the Action Panel
+const LiveActionPanel = ({ complaintId, currentStatus, currentDept, currentNotes }: any) => {
+  return (
+    <div style={{...theme.card, border: '1px solid #fbbf24', marginTop: '24px'}}>
+      <h2 style={{...theme.title, color: '#fbbf24'}}>Case Actions</h2>
+      
+      <form 
+        style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.currentTarget);
+          
+          fetch(`/api/complaints/${complaintId}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              status: formData.get('status'),
+              department: formData.get('department'),
+              assignee: formData.get('assignee'),
+              internalNotes: formData.get('internalNotes')
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if(data.success) {
+              alert('Successfully updated case.');
+              window.location.reload();
+            } else {
+              alert('Failed to update case.');
+            }
+          })
+          .catch(() => alert('Error updating case.'));
+        }}
+      >
+        <div>
+          <label style={theme.label}>Update Status</label>
+          <select name="status" defaultValue={currentStatus} style={theme.input}>
+            <option value="New">New</option>
+            <option value="AI Processed">AI Processed</option>
+            <option value="Under Review">Under Review</option>
+            <option value="More Information Requested">More Information Requested</option>
+            <option value="Assigned">Assigned</option>
+            <option value="Escalated">Escalated</option>
+            <option value="Action Reported">Action Reported</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Reopened">Reopened</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+
+        <div>
+          <label style={theme.label}>Department Assignment</label>
+          <input type="text" name="department" defaultValue={currentDept || ''} placeholder="e.g. Revenue, Police..." style={theme.input} />
+        </div>
+
+        <div>
+          <label style={theme.label}>Assign to Reviewer</label>
+          <input type="text" name="assignee" placeholder="Reviewer Name/ID" style={theme.input} />
+        </div>
+
+        <div>
+          <label style={theme.label}>Internal Notes (Appends)</label>
+          <textarea name="internalNotes" defaultValue={currentNotes || ''} rows={4} placeholder="Add confidential notes..." style={{...theme.input, resize: 'vertical'}}></textarea>
+        </div>
+
+        <button type="submit" style={theme.button}>Save Changes</button>
+      </form>
+    </div>
+  );
+}
+
+const theme = {
+  page: { minHeight: '100vh', backgroundColor: '#0f172a', color: '#f8fafc', fontFamily: 'sans-serif', paddingBottom: '40px' },
+  container: { maxWidth: '1200px', margin: '0 auto', padding: '24px' },
+  card: { backgroundColor: '#1e293b', borderRadius: '8px', padding: '24px', border: '1px solid #334155', marginBottom: '24px' },
+  title: { fontSize: '20px', color: '#f8fafc', margin: '0 0 16px', borderBottom: '1px solid #334155', paddingBottom: '12px' },
+  section: { marginBottom: '20px' },
+  sectionTitle: { fontSize: '14px', color: '#fbbf24', textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginBottom: '8px' },
+  backLink: { color: '#fbbf24', textDecoration: 'none', fontWeight: 'bold' },
+  label: { display: 'block', fontSize: '14px', color: '#94a3b8', marginBottom: '8px' },
+  input: { width: '100%', padding: '10px', backgroundColor: '#0f172a', border: '1px solid #334155', color: '#f8fafc', borderRadius: '4px', boxSizing: 'border-box' as const },
+  button: { width: '100%', padding: '12px', backgroundColor: '#fbbf24', color: '#0f172a', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', fontSize: '16px' }
+};
