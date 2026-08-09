@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { storage } from "@/lib/storage";
+import { notifier } from "@/lib/notifications";
 
 export async function GET() {
   try {
@@ -14,10 +16,14 @@ export async function GET() {
         environment: process.env.NODE_ENV || "development",
         database_provider: dbHealth.provider,
         database_connectivity: dbHealth.connected ? "connected" : "disconnected",
+        storage_provider: storage.providerName,
+        notification_provider: notifier.providerName,
         ai_provider: "rule_based_analyzer",
         checks: {
           api: "healthy",
           database: dbHealth.connected ? `active (${dbHealth.provider})` : "error",
+          storage: `active (${storage.providerName})`,
+          notifications: `active (${notifier.providerName})`,
           ai_analyzer: "active (rule_based_analyzer)",
           totalRecords: dbHealth.totalRecords,
           liveRecords: dbHealth.liveRecords,
@@ -40,6 +46,8 @@ export async function GET() {
         error: error instanceof Error ? error.message : "Unknown error",
         database_provider: "sqlite_file",
         database_connectivity: "error",
+        storage_provider: storage.providerName,
+        notification_provider: notifier.providerName,
         ai_provider: "rule_based_analyzer",
       },
       { status: 500 }
