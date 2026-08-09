@@ -67,13 +67,24 @@ export default function HomePage() {
         transition: "background-color 0.25s ease",
       }}>
         {/* Gopuram Background Image Overlay */}
-        <div style={{ position: "absolute", inset: 0, opacity: 0.15, zIndex: 0, pointerEvents: "none" }}>
+        <div style={{ position: "absolute", inset: 0, opacity: 0.12, zIndex: 0, pointerEvents: "none" }}>
           <Image
             src={ASSET_MANIFEST.templeHero.imagePath}
             alt="Srikalahasteeswara Temple Gopuram Skyline"
             fill
             priority
             style={{ objectFit: "cover", objectPosition: "center top" }}
+          />
+        </div>
+
+        {/* Official Praja Seva Emblem Watermark Logo */}
+        <div style={{ position: "absolute", top: "50%", right: "5%", transform: "translateY(-50%)", width: "480px", height: "480px", opacity: 0.14, zIndex: 0, pointerEvents: "none" }}>
+          <Image
+            src="/assets/symbols/civic-emblem.svg"
+            alt="Praja Seva Official Emblem Watermark"
+            width={480}
+            height={480}
+            style={{ objectFit: "contain", filter: "drop-shadow(0 0 20px var(--accent-teal))" }}
           />
         </div>
 
