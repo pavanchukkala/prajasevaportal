@@ -1,0 +1,202 @@
+[
+  {
+    "description": "Water supply pipeline leak reported near Renigunta Main Road causing severe flooding.",
+    "mandal": "Renigunta",
+    "village": "Renigunta Main",
+    "department": "Municipal Administration",
+    "incidentDate": "2026-08-09",
+    "mediaUrls": [],
+    "dataSource": "citizen_submission",
+    "isSample": false,
+    "isAnonymous": false,
+    "mobileNumber": "9876543210",
+    "mobileNumberMasked": "+91 ******3210",
+    "consentGiven": true,
+    "consentTimestamp": "2026-08-09T09:42:14.676Z",
+    "consentPurpose": "Complaint status updates only",
+    "notificationPreference": "sms",
+    "id": "SKT-2026-25175",
+    "trackingToken": "TKN-25175-YFXS41",
+    "createdAt": "2026-08-09T09:42:14.678Z",
+    "updatedAt": "2026-08-09T09:42:14.689Z",
+    "status": "Resolved",
+    "auditLog": [
+      {
+        "timestamp": "2026-08-09T09:42:14.678Z",
+        "action": "Complaint received via public portal",
+        "actor": "system"
+      },
+      {
+        "timestamp": "2026-08-09T09:42:14.682Z",
+        "action": "Status changed from \"New\" to \"Under Review\"",
+        "actor": "mla_staff"
+      },
+      {
+        "timestamp": "2026-08-09T09:42:14.682Z",
+        "action": "Internal note added",
+        "actor": "mla_staff"
+      },
+      {
+        "timestamp": "2026-08-09T09:42:14.686Z",
+        "action": "Status changed from \"Under Review\" to \"Assigned\"",
+        "actor": "reviewer"
+      },
+      {
+        "timestamp": "2026-08-09T09:42:14.686Z",
+        "action": "Assigned to: MRO_Renigunta",
+        "actor": "reviewer"
+      },
+      {
+        "timestamp": "2026-08-09T09:42:14.686Z",
+        "action": "Department assigned: Municipal Administration",
+        "actor": "reviewer"
+      },
+      {
+        "timestamp": "2026-08-09T09:42:14.689Z",
+        "action": "Status changed from \"Assigned\" to \"Resolved\"",
+        "actor": "dept_officer"
+      },
+      {
+        "timestamp": "2026-08-09T09:42:14.689Z",
+        "action": "Internal note added",
+        "actor": "dept_officer"
+      }
+    ],
+    "notificationLog": [],
+    "internalNotes": [
+      "Assigned reviewer investigating report.",
+      "Pipeline repair completed."
+    ],
+    "assignedTo": "MRO_Renigunta",
+    "assignedDepartment": "Municipal Administration"
+  },
+  {
+    "description": "Complainant reports being asked for an unofficial payment to process a land mutation file at the sub-registrar office in Thottambedu. No receipt was offered.",
+    "mandal": "Thottambedu",
+    "village": "Thottambedu",
+    "department": "Registration & Stamps",
+    "mediaUrls": [],
+    "aiAnalysis": {
+      "title": "Alleged Unofficial Payment Request — Land Mutation",
+      "category": "Alleged Misconduct — Financial Irregularity",
+      "subcategory": "Alleged Bribery",
+      "department": "Registration & Stamps",
+      "urgency": "High",
+      "evidenceCompleteness": "Insufficient",
+      "credibilityBand": "Low preliminary confidence",
+      "confidenceScore": 58,
+      "missingInformation": [
+        "No documentary or audio evidence provided",
+        "Single complainant — no corroborating account",
+        "Specific person role not provided"
+      ],
+      "duplicateLikelihood": "Unknown",
+      "recommendedAction": "Flag for human review before escalation. Request additional evidence from complainant before any departmental action.",
+      "humanReviewRequired": true,
+      "analysisMode": "local_fallback",
+      "legalDisclaimer": "AI-generated preliminary assessment for human review. This is not a legal finding, factual determination, finding of guilt, or replacement for official investigation. Do not act on this without human review and verification."
+    },
+    "dataSource": "sample_presentation",
+    "isSample": true,
+    "isAnonymous": true,
+    "consentGiven": false,
+    "id": "SKT-2026-24772",
+    "trackingToken": "TKN-24772-35GL52",
+    "createdAt": "2026-08-09T09:41:16.142Z",
+    "updatedAt": "2026-08-09T09:41:16.142Z",
+    "status": "New",
+    "auditLog": [
+      {
+        "timestamp": "2026-08-09T09:41:16.142Z",
+        "action": "Complaint received via public portal",
+        "actor": "system"
+      }
+    ],
+    "notificationLog": []
+  },
+  {
+    "description": "A major underground drinking water pipeline has reportedly burst near the central junction in Ward 12 of Srikalahasti town. Local residents report water contamination affecting approximately 50 households.",
+    "mandal": "Srikalahasti",
+    "village": "Ward 12",
+    "department": "Municipal Administration",
+    "mediaUrls": [],
+    "aiAnalysis": {
+      "title": "Drinking Water Pipeline Failure — 50 Households Affected",
+      "category": "Infrastructure — Water Supply",
+      "subcategory": "Pipeline Failure",
+      "department": "Municipal Administration",
+      "urgency": "High",
+      "evidenceCompleteness": "Partial",
+      "credibilityBand": "High preliminary confidence",
+      "confidenceScore": 91,
+      "missingInformation": [
+        "Photographic evidence of burst would strengthen this"
+      ],
+      "duplicateLikelihood": "Low",
+      "recommendedAction": "Alert Municipal Commissioner immediately. Public health risk classification applies.",
+      "humanReviewRequired": true,
+      "analysisMode": "local_fallback",
+      "legalDisclaimer": "AI-generated preliminary assessment for human review. This is not a legal finding, factual determination, finding of guilt, or replacement for official investigation."
+    },
+    "dataSource": "sample_presentation",
+    "isSample": true,
+    "isAnonymous": true,
+    "consentGiven": false,
+    "id": "SKT-2026-36379",
+    "trackingToken": "TKN-36379-A9QQED",
+    "createdAt": "2026-08-09T09:41:16.112Z",
+    "updatedAt": "2026-08-09T09:41:16.112Z",
+    "status": "New",
+    "auditLog": [
+      {
+        "timestamp": "2026-08-09T09:41:16.112Z",
+        "action": "Complaint received via public portal",
+        "actor": "system"
+      }
+    ],
+    "notificationLog": []
+  },
+  {
+    "description": "There appears to be a significant delay in the processing and issuance of welfare certificates at the local village secretariat. Multiple families have waited over 30 days without receiving their documents.",
+    "mandal": "Yerpedu",
+    "village": "Yerpedu Town",
+    "department": "Revenue",
+    "mediaUrls": [],
+    "aiAnalysis": {
+      "title": "Welfare Certificate Issuance Delay — Village Secretariat",
+      "category": "Welfare Access",
+      "subcategory": "Certificate Delay",
+      "department": "Revenue",
+      "urgency": "Priority",
+      "evidenceCompleteness": "Partial",
+      "credibilityBand": "Medium preliminary confidence",
+      "confidenceScore": 78,
+      "missingInformation": [
+        "Names of affected families not provided",
+        "No photographic evidence of queues or notices"
+      ],
+      "duplicateLikelihood": "Low",
+      "recommendedAction": "Route to Mandal Revenue Officer, Yerpedu for verification of processing timelines.",
+      "humanReviewRequired": true,
+      "analysisMode": "local_fallback",
+      "legalDisclaimer": "AI-generated preliminary assessment for human review. This is not a legal finding, factual determination, finding of guilt, or replacement for official investigation."
+    },
+    "dataSource": "sample_presentation",
+    "isSample": true,
+    "isAnonymous": true,
+    "consentGiven": false,
+    "id": "SKT-2026-20124",
+    "trackingToken": "TKN-20124-OQFRW4",
+    "createdAt": "2026-08-09T09:41:16.099Z",
+    "updatedAt": "2026-08-09T09:41:16.099Z",
+    "status": "New",
+    "auditLog": [
+      {
+        "timestamp": "2026-08-09T09:41:16.099Z",
+        "action": "Complaint received via public portal",
+        "actor": "system"
+      }
+    ],
+    "notificationLog": []
+  }
+]

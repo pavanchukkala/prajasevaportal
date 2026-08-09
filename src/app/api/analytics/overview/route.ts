@@ -1,31 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SAMPLE_COMPLAINTS } from "@/lib/db";
+import { db } from "@/lib/db";
 
 export async function GET(_req: NextRequest) {
-  const total = SAMPLE_COMPLAINTS.length;
-  const highPriority = SAMPLE_COMPLAINTS.filter(
-    c => c.aiAnalysis?.urgency === "High" || c.aiAnalysis?.urgency === "Emergency"
-  ).length;
-  const underReview = SAMPLE_COMPLAINTS.filter(c => c.status === "Under Review").length;
-  const resolved = SAMPLE_COMPLAINTS.filter(
-    c => c.status === "Resolved" || c.status === "Closed"
-  ).length;
+  const allComplaints = await db.complaints.list();
+  const stats = await db.complaints.getStats();
 
   const deptCounts: Record<string, number> = {};
-  SAMPLE_COMPLAINTS.forEach(c => {
+  allComplaints.forEach((c) => {
     const dept = c.aiAnalysis?.department ?? c.department ?? "Unknown";
     deptCounts[dept] = (deptCounts[dept] ?? 0) + 1;
   });
 
   return NextResponse.json({
-    isSampleData: true,
-    dataNote: "All records are sample presentation data. No live citizen data.",
+    databaseProvider: db.getProviderName(),
     overview: {
-      total,
-      highPriority,
-      underReview,
-      resolved,
-      pending: total - resolved,
+      total: stats.total,
+      liveSubmissions: stats.live,
+      sampleRecords: stats.sample,
+      highPriority: stats.highPriority,
+      underReview: stats.underReview,
+      resolved: stats.resolved,
+      pending: stats.total - stats.resolved,
     },
     departmentBreakdown: deptCounts,
     mandals: ["Srikalahasti", "Renigunta", "Yerpedu", "Thottambedu"],

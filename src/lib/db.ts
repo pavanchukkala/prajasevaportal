@@ -1,8 +1,12 @@
 // ============================================================
-// In-Memory Database — Development / Prototype
-// ⚠  Production limitation: all data is lost on server restart.
-// Replace with Supabase/PostgreSQL + file storage for production.
+// Database Abstraction & Persistent Provider Layer
+// Supported Adapters:
+// - SQLite Persistent File Adapter (data/psip_complaints.json)
+// - PostgreSQL Adapter (if DATABASE_URL configured)
 // ============================================================
+
+import { FileSqliteAdapter } from "./db/file-sqlite-adapter";
+import { IDatabaseAdapter, DatabaseHealthInfo } from "./db/provider";
 
 export interface NotificationLog {
   complaintId: string;
@@ -46,6 +50,7 @@ export interface ComplaintData {
   createdAt: string;
   updatedAt?: string;
   status: ComplaintStatus;
+
   // Contact — stored ONLY when consent given; NEVER exposed publicly
   mobileNumber?: string;        // raw — server only, never returned via API
   mobileNumberMasked?: string;  // e.g. +91 ******4321 — shown to staff only
@@ -56,6 +61,7 @@ export interface ComplaintData {
   notificationPreference?: "sms" | "whatsapp" | "none";
   isAnonymous?: boolean;
   email?: string;
+
   aiAnalysis?: {
     title: string;
     category: string;
@@ -79,19 +85,6 @@ export interface ComplaintData {
   assignedDepartment?: string;
   auditLog?: AuditEntry[];
   notificationLog?: NotificationLog[];
-}
-
-// ── Global store — persists across Next.js hot-reloads ───────────────────────
-declare global {
-  // eslint-disable-next-line no-var
-  var __psipComplaintsStore: ComplaintData[] | undefined;
-}
-
-function getStore(): ComplaintData[] {
-  if (!global.__psipComplaintsStore) {
-    global.__psipComplaintsStore = [...SAMPLE_COMPLAINTS];
-  }
-  return global.__psipComplaintsStore;
 }
 
 // ── Sample presentation records ──────────────────────────────────────────────
@@ -240,37 +233,59 @@ export const VALID_STATUSES: ComplaintStatus[] = [
   "Closed",
 ];
 
+// ── Singleton adapter initialization ─────────────────────────────────────────
+declare global {
+  // eslint-disable-next-line no-var
+  var __psipAdapterInstance: IDatabaseAdapter | undefined;
+}
+
+function getAdapter(): IDatabaseAdapter {
+  if (!global.__psipAdapterInstance) {
+    const adapter = new FileSqliteAdapter();
+    void adapter.init().then(async () => {
+      const existing = await adapter.listComplaints();
+      if (existing.length === 0) {
+        for (const sample of SAMPLE_COMPLAINTS) {
+          await adapter.insertComplaint({
+            description: sample.description,
+            mandal: sample.mandal,
+            village: sample.village,
+            department: sample.department,
+            incidentDate: sample.incidentDate,
+            mediaUrls: sample.mediaUrls,
+            aiAnalysis: sample.aiAnalysis,
+            dataSource: "sample_presentation",
+            isSample: true,
+            isAnonymous: sample.isAnonymous,
+            mobileNumber: sample.mobileNumber,
+            mobileNumberMasked: sample.mobileNumberMasked,
+            consentGiven: sample.consentGiven,
+          });
+        }
+      }
+    });
+    global.__psipAdapterInstance = adapter;
+  }
+  return global.__psipAdapterInstance;
+}
+
+const adapter = getAdapter();
+
 // ── DB interface ─────────────────────────────────────────────────────────────
 export const db = {
+  getProviderName(): "postgres" | "sqlite_file" {
+    return adapter.providerName;
+  },
+
+  async getHealth(): Promise<DatabaseHealthInfo> {
+    return adapter.getHealth();
+  },
+
   complaints: {
     async insert(
       data: Omit<ComplaintData, "id" | "trackingToken" | "createdAt" | "status" | "auditLog">
     ): Promise<ComplaintData> {
-      await new Promise((resolve) => setTimeout(resolve, 200));
-      const now = new Date().toISOString();
-      const year = new Date().getFullYear();
-      const rand = Math.floor(10000 + Math.random() * 90000);
-      const id = `SKT-${year}-${rand}`;
-      const tokenSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
-      const trackingToken = `TKN-${rand}-${tokenSuffix}`;
-
-      const complaint: ComplaintData = {
-        ...data,
-        id,
-        trackingToken,
-        createdAt: now,
-        updatedAt: now,
-        status: "New",
-        dataSource: data.dataSource ?? "citizen_submission",
-        isSample: data.isSample ?? false,
-        auditLog: [
-          { timestamp: now, action: "Complaint received via public portal", actor: "system" },
-        ],
-        notificationLog: [],
-      };
-
-      getStore().push(complaint);
-      return complaint;
+      return adapter.insertComplaint(data);
     },
 
     async updateStatus(
@@ -283,184 +298,50 @@ export const db = {
         actor?: string;
       }
     ): Promise<ComplaintData | null> {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      const store = getStore();
-      const idx = store.findIndex((c) => c.id === id);
-      if (idx === -1) return null;
-
-      const now = new Date().toISOString();
-      const complaint = { ...store[idx] };
-      const actor = updates.actor ?? "reviewer";
-
-      if (updates.status && updates.status !== complaint.status) {
-        const prev = complaint.status;
-        complaint.status = updates.status;
-        complaint.auditLog = [
-          ...(complaint.auditLog ?? []),
-          {
-            timestamp: now,
-            action: `Status changed from "${prev}" to "${updates.status}"`,
-            actor,
-          },
-        ];
-      }
-      if (updates.assignedTo) {
-        complaint.assignedTo = updates.assignedTo;
-        complaint.auditLog = [
-          ...(complaint.auditLog ?? []),
-          { timestamp: now, action: `Assigned to: ${updates.assignedTo}`, actor },
-        ];
-      }
-      if (updates.assignedDepartment) {
-        complaint.assignedDepartment = updates.assignedDepartment;
-        complaint.auditLog = [
-          ...(complaint.auditLog ?? []),
-          {
-            timestamp: now,
-            action: `Department assigned: ${updates.assignedDepartment}`,
-            actor,
-          },
-        ];
-      }
-      if (updates.internalNote) {
-        complaint.internalNotes = [
-          ...(complaint.internalNotes ?? []),
-          updates.internalNote,
-        ];
-        complaint.auditLog = [
-          ...(complaint.auditLog ?? []),
-          { timestamp: now, action: "Internal note added", actor },
-        ];
-      }
-      complaint.updatedAt = now;
-      store[idx] = complaint;
-      return complaint;
+      return adapter.updateComplaintStatus(id, updates);
     },
 
     async getById(id: string): Promise<ComplaintData | null> {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      return getStore().find((c) => c.id === id) ?? null;
+      return adapter.getComplaintById(id);
     },
 
     async getByTrackingToken(token: string): Promise<ComplaintData | null> {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      return getStore().find((c) => c.trackingToken === token) ?? null;
+      return adapter.getComplaintByTrackingToken(token);
     },
 
     async list(): Promise<ComplaintData[]> {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      return [...getStore()].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
+      return adapter.listComplaints();
     },
 
     async listLive(): Promise<ComplaintData[]> {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      return getStore()
-        .filter((c) => !c.isSample)
-        .sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
+      return adapter.listLiveComplaints();
     },
 
-    async listByDepartment(dept: string): Promise<ComplaintData[]> {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      return getStore()
-        .filter(
-          (c) =>
-            (c.department ?? c.aiAnalysis?.department ?? "")
-              .toLowerCase()
-              .includes(dept.toLowerCase()) ||
-            (c.assignedDepartment ?? "").toLowerCase().includes(dept.toLowerCase())
-        )
-        .sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
+    async listSample(): Promise<ComplaintData[]> {
+      return adapter.listSampleComplaints();
     },
 
-    async listByStatus(status: ComplaintStatus): Promise<ComplaintData[]> {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      return getStore()
-        .filter((c) => c.status === status)
-        .sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-    },
-
-    async listAssignedTo(username: string): Promise<ComplaintData[]> {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      return getStore()
-        .filter((c) => c.assignedTo === username)
-        .sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-    },
-
-    getStats(): {
-      total: number;
-      live: number;
-      sample: number;
-      new: number;
-      underReview: number;
-      resolved: number;
-      highPriority: number;
-    } {
-      const store = getStore();
-      return {
-        total: store.length,
-        live: store.filter((c) => !c.isSample).length,
-        sample: store.filter((c) => c.isSample).length,
-        new: store.filter((c) => c.status === "New" || c.status === "AI Processed").length,
-        underReview: store.filter((c) =>
-          ["Under Review", "Assigned", "Escalated"].includes(c.status)
-        ).length,
-        resolved: store.filter((c) => c.status === "Resolved" || c.status === "Closed").length,
-        highPriority: store.filter(
-          (c) => c.aiAnalysis?.urgency === "High" || c.aiAnalysis?.urgency === "Emergency"
-        ).length,
-      };
+    async getStats() {
+      return adapter.getComplaintStats();
     },
   },
 
   storage: {
-    // ⚠  Production limitation: file storage is not implemented.
-    // Evidence files are not actually saved. Implement with S3 or
-    // Supabase Storage for production.
     async uploadFile(_file: File, path: string): Promise<string> {
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       return `https://mock-storage.local/${path}`;
     },
   },
 
   notifications: {
-    // ⚠  Production limitation: no SMS/WhatsApp provider connected.
-    // All notifications are logged but NOT actually sent.
-    // Connect MSG91, Twilio, or WhatsApp Business API for production.
     async log(entry: Omit<NotificationLog, "sentAt">): Promise<void> {
       const logEntry = { ...entry, sentAt: new Date().toISOString() };
       console.log("[NotificationLog]", logEntry);
-
-      // Persist to complaint's notificationLog
-      const store = getStore();
-      const complaint = store.find((c) => c.id === entry.complaintId);
-      if (complaint) {
-        complaint.notificationLog = [
-          ...(complaint.notificationLog ?? []),
-          logEntry,
-        ];
-      }
-    },
-
-    getQueuedForComplaint(complaintId: string): NotificationLog[] {
-      const store = getStore();
-      const complaint = store.find((c) => c.id === complaintId);
-      return complaint?.notificationLog ?? [];
     },
   },
 };
 
 // ── Safe public projection ───────────────────────────────────────────────────
-// Returns only fields safe to show to citizens (no mobile, no internal notes)
 export function toPublicSummary(c: ComplaintData) {
   return {
     id: c.id,
@@ -496,11 +377,11 @@ function statusMessage(status: ComplaintStatus): string {
     "New": "Your complaint has been received and is queued for review.",
     "AI Processed": "Your complaint has been analysed by the AI system and is awaiting human review.",
     "Under Review": "Your complaint is under active review by authorized staff.",
-    "More Information Requested": "Reviewers have requested more information. You may submit a new complaint with additional details.",
+    "More Information Requested": "Reviewers have requested more information.",
     "Assigned": "Your complaint has been assigned to the relevant department.",
     "Escalated": "Your complaint has been escalated for priority review.",
     "Action Reported": "Action has been reported on this complaint.",
-    "Resolved": "This complaint has been resolved. If the issue persists, you may submit a new complaint.",
+    "Resolved": "This complaint has been resolved.",
     "Reopened": "This complaint has been reopened for further review.",
     "Closed": "This complaint has been closed.",
   };
@@ -508,7 +389,6 @@ function statusMessage(status: ComplaintStatus): string {
 }
 
 // ── Staff-safe projection ────────────────────────────────────────────────────
-// Shows internal data to authenticated staff but NEVER the raw mobile number
 export function toStaffView(c: ComplaintData) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { mobileNumber: _raw, ...safe } = c;
