@@ -19,27 +19,14 @@ export default function HomePage() {
       {/* ── 1. PRESENTATION RIBBON (INDIAN TRICOLOR MOTIF) ── */}
       <div style={{ height: "4px", background: "linear-gradient(90deg, #FF9933 0%, #FF9933 33.3%, #ffffff 33.3%, #ffffff 66.6%, #138808 66.6%, #138808 100%)" }} />
 
-      {/* ── 2. HOMEPAGE HERO WITH SRIKALAHASTI TEMPLE VISUAL & CIVIC EMBLEM ── */}
-      <section style={{ position: "relative", minHeight: "90vh", display: "flex", flexDirection: "column", justifyContent: "center", overflow: "hidden", background: "linear-gradient(135deg, #060f1a 0%, #0D2137 50%, #081424 100%)" }}>
+      {/* ── 2. HOMEPAGE HERO ── */}
+      <section style={{ position: "relative", minHeight: "85vh", display: "flex", flexDirection: "column", justifyContent: "center", overflow: "hidden", background: "linear-gradient(135deg, #060f1a 0%, #0D2137 50%, #081424 100%)" }}>
 
         {/* Background ambient glows */}
         <div style={{ position: "absolute", top: "20%", left: "10%", width: "500px", height: "500px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,160,23,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: "20%", right: "10%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(30,136,229,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-        {/* Decorative Civic Emblem Watermark */}
-        <div style={{ position: "absolute", right: "5%", top: "15%", opacity: 0.08, pointerEvents: "none", width: "400px", height: "400px" }}>
-          <img src={leadershipConfig.branding.civicEmblem} alt="Civic Emblem" style={{ width: "100%", height: "100%" }} />
-        </div>
-
-        <div style={{ position: "relative", zIndex: 10, maxWidth: "1280px", margin: "0 auto", padding: "6rem 1.5rem 8rem" }}>
-
-          {/* Platform badge */}
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.75rem", padding: "0.4rem 1.2rem", borderRadius: "9999px", border: "1px solid rgba(212,160,23,0.3)", background: "rgba(212,160,23,0.08)", marginBottom: "2rem" }}>
-            <img src={leadershipConfig.branding.civicEmblem} alt="Emblem" style={{ width: "20px", height: "20px" }} />
-            <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#D4A017", letterSpacing: "0.15em", textTransform: "uppercase" }}>
-              {t("common.proposedNotice", "Proposed Civic Technology · Not an Official Government Portal")}
-            </span>
-          </div>
+        <div style={{ position: "relative", zIndex: 10, maxWidth: "1280px", margin: "0 auto", padding: "5rem 1.5rem 7rem" }}>
 
           {/* Main headline */}
           <h1 style={{ fontSize: "clamp(2.5rem, 6vw, 4.8rem)", fontWeight: 900, lineHeight: 1.1, letterSpacing: "-0.03em", marginBottom: "1.5rem", maxWidth: "900px" }}>
@@ -100,7 +87,7 @@ export default function HomePage() {
         <div style={{ position: "absolute", bottom: 0, width: "100%", borderTop: "1px solid rgba(212,160,23,0.12)", background: "rgba(6,15,26,0.9)", backdropFilter: "blur(20px)" }}>
           <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "1.25rem 1.5rem", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem" }}>
             {[
-              { label: isTe ? "3.13 లక్షల పౌరులు" : "3.13 Lakh Citizens", sub: isTe ? "2011 జనాభా ఆధారంగా" : "Census 2011 Baseline" },
+              { label: isTe ? "3.13 లక్షల పౌరులు" : "3.13 Lakh Citizens", sub: isTe ? "ఆధారం: సెన్సస్ ఆఫ్ ఇండియా 2011 · తనిఖీ: ఆగస్టు 2026" : "Source: Census 2011 Baseline" },
               { label: isTe ? "4 అసెంబ్లీ మండలాలు" : "4 Assembly Mandals", sub: "Srikalahasti, Renigunta, Yerpedu, Thottambedu" },
               { label: isTe ? "25+ ప్రభుత్వ విభాగాలు" : "25+ Departments", sub: isTe ? "పర్యవేక్షించబడేవి" : "Monitored" },
               { label: isTe ? "AI విశ్లేషణ వ్యవస్థ" : "AI-Assisted Analysis", sub: isTe ? "మానవ సమీక్ష ద్వారా" : "Human-reviewed" },
@@ -134,7 +121,7 @@ export default function HomePage() {
 
             {[
               { n: 1, icon: "💬", title: t("home.step1", "Citizen Submits"), desc: t("home.step1Desc", "Secure text, audio, or image submission. Identity optional.") },
-              { n: 2, icon: "🔒", title: t("home.step2", "Secure Storage"), desc: t("home.step2Desc", "Unique ID generated. Evidence encrypted. Tracking code issued.") },
+              { n: 2, icon: "🔒", title: t("home.step2", "Secure Storage"), desc: t("home.step2Desc", "Unique ID generated. Access restricted to authorized reviewers. Tracking code issued.") },
               { n: 3, icon: "🧠", title: t("home.step3", "AI Processing"), desc: t("home.step3Desc", "Classification, credibility indicators, department routing.") },
               { n: 4, icon: "👁", title: t("home.step4", "Human Review"), desc: t("home.step4Desc", "Authorized reviewer validates AI assessment.") },
               { n: 5, icon: "✅", title: t("home.step5", "Authority Notified"), desc: t("home.step5Desc", "Department receives brief. MLA office monitors SLA.") },
@@ -163,7 +150,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 3. LEADERSHIP SECTION (MLA + BADGES - NO PARTY LOGO/SYMBOL) ── */}
+      {/* ── 3. LEADERSHIP SECTION ── */}
       <section style={{ padding: "6rem 1.5rem", backgroundColor: "#060f1a", borderTop: "1px solid rgba(212,160,23,0.08)" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6rem", alignItems: "center" }}>
           <div>
@@ -176,9 +163,14 @@ export default function HomePage() {
             <p style={{ color: "#64748b", fontSize: "1rem", marginBottom: "1rem" }}>
               {isTe ? rep.titleTe : rep.title} · {isTe ? "తెలుగుదేశం పార్టీ" : rep.party}
             </p>
-            <blockquote style={{ borderLeft: "2px solid #D4A017", paddingLeft: "1.5rem", color: "#94a3b8", fontSize: "1.1rem", fontStyle: "italic", lineHeight: 1.7, margin: "2rem 0" }}>
-              "{t("home.leadershipQuote")}"
-            </blockquote>
+            
+            <div style={{ borderLeft: "2px solid #D4A017", paddingLeft: "1.5rem", color: "#94a3b8", fontSize: "1rem", lineHeight: 1.7, margin: "2rem 0" }}>
+              <div style={{ fontSize: "0.7rem", color: "#D4A017", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.35rem" }}>
+                {isTe ? "ప్రతిపాదిత వేదిక ధ్యేయం:" : "Proposed Platform Vision Statement:"}
+              </div>
+              <div>{t("home.leadershipQuote")}</div>
+            </div>
+
             <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
               <div style={{ padding: "0.5rem 1rem", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "8px", fontSize: "0.8rem", color: "#94a3b8" }}>
                 {t("home.constituencyBadge", "Constituency No. 168")}
@@ -197,9 +189,7 @@ export default function HomePage() {
               <div style={{ position: "absolute", inset: 0, background: "#D4A017", borderRadius: "16px", transform: "translate(8px, 8px)", opacity: 0.1, filter: "blur(20px)" }} />
               <div style={{ position: "absolute", inset: 0, border: "1px solid rgba(212,160,23,0.3)", borderRadius: "16px", transform: "translate(-6px, -6px)" }} />
               <div style={{ position: "relative", width: "320px", height: "420px", background: "#0D2137", borderRadius: "16px", border: "1px solid rgba(212,160,23,0.4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem", overflow: "hidden" }}>
-                <div style={{ width: "140px", height: "140px", borderRadius: "50%", border: "2px solid rgba(212,160,23,0.4)", padding: "1rem", background: "rgba(255,255,255,0.03)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <img src={leadershipConfig.branding.civicEmblem} alt="Civic Avatar" style={{ width: "100%", height: "100%" }} />
-                </div>
+                <div style={{ fontSize: "4rem" }}>👤</div>
                 <div style={{ textAlign: "center", padding: "0 1.5rem" }}>
                   <div style={{ color: "#D4A017", fontWeight: 700, fontSize: "0.95rem" }}>
                     {isTe ? rep.nameTe : rep.name}
@@ -232,8 +222,8 @@ export default function HomePage() {
             <div style={{ fontSize: "0.7rem", color: "#D4A017", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "2rem" }}>
               {t("home.memoriamBadge", "In Memoriam")}
             </div>
-            <div style={{ width: "140px", height: "140px", borderRadius: "50%", border: "3px solid rgba(212,160,23,0.4)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem", background: "#0D2137", boxShadow: "0 0 40px rgba(212,160,23,0.15)", padding: "1rem" }}>
-              <img src={leadershipConfig.branding.civicEmblem} alt="Memorial Emblem" style={{ width: "100%", height: "100%", filter: "grayscale(50%)" }} />
+            <div style={{ width: "120px", height: "120px", borderRadius: "50%", border: "3px solid rgba(212,160,23,0.4)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem", background: "#0D2137", boxShadow: "0 0 40px rgba(212,160,23,0.15)", fontSize: "3rem" }}>
+              👤
             </div>
             <h2 style={{ fontSize: "2rem", fontWeight: 800, color: "#ffffff", marginBottom: "0.5rem" }}>
               {isTe ? rep.father.nameTe : rep.father.name}
@@ -317,12 +307,11 @@ export default function HomePage() {
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "3rem", marginBottom: "2rem" }}>
             <div>
-              <div style={{ fontWeight: 800, color: "#D4A017", fontSize: "1.1rem", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <img src={leadershipConfig.branding.civicEmblem} alt="Logo" style={{ width: "22px", height: "22px" }} />
-                <span>{t("nav.title", "Srikalahasti Praja Seva")}</span>
+              <div style={{ fontWeight: 800, color: "#D4A017", fontSize: "1.1rem", marginBottom: "0.75rem" }}>
+                {t("nav.title", "Srikalahasti Praja Seva")}
               </div>
               <p style={{ fontSize: "0.8rem", color: "#475569", lineHeight: 1.7, maxWidth: "360px" }}>
-                {t("common.proposedNotice")}
+                Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh.
               </p>
             </div>
             <div>
