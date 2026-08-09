@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Sun, Moon, Sparkles } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
 export default function ThemeSwitcher() {
@@ -32,11 +33,16 @@ export default function ThemeSwitcher() {
           borderRadius: "9999px",
           cursor: "pointer",
           fontWeight: 700,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "0.3rem",
           transition: "all 0.2s ease",
         }}
       >
-        ☀️ Light
+        <Sun size={13} />
+        <span>Light</span>
       </button>
+
       <button
         type="button"
         onClick={() => setTheme("dark")}
@@ -50,11 +56,16 @@ export default function ThemeSwitcher() {
           borderRadius: "9999px",
           cursor: "pointer",
           fontWeight: 700,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "0.3rem",
           transition: "all 0.2s ease",
         }}
       >
-        🌙 Dark
+        <Moon size={13} />
+        <span>Dark</span>
       </button>
+
       <button
         type="button"
         onClick={() => setTheme("special")}
@@ -68,10 +79,14 @@ export default function ThemeSwitcher() {
           borderRadius: "9999px",
           cursor: "pointer",
           fontWeight: 700,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "0.3rem",
           transition: "all 0.2s ease",
         }}
       >
-        ✨ Special
+        <Sparkles size={13} />
+        <span>Special</span>
       </button>
     </div>
   );

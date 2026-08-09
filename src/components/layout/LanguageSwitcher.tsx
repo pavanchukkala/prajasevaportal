@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Globe } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function LanguageSwitcher() {
@@ -11,7 +12,7 @@ export default function LanguageSwitcher() {
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: "0.25rem",
+        gap: "0.35rem",
         background: "var(--bg-elevated)",
         border: "1px solid var(--border-main)",
         borderRadius: "9999px",
@@ -20,9 +21,7 @@ export default function LanguageSwitcher() {
       }}
       aria-label="Language switcher"
     >
-      <span style={{ fontSize: "0.9rem", color: "var(--accent-teal)", display: "flex", alignItems: "center" }} aria-hidden="true">
-        🌐
-      </span>
+      <Globe size={14} style={{ color: "var(--accent-teal)" }} aria-hidden="true" />
 
       <button
         type="button"

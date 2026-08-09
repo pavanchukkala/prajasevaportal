@@ -143,12 +143,7 @@ export default function TrackPage() {
   const statusColor = result ? (STATUS_COLORS[result.status] ?? "#94a3b8") : "#94a3b8";
 
   return (
-    <main style={{ minHeight: "100vh", background: "#04091A", color: "#f0f4f8" }}>
-      {/* Ambient */}
-      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-        <div style={{ position: "absolute", top: "10%", right: "10%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.04) 0%, transparent 70%)" }} />
-      </div>
-
+    <main style={{ minHeight: "100vh", backgroundColor: "var(--bg-main)", color: "var(--text-main)", transition: "background-color 0.25s ease, color 0.25s ease" }}>
       {/* Nav */}
       <Navbar />
       <Breadcrumb />
@@ -157,16 +152,16 @@ export default function TrackPage() {
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.35rem 1rem", borderRadius: "9999px", background: "rgba(167,139,250,0.07)", border: "1px solid rgba(167,139,250,0.2)", marginBottom: "1.25rem" }}>
-            <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#a78bfa", textTransform: "uppercase", letterSpacing: "0.12em" }}>{t.badge}</span>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.35rem 1rem", borderRadius: "9999px", background: "rgba(13,148,136,0.12)", border: "1px solid var(--accent-teal)", marginBottom: "1.25rem" }}>
+            <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--accent-teal)", textTransform: "uppercase", letterSpacing: "0.12em" }}>{t.badge}</span>
           </div>
-          <h1 style={{ fontSize: "clamp(1.5rem, 4vw, 2rem)", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.025em", marginBottom: "0.5rem" }}>{t.title}</h1>
-          <p style={{ color: "#64748b", fontSize: "0.9rem" }}>{t.subtitle}</p>
+          <h1 style={{ fontSize: "clamp(1.5rem, 4vw, 2rem)", fontWeight: 900, color: "var(--text-main)", letterSpacing: "-0.025em", marginBottom: "0.5rem" }}>{t.title}</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>{t.subtitle}</p>
         </div>
 
         {/* Search form */}
-        <form onSubmit={handleSearch} style={{ background: "rgba(13,33,55,0.6)", border: "1px solid rgba(212,160,23,0.15)", borderRadius: "20px", padding: "2rem", backdropFilter: "blur(24px)", marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", fontSize: "0.72rem", fontWeight: 700, color: "#94a3b8", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>{t.idLabel}</label>
+        <form onSubmit={handleSearch} style={{ background: "var(--bg-surface)", border: "1.5px solid var(--border-main)", borderRadius: "20px", padding: "2rem", marginBottom: "1.5rem", boxShadow: "0 6px 20px rgba(0,0,0,0.06)" }}>
+          <label style={{ display: "block", fontSize: "0.72rem", fontWeight: 700, color: "var(--text-muted)", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>{t.idLabel}</label>
           <input
             type="text"
             value={query}

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Lock, Menu, X } from "lucide-react";
 import IndianFlagRibbon from "./IndianFlagRibbon";
 import CivicLogo from "./CivicLogo";
 import ThemeSwitcher from "./ThemeSwitcher";
@@ -33,6 +34,7 @@ export default function GlobalHeader() {
         backgroundColor: "var(--bg-surface)",
         borderBottom: "1px solid var(--border-main)",
         backdropFilter: "blur(12px)",
+        transition: "background-color 0.25s ease, border-color 0.25s ease",
       }}
     >
       <IndianFlagRibbon />
@@ -103,7 +105,7 @@ export default function GlobalHeader() {
                 gap: "0.4rem",
               }}
             >
-              <span>🔒</span>
+              <Lock size={14} />
               <span>{isTe ? "సిబ్బంది లాగిన్" : "Staff Login"}</span>
             </Link>
           </div>
@@ -120,14 +122,13 @@ export default function GlobalHeader() {
             background: "none",
             border: "1px solid var(--border-main)",
             borderRadius: "8px",
-            padding: "0.5rem 0.75rem",
+            padding: "0.5rem",
             color: "var(--text-main)",
             cursor: "pointer",
-            fontSize: "1.2rem",
           }}
           className="show-mobile"
         >
-          {mobileMenuOpen ? "✕" : "☰"}
+          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
@@ -186,7 +187,7 @@ export default function GlobalHeader() {
                 gap: "0.4rem",
               }}
             >
-              <span>🔒</span>
+              <Lock size={14} />
               <span>{isTe ? "సిబ్బంది లాగిన్" : "Staff Login"}</span>
             </Link>
           </div>

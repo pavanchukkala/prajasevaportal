@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -17,64 +18,64 @@ export default function ConstituencyPage() {
   const isTe = language === "te";
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0F172A", color: "#F8FAFC", fontFamily: "system-ui, sans-serif" }}>
+    <main style={{ minHeight: "100vh", backgroundColor: "var(--bg-main)", color: "var(--text-main)", transition: "background-color 0.25s ease, color 0.25s ease" }}>
       <Navbar />
       <Breadcrumb />
 
       {/* Hero Header */}
-      <section style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", padding: "5rem 1.5rem", borderBottom: "1px solid rgba(2,132,199,0.3)" }}>
+      <section style={{ backgroundColor: "var(--bg-surface)", padding: "5rem 1.5rem", borderBottom: "1px solid var(--border-main)" }}>
         <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
-          <div style={{ fontSize: "0.75rem", color: "#06B6D4", fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.25rem" }}>
+          <div style={{ fontSize: "0.75rem", color: "var(--accent-teal)", fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1.25rem" }}>
             {isTe ? "అసెంబ్లీ నియోజకవర్గం" : "Assembly Constituency Analytics"}
           </div>
-          <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", fontWeight: 900, color: "#F8FAFC", letterSpacing: "-0.03em", marginBottom: "1.25rem" }}>
+          <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", fontWeight: 900, color: "var(--text-main)", letterSpacing: "-0.03em", marginBottom: "1.25rem" }}>
             {t("constituency.title")}
           </h1>
-          <p style={{ color: "#94A3B8", fontSize: "1.1rem", lineHeight: 1.7 }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "1.1rem", lineHeight: 1.7 }}>
             {t("constituency.subtitle")}
           </p>
         </div>
       </section>
 
       {/* Analytics Mandals Grid */}
-      <section style={{ padding: "4.5rem 1.5rem" }}>
+      <section style={{ padding: "4.5rem 1.5rem", backgroundColor: "var(--bg-main)" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-            <h2 style={{ fontSize: "2.2rem", fontWeight: 900, color: "#F8FAFC" }}>
+            <h2 style={{ fontSize: "2.2rem", fontWeight: 900, color: "var(--text-main)" }}>
               {t("constituency.mandalsTitle")}
             </h2>
-            <p style={{ color: "#94A3B8", marginTop: "0.5rem", fontSize: "1rem" }}>
+            <p style={{ color: "var(--text-muted)", marginTop: "0.5rem", fontSize: "1rem" }}>
               {t("constituency.mandalsDesc")}
             </p>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.75rem", marginBottom: "4rem" }}>
             {MANDAL_DATA.map(m => (
-              <div key={m.name} style={{ background: "rgba(30,41,59,0.75)", border: "1.5px solid rgba(2,132,199,0.35)", borderRadius: "20px", padding: "2rem", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }}>
+              <div key={m.name} style={{ background: "var(--bg-elevated)", border: "1.5px solid var(--border-main)", borderRadius: "20px", padding: "2rem", boxShadow: "0 6px 20px rgba(0,0,0,0.06)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                  <h3 style={{ fontSize: "1.35rem", fontWeight: 900, color: "#06B6D4", margin: 0 }}>
+                  <h3 style={{ fontSize: "1.35rem", fontWeight: 900, color: "var(--accent-teal)", margin: 0 }}>
                     {isTe ? m.nameTe : m.name}
                   </h3>
-                  <span style={{ fontSize: "0.72rem", padding: "0.25rem 0.65rem", borderRadius: "9999px", background: "rgba(132,204,22,0.15)", border: "1px solid #84CC16", color: "#84CC16", fontWeight: 800 }}>
+                  <span style={{ fontSize: "0.72rem", padding: "0.25rem 0.65rem", borderRadius: "9999px", background: "rgba(13,148,136,0.15)", border: "1px solid var(--accent-teal)", color: "var(--accent-teal)", fontWeight: 800 }}>
                     {m.status}
                   </span>
                 </div>
-                <p style={{ color: "#CBD5E1", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+                <p style={{ color: "var(--text-muted)", fontSize: "0.92rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
                   {isTe ? m.descTe : m.descEn}
                 </p>
 
-                <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "1rem", fontSize: "0.82rem", marginBottom: "0.75rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid var(--border-main)", paddingTop: "1rem", fontSize: "0.82rem", marginBottom: "0.75rem" }}>
                   <div>
-                    <span style={{ color: "#94A3B8" }}>{isTe ? "జనాభా: " : "Population: "}</span>
-                    <strong style={{ color: "#06B6D4" }}>{m.pop}</strong>
+                    <span style={{ color: "var(--text-muted)" }}>{isTe ? "జనాభా: " : "Population: "}</span>
+                    <strong style={{ color: "var(--accent-teal)" }}>{m.pop}</strong>
                   </div>
                   <div>
-                    <span style={{ color: "#94A3B8" }}>{isTe ? "గ్రామాలు: " : "Villages: "}</span>
-                    <strong style={{ color: "#F8FAFC" }}>{m.villages}</strong>
+                    <span style={{ color: "var(--text-muted)" }}>{isTe ? "గ్రామాలు: " : "Villages: "}</span>
+                    <strong style={{ color: "var(--text-main)" }}>{m.villages}</strong>
                   </div>
                 </div>
 
-                <div style={{ fontSize: "0.78rem", color: "#F43F5E", fontWeight: 700 }}>
+                <div style={{ fontSize: "0.78rem", color: "var(--accent-gold)", fontWeight: 700 }}>
                   Focus Priority: {m.priority}
                 </div>
               </div>
@@ -82,10 +83,10 @@ export default function ConstituencyPage() {
           </div>
 
           <div style={{ textAlign: "center", display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/constituency/mandals" style={{ background: "linear-gradient(135deg, #0284C7 0%, #06B6D4 100%)", color: "#FFFFFF", fontWeight: 800, padding: "0.9rem 2.25rem", borderRadius: "9999px", textDecoration: "none", boxShadow: "0 4px 20px rgba(2,132,199,0.35)" }}>
+            <Link href="/constituency/mandals" style={{ background: "var(--accent-teal)", color: "#FFFFFF", fontWeight: 800, padding: "0.9rem 2.25rem", borderRadius: "9999px", textDecoration: "none", boxShadow: "0 4px 20px rgba(13,148,136,0.3)" }}>
               {isTe ? "మండలాల వివరాలు చూడండి →" : "View Mandal Details →"}
             </Link>
-            <Link href="/constituency/services" style={{ border: "1.5px solid #06B6D4", color: "#06B6D4", backgroundColor: "rgba(15,23,42,0.5)", fontWeight: 700, padding: "0.9rem 2.25rem", borderRadius: "9999px", textDecoration: "none" }}>
+            <Link href="/constituency/services" style={{ border: "1.5px solid var(--accent-gold)", color: "var(--accent-gold)", backgroundColor: "var(--bg-elevated)", fontWeight: 700, padding: "0.9rem 2.25rem", borderRadius: "9999px", textDecoration: "none" }}>
               {isTe ? "సేవల జాబితా →" : "Services Directory →"}
             </Link>
           </div>
