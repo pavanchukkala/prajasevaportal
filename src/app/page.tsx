@@ -163,7 +163,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 3. LEADERSHIP SECTION (MLA + TDP EMBLEM) ── */}
+      {/* ── 3. LEADERSHIP SECTION (MLA + BADGES - NO PARTY LOGO/SYMBOL) ── */}
       <section style={{ padding: "6rem 1.5rem", backgroundColor: "#060f1a", borderTop: "1px solid rgba(212,160,23,0.08)" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6rem", alignItems: "center" }}>
           <div>
@@ -186,9 +186,8 @@ export default function HomePage() {
               <div style={{ padding: "0.5rem 1rem", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "8px", fontSize: "0.8rem", color: "#94a3b8" }}>
                 {t("home.electedBadge", "Elected 2024")}
               </div>
-              <div style={{ padding: "0.5rem 1rem", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "8px", fontSize: "0.8rem", color: "#94a3b8", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <img src={rep.partySymbol} alt="TDP Symbol" style={{ width: "16px", height: "16px" }} />
-                <span>{t("home.partyBadge", "TDP")}</span>
+              <div style={{ padding: "0.5rem 1rem", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "8px", fontSize: "0.8rem", color: "#94a3b8" }}>
+                {t("home.partyBadge", "TDP")}
               </div>
             </div>
           </div>
