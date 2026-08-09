@@ -7,11 +7,12 @@ export default function IndianFlagRibbon() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      // Triggers smooth 0 -> 100% fill over the first 400px of scrolling
-      const maxScroll = 400;
-      const progress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
-      setFillPercent(progress * 100);
+      const totalScrollable = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalScrollable > 0) {
+        // Slow, full-page scroll progress (0% at page top -> 100% when user reaches end of page)
+        const progress = Math.min(Math.max(window.scrollY / totalScrollable, 0), 1);
+        setFillPercent(progress * 100);
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -22,19 +23,20 @@ export default function IndianFlagRibbon() {
   return (
     <div
       role="region"
-      aria-label="Indian National Tricolour Ribbon with Fill Animation"
+      aria-label="Indian National Tricolour Ribbon with Scroll Fill Animation"
       style={{
         width: "100%",
-        height: "14px",
+        height: "18px",
         display: "flex",
         position: "relative",
         overflow: "hidden",
         backgroundColor: "var(--bg-surface)",
         borderBottom: "1px solid var(--border-main)",
         zIndex: 100,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
       }}
     >
-      {/* ── LEFT SECTION (INITIAL: SAFFRON #FF9933 | FILLED: GREEN #138808) ── */}
+      {/* ── LEFT SECTION (INITIAL: SAFFRON #FF9933 | FILLED: GREEN #138808 ON SCROLL TO BOTTOM) ── */}
       <div style={{ flex: 1, backgroundColor: "#FF9933", position: "relative", overflow: "hidden" }}>
         <div
           aria-hidden="true"
@@ -45,7 +47,7 @@ export default function IndianFlagRibbon() {
             left: 0,
             width: `${fillPercent}%`,
             backgroundColor: "#138808",
-            transition: "width 0.1s ease-out",
+            transition: "width 0.15s ease-out",
           }}
         />
       </div>
@@ -64,13 +66,13 @@ export default function IndianFlagRibbon() {
       >
         <svg
           viewBox="0 0 24 24"
-          width="12"
-          height="12"
+          width="14"
+          height="14"
           aria-hidden="true"
           style={{
             transform: `rotate(${fillPercent * 3.6}deg)`,
-            transition: "transform 0.1s ease-out",
-            filter: fillPercent > 50 ? "drop-shadow(0 0 3px #000080)" : "none",
+            transition: "transform 0.15s ease-out",
+            filter: fillPercent > 50 ? "drop-shadow(0 0 4px #000080)" : "none",
           }}
         >
           <circle cx="12" cy="12" r="10" fill="none" stroke="#000080" strokeWidth="1.5" />
@@ -95,7 +97,7 @@ export default function IndianFlagRibbon() {
         </svg>
       </div>
 
-      {/* ── RIGHT SECTION (INITIAL: GREEN #138808 | FILLED: SAFFRON #FF9933) ── */}
+      {/* ── RIGHT SECTION (INITIAL: GREEN #138808 | FILLED: SAFFRON #FF9933 ON SCROLL TO BOTTOM) ── */}
       <div style={{ flex: 1, backgroundColor: "#138808", position: "relative", overflow: "hidden" }}>
         <div
           aria-hidden="true"
@@ -106,7 +108,7 @@ export default function IndianFlagRibbon() {
             right: 0,
             width: `${fillPercent}%`,
             backgroundColor: "#FF9933",
-            transition: "width 0.1s ease-out",
+            transition: "width 0.15s ease-out",
           }}
         />
       </div>
