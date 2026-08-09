@@ -11,7 +11,7 @@ const HIDDEN_PATHS = ["/staff/login", "/mla/", "/reviewer/", "/admin/", "/depart
 export default function DeveloperPopup() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const { language } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -175,7 +175,7 @@ export default function DeveloperPopup() {
               {(["en", "te"] as const).map((l) => (
                 <button
                   key={l}
-                  onClick={() => setLang(l)}
+                  onClick={() => setLanguage(l)}
                   style={{
                     padding: "0.25rem 0.65rem",
                     borderRadius: "9999px",
@@ -183,9 +183,9 @@ export default function DeveloperPopup() {
                     fontSize: "0.68rem",
                     fontWeight: 700,
                     cursor: "pointer",
-                    background: lang === l ? "#D4A017" : "transparent",
-                    borderColor: lang === l ? "#D4A017" : "rgba(212,160,23,0.3)",
-                    color: lang === l ? "#04091A" : "#D4A017",
+                    background: language === l ? "#D4A017" : "transparent",
+                    borderColor: language === l ? "#D4A017" : "rgba(212,160,23,0.3)",
+                    color: language === l ? "#04091A" : "#D4A017",
                   }}
                 >
                   {l === "en" ? "EN" : "తెలుగు"}
