@@ -12,8 +12,8 @@ export default function SecurityPage() {
       <Navbar />
 
       <section style={{ background: "linear-gradient(135deg, #060f1a 0%, #0D2137 100%)", padding: "4rem 1.5rem" }}>
-        <div style={{ maxWidth: "700px", margin: "0 auto", textAlign: "center" }}>
-          <div style={{ fontSize: "3rem", marginBottom: "1.5rem" }}>🔒</div>
+        <div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
+          <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔒</div>
           <h1 style={{ fontSize: "2.5rem", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.03em", marginBottom: "1rem" }}>
             {t("securityPage.title")}
           </h1>
@@ -24,30 +24,105 @@ export default function SecurityPage() {
       </section>
 
       <section style={{ padding: "4rem 1.5rem" }}>
-        <div style={{ maxWidth: "900px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-          {[
-            {
-              title: isTe ? "రోల్-బేస్డ్ యాక్సెస్" : "Role-Based Access",
-              desc: isTe ? "అధికారిక సిబ్బంది మాత్రమే లాగిన్ ద్వారా వివరాలు పరిశీలించగలరు." : "Reviewers, staff, and officers access complaint data strictly according to their assigned roles."
-            },
-            {
-              title: isTe ? "ఆడిట్ ట్రాక్" : "Audit Trail",
-              desc: isTe ? "ప్రతి స్థితి మార్పు, వివరాల చేరిక సమయంతో సహా రికార్డు చేయబడుతుంది." : "Every status change, assignment, and internal note is logged with a timestamp and actor."
-            },
-            {
-              title: isTe ? "మొబైల్ నంబర్ పరిరక్షణ" : "Masked Mobile Numbers",
-              desc: isTe ? "సిబ్బంది స్క్రీన్‌లలో మొబైల్ సంఖ్యలు +91 ******4321 విధంగా మాస్క్ చేయబడతాయి." : "Staff screens display masked numbers (+91 ******4321) to protect citizen identities."
-            },
-            {
-              title: isTe ? "AI సురక్షిత పరిమితులు" : "AI Safety Guardrails",
-              desc: isTe ? "AI అంచనాలు ప్రాథమికమైనవి మాత్రమే. ఇవి చట్టపరమైన తీర్పులు కావు." : "AI outputs provide preliminary indicators only and cannot declare guilt or replace investigations."
-            }
-          ].map(card => (
-            <div key={card.title} style={{ background: "rgba(13,33,55,0.5)", border: "1px solid rgba(212,160,23,0.12)", borderRadius: "16px", padding: "2rem" }}>
-              <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#D4A017", marginBottom: "0.75rem" }}>{card.title}</h3>
-              <p style={{ color: "#94a3b8", lineHeight: 1.6, fontSize: "0.9rem" }}>{card.desc}</p>
+        <div style={{ maxWidth: "900px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "2.5rem" }}>
+
+          {/* 1. Implemented in Current Deployment */}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
+              <span style={{ color: "#22c55e", fontSize: "1.2rem" }}>✓</span>
+              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#22c55e" }}>
+                {isTe ? "ప్రస్తుత డిప్లాయ్‌మెంట్‌లో అమలవుతున్న భద్రత" : "Implemented in Current Deployment"}
+              </h2>
             </div>
-          ))}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+              {[
+                {
+                  title: isTe ? "రోల్-బేస్డ్ యాక్సెస్ నియంత్రణ" : "Role-Based Access Control (RBAC)",
+                  desc: isTe ? "అధికారిక లాగిన్ సెషన్ల ద్వారా మాత్రమే కేసుల డేటా అందుబాటులో ఉంటుంది." : "Protected routes (`/mla/*`, `/reviewer/*`) enforce authentication cookie validation."
+                },
+                {
+                  title: isTe ? "మాస్క్ చేసిన మొబైల్ సంఖ్యలు" : "Masked Mobile Numbers",
+                  desc: isTe ? "సిబ్బంది స్క్రీన్‌లలో మొబైల్ సంఖ్యలు +91 ******4321 రూపంలో మాత్రమే కనిపిస్తాయి." : "Citizen contact numbers are masked (`+91 ******4321`) on all staff views and API responses."
+                },
+                {
+                  title: isTe ? "అనామక సమర్పణ ఎంపిక" : "Anonymous Submission Option",
+                  desc: isTe ? "పౌరులు ఎలాంటి సంప్రదింపు వివరాలు ఇవ్వకుండా ఫిర్యాదును నమోదు చేయవచ్చు." : "Citizens may choose to submit issues without disclosing mobile number or email."
+                },
+                {
+                  title: isTe ? "రక్షిత స్థితి ట్రాకింగ్" : "Restricted Public Status Projection",
+                  desc: isTe ? "పబ్లిక్ ట్రాకింగ్ పేజీలో అంతర్గత వ్యాఖ్యలు లేదా మొబైల్ నంబర్లు చూపబడవు." : "Public tracking (`/track`) strips internal notes, raw contact info, and reviewer identity."
+                }
+              ].map(card => (
+                <div key={card.title} style={{ background: "rgba(13,33,55,0.5)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: "14px", padding: "1.5rem" }}>
+                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#ffffff", marginBottom: "0.5rem" }}>{card.title}</h3>
+                  <p style={{ color: "#94a3b8", lineHeight: 1.6, fontSize: "0.88rem" }}>{card.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 2. Foundation Only */}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
+              <span style={{ color: "#eab308", fontSize: "1.2rem" }}>⚡</span>
+              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#eab308" }}>
+                {isTe ? "ప్రాథమిక మూలాధారాలు (ప్రోటోటైప్ మోడ్)" : "Foundation Only (Prototype Mode)"}
+              </h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+              {[
+                {
+                  title: isTe ? "ఇన్-మెమరీ డేటా స్టోర్" : "In-Memory Prototype Store",
+                  desc: isTe ? "ప్రస్తుత ఉచిత డిప్లాయ్‌మెంట్‌లో డేటా తాత్కాలిక మెమరీలో సేవ్ చేయబడుతుంది." : "Server state is currently maintained in memory. Persistent Supabase/PostgreSQL is architected but not connected."
+                },
+                {
+                  title: isTe ? "స్థానిక విశ్లేషణ AI మోడ్" : "Local Fallback AI Categorization",
+                  desc: isTe ? "సమర్పణలను వర్గీకరించడానికి స్థానిక కీవర్డ్ రూల్స్ విశ్లేషణ ఉపయోగించబడుతుంది." : "Rule-based structural analyzer runs locally to categorize complaints and assign urgency metrics."
+                }
+              ].map(card => (
+                <div key={card.title} style={{ background: "rgba(13,33,55,0.5)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: "14px", padding: "1.5rem" }}>
+                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#ffffff", marginBottom: "0.5rem" }}>{card.title}</h3>
+                  <p style={{ color: "#94a3b8", lineHeight: 1.6, fontSize: "0.88rem" }}>{card.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 3. Required Before Public Launch */}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
+              <span style={{ color: "#ef4444", fontSize: "1.2rem" }}>🛡️</span>
+              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#ef4444" }}>
+                {isTe ? "అధికారిక ప్రారంభానికి ముందు అవసరమైనవి" : "Required Before Public Launch"}
+              </h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+              {[
+                {
+                  title: isTe ? "క్లౌడ్ ఫైల్ ఎన్‌క్రిప్షన్" : "End-to-End Evidence Encryption",
+                  desc: isTe ? "అప్‌లోడ్ చేసిన ఫైళ్లను క్లౌడ్ స్టోరేజ్‌లో ఎన్‌క్రిప్ట్ చేయడం." : "Production S3 / Cloud Storage integration with KMS encryption at rest for uploaded media."
+                },
+                {
+                  title: isTe ? "ప్రొడక్షన్ డేటాబేస్ RLS" : "Production Database RLS",
+                  desc: isTe ? "డేటాబేస్ పర్మిషన్లతో కఠినమైన యాక్సెస్." : "PostgreSQL with Row-Level Security policies and encrypted audit logs."
+                },
+                {
+                  title: isTe ? "అధికారిక SMS గేట్‌వే" : "Production SMS / WhatsApp Gateway",
+                  desc: isTe ? "ఫోన్ నంబర్లకు SMS నోటిఫికేషన్లను పంపడం." : "Live connection to Twilio / MSG91 for OTP verification and automated status updates."
+                },
+                {
+                  title: isTe ? "థర్డ్-పార్టీ సెక్యూరిటీ ఆడిట్" : "Third-Party Security Audit",
+                  desc: isTe ? "అధికారిక భద్రతా ఆడిట్ మరియు సర్టిఫికేషన్." : "Formal penetration testing and compliance audit prior to official government deployment."
+                }
+              ].map(card => (
+                <div key={card.title} style={{ background: "rgba(13,33,55,0.5)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "14px", padding: "1.5rem" }}>
+                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#ffffff", marginBottom: "0.5rem" }}>{card.title}</h3>
+                  <p style={{ color: "#94a3b8", lineHeight: 1.6, fontSize: "0.88rem" }}>{card.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </section>
     </main>

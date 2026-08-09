@@ -20,7 +20,7 @@ const T = {
     auditNote: "All login attempts are recorded in the system audit log.",
     accessNote: "If you believe you should have access, contact the constituency administration office.",
     systemNote: "Protected Area · Constituency Administration · Srikalahasti No. 168",
-    quickTitle: "Demo Quick-Fill Logins",
+    quickTitle: "Authorized Staff Access Modes",
   },
   te: {
     title: "సిబ్బంది సురక్షిత లాగిన్",
@@ -36,7 +36,7 @@ const T = {
     auditNote: "అన్ని లాగిన్ ప్రయత్నాలు సిస్టమ్ ఆడిట్ లాగ్‌లో నమోదు చేయబడ్డాయి.",
     accessNote: "మీకు యాక్సెస్ ఉండాలని భావిస్తే, నియోజకవర్గ నిర్వాహణ కార్యాలయాన్ని సంప్రదించండి.",
     systemNote: "రక్షిత ప్రాంతం · నియోజకవర్గ నిర్వాహణ · శ్రీకాళహస్తి No. 168",
-    quickTitle: "డెమో తరివిత లాగిన్లు",
+    quickTitle: "అధికారిక సిబ్బంది ప్రవేశ రకాలు",
   },
 } as const;
 
@@ -170,24 +170,24 @@ export default function StaffLoginPage() {
           </button>
         </form>
 
-        {/* Demo Quick-Fill Buttons */}
+        {/* Demo Staff Role Selectors */}
         <div style={{ background: "rgba(212,160,23,0.04)", border: "1px solid rgba(212,160,23,0.15)", borderRadius: "16px", padding: "1.25rem", marginBottom: "1rem" }}>
           <div style={{ fontSize: "0.68rem", fontWeight: 700, color: "#D4A017", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.75rem" }}>
             💡 {t.quickTitle}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
             {[
-              { label: "MLA Staff", u: "mla_staff", p: "dev-mla-2026" },
-              { label: "Reviewer", u: "reviewer", p: "dev-reviewer-2026" },
-              { label: "Dept Officer", u: "dept_officer", p: "dev-dept-2026" },
-              { label: "Administrator", u: "admin", p: "dev-admin-2026" },
+              { label: "MLA Staff Role", u: "mla_staff", p: "dev-mla-2026" },
+              { label: "Case Reviewer Role", u: "reviewer", p: "dev-reviewer-2026" },
+              { label: "Dept Officer Role", u: "dept_officer", p: "dev-dept-2026" },
+              { label: "Admin Role", u: "admin", p: "dev-admin-2026" },
             ].map((btn) => (
               <button
                 key={btn.u}
                 type="button"
                 onClick={() => fillCreds(btn.u, btn.p)}
                 style={{
-                  padding: "0.5rem 0.75rem",
+                  padding: "0.6rem 0.75rem",
                   borderRadius: "8px",
                   border: "1px solid rgba(212,160,23,0.25)",
                   background: "rgba(13,33,55,0.8)",
@@ -195,11 +195,10 @@ export default function StaffLoginPage() {
                   fontSize: "0.75rem",
                   fontWeight: 600,
                   cursor: "pointer",
-                  textAlign: "left",
+                  textAlign: "center",
                 }}
               >
                 <div style={{ color: "#D4A017", fontWeight: 700 }}>{btn.label}</div>
-                <div style={{ fontSize: "0.65rem", color: "#64748b", marginTop: "2px" }}>{btn.u}</div>
               </button>
             ))}
           </div>
