@@ -185,7 +185,7 @@ export default function HomePage() {
 
           {/* State, Technology, National & Party Leadership Gallery */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.5rem" }}>
-            {[cm, lokesh, pm, ntr].map((item) => (
+            {[lokesh, cm, ntr, pm].map((item) => (
               <div key={item.id} style={{
                 background: "#FDFBF7",
                 color: "#1C0A00",

@@ -1,29 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Telugu:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
-:root, [data-theme="dark"], .dark {
-  --dark-background: #060F1E;
-  --dark-surface: #0F172A;
-  --dark-elevated: #162338;
-  --dark-text: #F8FAFC;
-  --dark-muted: #A8BBC6;
-  --dark-teal: #2DD4BF;
-  --dark-gold: #F59E0B;
-  --dark-border: #294158;
-
-  --bg-main: var(--dark-background);
-  --bg-surface: var(--dark-surface);
-  --bg-elevated: var(--dark-elevated);
-  --text-main: var(--dark-text);
-  --text-muted: var(--dark-muted);
-  --accent-teal: var(--dark-teal);
-  --accent-gold: var(--dark-gold);
-  --border-main: var(--dark-border);
-
-  color-scheme: dark;
-}
-
-[data-theme="light"], .light {
+/* ── DEFAULT THEME IS LIGHT ── */
+:root, [data-theme="light"], .light {
   --light-background: #F8FAFC;
   --light-surface: #FFFFFF;
   --light-elevated: #F1F5F9;
@@ -45,74 +24,75 @@
   color-scheme: light;
 }
 
+/* ── DARK THEME ── */
+[data-theme="dark"], .dark {
+  --dark-background: #0F172A;
+  --dark-surface: #1E293B;
+  --dark-elevated: #334155;
+  --dark-text: #F8FAFC;
+  --dark-muted: #94A3B8;
+  --dark-teal: #2DD4BF;
+  --dark-gold: #F59E0B;
+  --dark-border: #475569;
+
+  --bg-main: var(--dark-background);
+  --bg-surface: var(--dark-surface);
+  --bg-elevated: var(--dark-elevated);
+  --text-main: var(--dark-text);
+  --text-muted: var(--dark-muted);
+  --accent-teal: var(--dark-teal);
+  --accent-gold: var(--dark-gold);
+  --border-main: var(--dark-border);
+
+  color-scheme: dark;
+}
+
+/* ── SPECIAL CINEMATIC THEME (NAVY, GOLD, INDIGO) ── */
+[data-theme="special"], .special {
+  --special-background: #060F1E;
+  --special-surface: #0D2137;
+  --special-elevated: #162338;
+  --special-text: #F8FAFC;
+  --special-muted: #A8BBC6;
+  --special-teal: #2DD4BF;
+  --special-gold: #F59E0B;
+  --special-border: #294158;
+
+  --bg-main: var(--special-background);
+  --bg-surface: var(--special-surface);
+  --bg-elevated: var(--special-elevated);
+  --text-main: var(--special-text);
+  --text-muted: var(--special-muted);
+  --accent-teal: var(--special-teal);
+  --accent-gold: var(--special-gold);
+  --border-main: var(--special-border);
+
+  color-scheme: dark;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
-  }
-
-  html {
-    font-family: 'Inter', 'Noto Sans Telugu', system-ui, sans-serif;
-    scroll-behavior: smooth;
+    margin: 0;
+    padding: 0;
   }
 
   body {
     background-color: var(--bg-main);
     color: var(--text-main);
+    font-family: 'Inter', 'Noto Sans Telugu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    line-height: 1.6;
     transition: background-color 0.25s ease, color 0.25s ease;
   }
 
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: var(--bg-surface);
-  }
-  ::-webkit-scrollbar-thumb {
-    background: var(--accent-teal);
-    border-radius: 3px;
-  }
-
-  ::selection {
-    background: rgba(13, 148, 136, 0.3);
-    color: inherit;
+  *:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
   }
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .glass-card {
-    background: var(--bg-surface);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border-main);
-    border-radius: 16px;
-  }
-
-  .gold-gradient {
-    background: linear-gradient(90deg, var(--accent-gold), #F3E5AB, var(--accent-gold));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .glow-teal {
-    box-shadow: 0 0 30px rgba(45, 212, 191, 0.25);
-  }
-}
-
-/* Accessibility: Focus outlines for keyboard navigation */
-:focus-visible {
-  outline: 2px solid var(--accent-teal) !important;
-  outline-offset: 2px !important;
-}
-
-/* Accessibility: Reduced motion media query */
+/* Reduced motion preference override */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;

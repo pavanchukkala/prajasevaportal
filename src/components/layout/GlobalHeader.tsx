@@ -98,9 +98,13 @@ export default function GlobalHeader() {
                 backgroundColor: "var(--accent-gold)",
                 textDecoration: "none",
                 boxShadow: "0 2px 10px rgba(180,83,9,0.3)",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.4rem",
               }}
             >
-              {isTe ? "సిబ్బంది లాగిన్" : "Staff Login"}
+              <span>🔒</span>
+              <span>{isTe ? "సిబ్బంది లాగిన్" : "Staff Login"}</span>
             </Link>
           </div>
         </nav>
@@ -176,9 +180,14 @@ export default function GlobalHeader() {
                 backgroundColor: "var(--accent-gold)",
                 textDecoration: "none",
                 marginTop: "0.5rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.4rem",
               }}
             >
-              {isTe ? "సిబ్బంది లాగిన్" : "Staff Login"}
+              <span>🔒</span>
+              <span>{isTe ? "సిబ్బంది లాగిన్" : "Staff Login"}</span>
             </Link>
           </div>
         </div>

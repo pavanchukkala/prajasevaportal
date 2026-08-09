@@ -22,13 +22,13 @@ export default function ThemeSwitcher() {
       <button
         type="button"
         onClick={() => setTheme("light")}
-        title="Light Theme"
+        title="Light Theme (Default)"
         aria-label="Switch to light mode"
         style={{
           border: "none",
           background: theme === "light" ? "var(--accent-teal)" : "transparent",
           color: theme === "light" ? "#FFFFFF" : "var(--text-muted)",
-          padding: "4px 10px",
+          padding: "4px 9px",
           borderRadius: "9999px",
           cursor: "pointer",
           fontWeight: 700,
@@ -46,7 +46,7 @@ export default function ThemeSwitcher() {
           border: "none",
           background: theme === "dark" ? "var(--accent-teal)" : "transparent",
           color: theme === "dark" ? "#FFFFFF" : "var(--text-muted)",
-          padding: "4px 10px",
+          padding: "4px 9px",
           borderRadius: "9999px",
           cursor: "pointer",
           fontWeight: 700,
@@ -57,21 +57,21 @@ export default function ThemeSwitcher() {
       </button>
       <button
         type="button"
-        onClick={() => setTheme("system")}
-        title="System Theme"
-        aria-label="Switch to system default mode"
+        onClick={() => setTheme("special")}
+        title="Special Cinematic Theme"
+        aria-label="Switch to special theme mode"
         style={{
           border: "none",
-          background: theme === "system" ? "var(--accent-teal)" : "transparent",
-          color: theme === "system" ? "#FFFFFF" : "var(--text-muted)",
-          padding: "4px 10px",
+          background: theme === "special" ? "var(--accent-gold)" : "transparent",
+          color: theme === "special" ? "#FFFFFF" : "var(--text-muted)",
+          padding: "4px 9px",
           borderRadius: "9999px",
           cursor: "pointer",
           fontWeight: 700,
           transition: "all 0.2s ease",
         }}
       >
-        💻 Auto
+        ✨ Special
       </button>
     </div>
   );

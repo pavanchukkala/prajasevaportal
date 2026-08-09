@@ -11,14 +11,19 @@ export default function LanguageSwitcher() {
       style={{
         display: "inline-flex",
         alignItems: "center",
+        gap: "0.25rem",
         background: "var(--bg-elevated)",
         border: "1px solid var(--border-main)",
         borderRadius: "9999px",
-        padding: "2px",
+        padding: "3px 6px 3px 8px",
         fontSize: "0.78rem",
       }}
       aria-label="Language switcher"
     >
+      <span style={{ fontSize: "0.9rem", color: "var(--accent-teal)", display: "flex", alignItems: "center" }} aria-hidden="true">
+        🌐
+      </span>
+
       <button
         type="button"
         onClick={() => setLanguage("en")}
@@ -36,6 +41,7 @@ export default function LanguageSwitcher() {
       >
         English
       </button>
+
       <button
         type="button"
         onClick={() => setLanguage("te")}
