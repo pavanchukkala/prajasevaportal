@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -127,6 +128,7 @@ export default function SecurityPage() {
 
         </div>
       </section>
+      <Footer />
     </main>
   );
 }

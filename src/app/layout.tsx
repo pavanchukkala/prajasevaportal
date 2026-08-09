@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import DeveloperPopup from "@/components/DeveloperPopup";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { ThemeProvider } from "@/context/ThemeContext";
+import MeetDeveloperButton from "@/components/layout/MeetDeveloperButton";
 
 export const metadata: Metadata = {
   title: {
@@ -14,6 +15,11 @@ export const metadata: Metadata = {
     "Srikalahasti", "constituency", "grievance", "public service", "Tirupati",
     "Andhra Pradesh", "civic tech", "MLA", "TDP", "complaints", "AI analysis",
   ],
+  icons: {
+    icon: "/assets/symbols/civic-emblem.svg",
+    shortcut: "/assets/symbols/civic-emblem.svg",
+    apple: "/assets/symbols/civic-emblem.svg",
+  },
   openGraph: {
     title: "Srikalahasti Praja Seva Intelligence Platform",
     description: "Proposed civic-technology platform for Srikalahasti constituency.",
@@ -31,19 +37,21 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#04091A" />
+        <meta name="theme-color" content="#060F1E" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
       <body>
-        <LanguageProvider>
-          {children}
-          <DeveloperPopup />
-        </LanguageProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            {children}
+            <MeetDeveloperButton />
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

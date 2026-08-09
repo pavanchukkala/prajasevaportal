@@ -159,76 +159,30 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Primary Representative Card (MLA - Sri Bojjala Sudhir Reddy) */}
-          <div style={{
-            background: "#FDFBF7",
-            color: "#1C0A00",
-            borderRadius: "24px",
-            padding: "2.75rem",
-            marginBottom: "3.5rem",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: "2.75rem",
-            alignItems: "center",
-            boxShadow: "0 20px 50px rgba(0,0,0,0.4)",
-            border: "2px solid #B45309"
-          }}>
-            <div style={{ position: "relative", width: "100%", height: "350px", borderRadius: "20px", overflow: "hidden", border: "3px solid #B45309", boxShadow: "0 10px 30px rgba(0,0,0,0.25)" }}>
-              <Image
-                src={mla.imagePath}
-                alt={mla.name}
-                fill
-                style={{ objectFit: "cover", objectPosition: "center top" }}
-              />
-            </div>
-
-            <div>
-              <div style={{ display: "inline-flex", gap: "0.6rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
-                <span style={{ padding: "0.35rem 0.9rem", borderRadius: "9999px", background: "rgba(180,83,9,0.12)", border: "1px solid #B45309", color: "#B45309", fontWeight: 800, fontSize: "0.78rem" }}>
-                  Elected 2024 (1,21,565 Votes)
-                </span>
-                <span style={{ padding: "0.35rem 0.9rem", borderRadius: "9999px", background: "rgba(15,118,110,0.12)", border: "1px solid #0F766E", color: "#0F766E", fontWeight: 800, fontSize: "0.78rem" }}>
-                  Margin: 43,304 Votes
-                </span>
-              </div>
-
-              <h3 style={{ fontSize: "2.3rem", fontWeight: 900, color: "#1C0A00", marginBottom: "0.5rem", letterSpacing: "-0.02em" }}>{mla.name}</h3>
-              <div style={{ color: "#B45309", fontWeight: 800, fontSize: "1.05rem", marginBottom: "1.25rem" }}>{mla.role}</div>
-
-              <blockquote style={{ borderLeft: "4px solid #B45309", paddingLeft: "1.25rem", color: "#451A03", fontSize: "1rem", fontStyle: "italic", lineHeight: 1.7, margin: "0 0 1.5rem" }}>
-                "{isTe ? "ప్రతి సమస్యకు ఒక పరిష్కారం ఉంటుంది. ప్రతి పౌరుడి స్వరానికి స్పందించడమే మా మొదటి బాధ్యత." : "Every citizen has a story. Every public problem leaves a pattern. Every pattern can guide responsible action for Srikalahasti."}"
-              </blockquote>
-
-              <div style={{ fontSize: "0.75rem", color: "#78350F", borderTop: "1px solid rgba(180,83,9,0.2)", paddingTop: "0.75rem" }}>
-                Attribution: {mla.attribution} · License: {mla.permissionStatus}
-              </div>
-            </div>
-          </div>
-
-          {/* State & National Leadership Composition Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "1.5rem" }}>
-            {[cm, lokesh, pm, ntr, father].map((item) => (
+          {/* Equal Leadership & Legacy Gallery Grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.75rem" }}>
+            {[mla, cm, lokesh, pm, ntr, father].map((item) => (
               <div key={item.id} style={{
-                background: "rgba(253,251,247,0.95)",
+                background: "#FDFBF7",
                 color: "#1C0A00",
-                border: "1px solid #B45309",
+                border: "2px solid #B45309",
                 borderRadius: "20px",
-                padding: "1.25rem",
+                padding: "1.5rem",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+                boxShadow: "0 12px 30px rgba(0,0,0,0.35)",
               }}>
                 <div>
-                  <div style={{ position: "relative", width: "100%", height: "200px", borderRadius: "14px", overflow: "hidden", marginBottom: "1rem", border: "2px solid #B45309" }}>
+                  <div style={{ position: "relative", width: "100%", height: "230px", borderRadius: "14px", overflow: "hidden", marginBottom: "1.25rem", border: "2px solid #B45309" }}>
                     <Image src={item.imagePath} alt={item.name} fill style={{ objectFit: "cover", objectPosition: "center top" }} />
                   </div>
-                  <div style={{ fontSize: "0.68rem", color: "#B45309", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.25rem" }}>
+                  <div style={{ fontSize: "0.75rem", color: "#B45309", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.35rem" }}>
                     {item.role}
                   </div>
-                  <h4 style={{ fontSize: "1.1rem", fontWeight: 900, color: "#1C0A00", marginBottom: "0.5rem" }}>{item.name}</h4>
+                  <h3 style={{ fontSize: "1.25rem", fontWeight: 900, color: "#1C0A00", marginBottom: "0.5rem" }}>{item.name}</h3>
                 </div>
-                <div style={{ fontSize: "0.65rem", color: "#78350F", borderTop: "1px solid rgba(180,83,9,0.2)", paddingTop: "0.6rem", marginTop: "0.8rem" }}>
+                <div style={{ fontSize: "0.7rem", color: "#78350F", borderTop: "1px solid rgba(180,83,9,0.2)", paddingTop: "0.75rem", marginTop: "1rem" }}>
                   {item.permissionStatus}
                 </div>
               </div>

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, FormEvent } from "react";
 import Link from "next/link";
+import Footer from "@/components/layout/Footer";
 
 type Lang = "en" | "te";
 
@@ -273,12 +274,13 @@ export default function TrackPage() {
               🔒 {t.privacyNote}
             </div>
 
-            <Link href="/submit" style={{ display: "inline-block", border: "1px solid rgba(212,160,23,0.25)", color: "#D4A017", fontWeight: 600, padding: "0.75rem 1.75rem", borderRadius: "9999px", textDecoration: "none", textAlign: "center", fontSize: "0.9rem" }}>
+            <Link href="/submit" style={{ display: "inline-block", border: "1.5px solid var(--accent-gold)", color: "var(--accent-gold)", fontWeight: 600, padding: "0.75rem 1.75rem", borderRadius: "9999px", textDecoration: "none", textAlign: "center", fontSize: "0.9rem" }}>
               {t.newComplaint}
             </Link>
           </div>
         )}
       </div>
+      <Footer />
     </main>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import { developerConfig } from "@/config/developer";
 import { useLanguage } from "@/context/LanguageContext";
@@ -111,6 +112,7 @@ export default function DeveloperPage() {
           </Link>
         </div>
       </div>
+      <Footer />
     </main>
   );
 }

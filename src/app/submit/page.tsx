@@ -138,6 +138,7 @@ interface SubmitResult {
 }
 
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -236,34 +237,33 @@ export default function SubmitPage() {
 
   const inp: React.CSSProperties = {
     width: "100%",
-    background: "#FFFFFF",
-    border: "1.5px solid #CBD5E1",
+    background: "var(--bg-elevated)",
+    border: "1.5px solid var(--border-main)",
     borderRadius: "12px",
     padding: "0.875rem 1rem",
-    color: "#0F172A",
+    color: "var(--text-main)",
     fontSize: "0.95rem",
     outline: "none",
     boxSizing: "border-box",
     fontFamily: "'Inter','Noto Sans Telugu',sans-serif",
-    boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
   };
 
   const lbl: React.CSSProperties = {
     display: "block",
     fontSize: "0.75rem",
     fontWeight: 800,
-    color: "#334155",
+    color: "var(--text-muted)",
     marginBottom: "0.5rem",
     textTransform: "uppercase",
     letterSpacing: "0.07em",
   };
 
   const card: React.CSSProperties = {
-    background: "#FFFFFF",
-    border: "1px solid #E2E8F0",
+    background: "var(--bg-surface)",
+    border: "1px solid var(--border-main)",
     borderRadius: "20px",
     padding: "2.25rem",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
   };
 
   const btnPrimary: React.CSSProperties = {
@@ -417,7 +417,7 @@ export default function SubmitPage() {
 
   // ── Main form ───────────────────────────────────────────────────────────────
   return (
-    <main style={{ minHeight: "100vh", background: "#F8FAFC", color: "#0F172A" }}>
+    <main style={{ minHeight: "100vh", background: "var(--bg-main)", color: "var(--text-main)", transition: "background-color 0.25s ease, color 0.25s ease" }}>
       {/* Nav */}
       <Navbar />
       <Breadcrumb />
@@ -684,6 +684,7 @@ export default function SubmitPage() {
           )}
         </form>
       </div>
+      <Footer />
     </main>
   );
 }
