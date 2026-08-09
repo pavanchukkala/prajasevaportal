@@ -20,6 +20,7 @@ const T = {
     auditNote: "All login attempts are recorded in the system audit log.",
     accessNote: "If you believe you should have access, contact the constituency administration office.",
     systemNote: "Protected Area · Constituency Administration · Srikalahasti No. 168",
+    quickTitle: "Demo Quick-Fill Logins",
   },
   te: {
     title: "సిబ్బంది సురక్షిత లాగిన్",
@@ -35,6 +36,7 @@ const T = {
     auditNote: "అన్ని లాగిన్ ప్రయత్నాలు సిస్టమ్ ఆడిట్ లాగ్‌లో నమోదు చేయబడ్డాయి.",
     accessNote: "మీకు యాక్సెస్ ఉండాలని భావిస్తే, నియోజకవర్గ నిర్వాహణ కార్యాలయాన్ని సంప్రదించండి.",
     systemNote: "రక్షిత ప్రాంతం · నియోజకవర్గ నిర్వాహణ · శ్రీకాళహస్తి No. 168",
+    quickTitle: "డెమో తరివిత లాగిన్లు",
   },
 } as const;
 
@@ -61,11 +63,11 @@ export default function StaffLoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: username.trim(), password: password.trim() }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        router.push("/mla/dashboard");
+        router.push(data.redirect || "/mla/dashboard");
       } else {
         setError(data.error ?? t.errorGeneric);
         setPassword("");
@@ -75,6 +77,12 @@ export default function StaffLoginPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function fillCreds(u: string, p: string) {
+    setUsername(u);
+    setPassword(p);
+    setError("");
   }
 
   const inp: React.CSSProperties = {
@@ -99,7 +107,7 @@ export default function StaffLoginPage() {
         <div style={{ position: "absolute", bottom: "20%", right: "20%", width: "300px", height: "300px", borderRadius: "50%", background: "radial-gradient(circle, rgba(239,68,68,0.03) 0%, transparent 70%)" }} />
       </div>
 
-      <div style={{ maxWidth: "420px", width: "100%", position: "relative", zIndex: 1 }}>
+      <div style={{ maxWidth: "440px", width: "100%", position: "relative", zIndex: 1 }}>
 
         {/* Lang toggle */}
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1.5rem", gap: "0.5rem" }}>
@@ -161,6 +169,41 @@ export default function StaffLoginPage() {
             {loading ? t.submitting : t.submit}
           </button>
         </form>
+
+        {/* Demo Quick-Fill Buttons */}
+        <div style={{ background: "rgba(212,160,23,0.04)", border: "1px solid rgba(212,160,23,0.15)", borderRadius: "16px", padding: "1.25rem", marginBottom: "1rem" }}>
+          <div style={{ fontSize: "0.68rem", fontWeight: 700, color: "#D4A017", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.75rem" }}>
+            💡 {t.quickTitle}
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+            {[
+              { label: "MLA Staff", u: "mla_staff", p: "dev-mla-2026" },
+              { label: "Reviewer", u: "reviewer", p: "dev-reviewer-2026" },
+              { label: "Dept Officer", u: "dept_officer", p: "dev-dept-2026" },
+              { label: "Administrator", u: "admin", p: "dev-admin-2026" },
+            ].map((btn) => (
+              <button
+                key={btn.u}
+                type="button"
+                onClick={() => fillCreds(btn.u, btn.p)}
+                style={{
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(212,160,23,0.25)",
+                  background: "rgba(13,33,55,0.8)",
+                  color: "#f0f4f8",
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  textAlign: "left",
+                }}
+              >
+                <div style={{ color: "#D4A017", fontWeight: 700 }}>{btn.label}</div>
+                <div style={{ fontSize: "0.65rem", color: "#64748b", marginTop: "2px" }}>{btn.u}</div>
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Security notices */}
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.5rem" }}>
