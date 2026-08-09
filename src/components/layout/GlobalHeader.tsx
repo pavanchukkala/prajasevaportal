@@ -70,20 +70,15 @@ export default function GlobalHeader() {
                   key={link.href}
                   href={link.href}
                   style={{
-                    padding: "0.5rem 0.9rem",
-                    borderRadius: "10px",
+                    padding: "0.5rem 0.85rem",
+                    borderRadius: "8px",
                     fontSize: "0.88rem",
                     fontWeight: isActive ? 800 : 600,
-                    color: isActive ? "var(--accent-gold)" : "var(--text-main)",
-                    background: isActive ? "linear-gradient(135deg, rgba(180,83,9,0.12), rgba(245,158,11,0.06))" : "transparent",
-                    border: isActive ? "1.5px solid var(--accent-gold)" : "1.5px solid transparent",
-                    boxShadow: isActive ? "0 4px 14px rgba(180,83,9,0.22)" : "none",
+                    color: isActive ? "var(--accent-teal)" : "var(--text-main)",
+                    backgroundColor: isActive ? "rgba(13,148,136,0.12)" : "transparent",
                     textDecoration: "none",
-                    transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                    display: "inline-flex",
-                    alignItems: "center",
+                    transition: "all 0.2s ease",
                   }}
-                  className={isActive ? "nav-link-active" : "nav-link-item"}
                 >
                   {link.label}
                 </Link>

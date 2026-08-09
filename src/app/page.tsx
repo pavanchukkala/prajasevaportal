@@ -70,11 +70,11 @@ export default function HomePage() {
         <div
           style={{
             position: "absolute",
-            top: "38%",
+            top: "40%",
             right: "3%",
             transform: "translateY(-50%)",
-            width: "clamp(300px, 36vw, 500px)",
-            height: "clamp(300px, 36vw, 500px)",
+            width: "clamp(340px, 42vw, 580px)",
+            height: "clamp(340px, 42vw, 580px)",
             opacity: 0.12,
             zIndex: 0,
             pointerEvents: "none",
@@ -83,8 +83,8 @@ export default function HomePage() {
           <Image
             src="/assets/symbols/civic-emblem.svg"
             alt="Praja Seva Official Emblem Watermark"
-            width={500}
-            height={500}
+            width={580}
+            height={580}
             priority
             style={{
               objectFit: "contain",
