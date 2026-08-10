@@ -7,7 +7,7 @@ import Link from 'next/link';
 export default async function MLADashboard({
   searchParams,
 }: {
-  searchParams: { tab?: string };
+  searchParams: Promise<{ tab?: string }> | { tab?: string };
 }) {
   const session = await getSession();
   if (!session) {
@@ -15,8 +15,8 @@ export default async function MLADashboard({
   }
 
   const allComplaints = await db.complaints.list();
-  
-  const currentTab = searchParams.tab || 'all';
+  const resolvedSearchParams = await Promise.resolve(searchParams ?? {});
+  const currentTab = resolvedSearchParams.tab || 'all';
 
   let filteredComplaints = allComplaints;
   if (currentTab === 'live') {

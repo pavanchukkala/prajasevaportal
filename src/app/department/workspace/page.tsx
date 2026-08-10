@@ -25,14 +25,15 @@ const DEPARTMENTS = [
 export default async function DepartmentWorkspacePage({
   searchParams,
 }: {
-  searchParams: Promise<{ dept?: string }>;
+  searchParams?: Promise<{ dept?: string }> | { dept?: string };
 }) {
   const session = await getSession();
   if (!session || (session.role !== "department_officer" && session.role !== "administrator")) {
     redirect("/staff/login");
   }
 
-  const { dept } = await searchParams;
+  const resolvedSearchParams = await Promise.resolve(searchParams ?? {});
+  const dept = resolvedSearchParams.dept;
   const activeDept = dept || "Revenue";
 
   const allComplaints = await db.complaints.list();

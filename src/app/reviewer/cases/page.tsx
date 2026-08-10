@@ -11,11 +11,17 @@ export const metadata = {
   description: "AI-assisted triage and preliminary review workspace for authorized case reviewers.",
 };
 
-export default async function ReviewerCasesPage() {
+export default async function ReviewerCasesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ tab?: string }> | { tab?: string };
+}) {
   const session = await getSession();
   if (!session || (session.role !== "reviewer" && session.role !== "administrator")) {
     redirect("/staff/login");
   }
+
+  const _resolvedSearchParams = await Promise.resolve(searchParams ?? {});
 
   const complaints = await db.complaints.list();
   const liveCases = complaints.filter((c) => !c.isSample);
