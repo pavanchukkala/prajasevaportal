@@ -40,7 +40,7 @@ const T = {
     anonNote: "When checked, no mobile number or email is stored. You can still track via Complaint ID.",
     evidenceLabel: "Upload evidence (optional)",
     evidenceNote:
-      "Photos, videos, audio, documents. Max 10MB each. Do not upload Aadhaar, PAN, bank details or sensitive personal data unrelated to this complaint.",
+      "Photos, videos, audio recordings, documents accepted without any size, type, or quantity limits.",
     submit: "Submit Complaint",
     submitting: "Submitting & analysing...",
     disclaimer:
@@ -94,7 +94,7 @@ const T = {
     anonNote: "తనిఖీ చేసినప్పుడు, మొబైల్ నంబర్ లేదా ఇమెయిల్ నిల్వ చేయబడదు. ఫిర్యాదు ID ద్వారా ట్రాక్ చేయవచ్చు.",
     evidenceLabel: "సాక్ష్యాలు అప్లోడ్ చేయండి (ఐచ్ఛికం)",
     evidenceNote:
-      "ఫోటోలు, వీడియోలు, ఆడియో, పత్రాలు. ప్రతి 10MB. ఆధార్, PAN లేదా వ్యక్తిగత డేటాను అప్లోడ్ చేయవద్దు.",
+      "ఫోటోలు, వీడియోలు, ఆడియో, పత్రాలు అన్ని రకాల ఫైళ్ళు పరిమితి లేకుండా అంగీకరించబడతాయి.",
     submit: "ఫిర్యాదు సమర్పించండి",
     submitting: "సమర్పిస్తున్నది & విశ్లేషిస్తున్నది...",
     disclaimer:

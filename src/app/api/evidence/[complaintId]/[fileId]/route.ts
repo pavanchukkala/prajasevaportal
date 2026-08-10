@@ -44,14 +44,24 @@ export async function GET(
     );
   }
 
-  // 2. Read file from private upload storage
-  const uploadDir = path.join(process.cwd(), "data", "uploads", complaintId);
+  // 2. Read file from private upload storage (Linux case-insensitive resolution)
+  const baseUploadsDir = path.join(process.cwd(), "data", "uploads");
+  let uploadDir = path.join(baseUploadsDir, complaintId);
+
+  if (!fs.existsSync(uploadDir) && fs.existsSync(baseUploadsDir)) {
+    const dirs = fs.readdirSync(baseUploadsDir);
+    const matchingDir = dirs.find((d) => d.toLowerCase() === complaintId.toLowerCase());
+    if (matchingDir) {
+      uploadDir = path.join(baseUploadsDir, matchingDir);
+    }
+  }
+
   if (!fs.existsSync(uploadDir)) {
-    return NextResponse.json({ error: "Evidence file not found." }, { status: 404 });
+    return NextResponse.json({ error: "Evidence directory not found." }, { status: 404 });
   }
 
   const files = fs.readdirSync(uploadDir);
-  const targetFile = files.find((f) => f.startsWith(fileId));
+  const targetFile = files.find((f) => f.toLowerCase().startsWith(fileId.toLowerCase()));
 
   if (!targetFile) {
     return NextResponse.json({ error: "Evidence file not found." }, { status: 404 });
@@ -66,11 +76,20 @@ export async function GET(
     ".jpeg": "image/jpeg",
     ".png": "image/png",
     ".webp": "image/webp",
+    ".gif": "image/gif",
     ".mp4": "video/mp4",
     ".webm": "video/webm",
+    ".mov": "video/quicktime",
+    ".3gp": "video/3gpp",
+    ".avi": "video/x-msvideo",
+    ".mkv": "video/x-matroska",
     ".mp3": "audio/mpeg",
     ".wav": "audio/wav",
+    ".ogg": "audio/ogg",
+    ".m4a": "audio/mp4",
     ".pdf": "application/pdf",
+    ".doc": "application/msword",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   };
 
   const contentType = mimeTypes[ext] || "application/octet-stream";
@@ -79,7 +98,7 @@ export async function GET(
     status: 200,
     headers: {
       "Content-Type": contentType,
-      "Cache-Control": "private, max-age=900",
+      "Cache-Control": "private, max-age=86400",
       "X-Content-Type-Options": "nosniff",
     },
   });

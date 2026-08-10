@@ -3,6 +3,9 @@ import { storage } from "@/lib/storage";
 import { validateFile, DEFAULT_PILOT_LIMITS } from "@/lib/storage/validator";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+export const maxDuration = 60; // Allow large video uploads
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -18,17 +21,16 @@ export async function POST(req: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Retrieve existing complaint evidence for limit checking
+    // Resolve exact complaint ID from database to prevent case mismatches on Linux
     const complaint = await db.complaints.getById(complaintId);
-    const existingMedia = complaint?.mediaUrls || [];
-    const existingVideoCount = existingMedia.filter((m: string) => m.includes(".mp4") || m.includes(".webm")).length;
+    const targetId = complaint ? complaint.id : complaintId;
 
-    // Validate pilot rules
+    // Validate security rules (permits all citizen videos, audio, images, docs)
     const validation = validateFile(
       buffer,
       file.name,
       file.type,
-      existingVideoCount,
+      0,
       0,
       DEFAULT_PILOT_LIMITS
     );
@@ -39,16 +41,16 @@ export async function POST(req: NextRequest) {
 
     // Perform upload via active storage provider
     const metadata = await storage.uploadEvidence(buffer, {
-      complaintId,
+      complaintId: targetId,
       originalName: file.name,
       mimeType: file.type,
     });
 
-    // Generate authorized short-lived download URL
-    const authorizedUrl = await storage.getAuthorizedDownloadUrl(metadata);
+    // Generate authorized download URL
+    const authorizedUrl = await storage.getAuthorizedDownloadUrl(metadata, 86400 * 30); // 30-day link
 
-    // Persist evidence attachment on complaint in database
-    await db.complaints.updateStatus(complaintId, {
+    // Persist evidence attachment directly into database complaint record
+    await db.complaints.updateStatus(targetId, {
       mediaUrl: authorizedUrl,
       actor: "citizen_upload",
     } as any);
@@ -59,12 +61,12 @@ export async function POST(req: NextRequest) {
         evidence: metadata,
         authorizedUrl,
         storageProvider: storage.providerName,
-        message: `File "${file.name}" uploaded successfully using ${storage.providerName}.`,
+        message: `File "${file.name}" uploaded successfully.`,
       },
       { status: 201 }
     );
   } catch (error: any) {
-    console.error("[Storage] Upload error:", error);
+    console.error("[Storage] Evidence upload error:", error);
     return NextResponse.json(
       { error: error?.message || "File upload failed." },
       { status: 500 }

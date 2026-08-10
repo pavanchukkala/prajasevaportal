@@ -549,7 +549,7 @@ function ComplaintsGrid({ complaints }: { complaints: any[] }) {
                 {c.description}
               </p>
 
-              {/* Attached Evidence Files Component with Clean Filename Formatting */}
+              {/* Attached Evidence Files Component with Clean Filename Formatting & Video Player */}
               <div style={{ backgroundColor: "rgba(15,23,42,0.8)", borderRadius: "8px", padding: "10px", marginBottom: "14px", border: "1px solid rgba(255,255,255,0.06)", fontSize: "0.8rem" }}>
                 <div style={{ fontWeight: 800, color: "#38bdf8", marginBottom: "6px" }}>
                   📎 Attached Evidence Files ({mediaList.length})
@@ -558,10 +558,11 @@ function ComplaintsGrid({ complaints }: { complaints: any[] }) {
                 {mediaList.length === 0 ? (
                   <span style={{ color: "#64748b", fontStyle: "italic" }}>No media files attached.</span>
                 ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     {mediaList.map((url: string, idx: number) => {
                       const isImage = url.match(/\.(jpeg|jpg|png|webp|gif)/i);
                       const isVideo = url.match(/\.(mp4|webm|mov|avi|3gp|mkv)/i);
+                      const isAudio = url.match(/\.(mp3|wav|ogg|m4a)/i);
                       const displayName = formatFileName(url, idx);
 
                       return (
@@ -569,36 +570,52 @@ function ComplaintsGrid({ complaints }: { complaints: any[] }) {
                           key={idx}
                           style={{
                             background: "rgba(30,41,59,0.9)",
-                            padding: "6px 10px",
+                            padding: "8px 10px",
                             borderRadius: "6px",
-                            border: "1px solid rgba(255,255,255,0.06)",
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            gap: "10px",
+                            border: "1px solid rgba(255,255,255,0.08)",
                           }}
                         >
-                          <span
-                            style={{
-                              color: "#f8fafc",
-                              fontSize: "0.78rem",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                              flex: 1,
-                              minWidth: 0,
-                            }}
-                          >
-                            {isImage ? "🖼️ Image" : isVideo ? "🎥 Video" : "📄 Document"}: {displayName}
-                          </span>
-                          <a
-                            href={url}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{ color: "#fbbf24", textDecoration: "none", fontWeight: "bold", fontSize: "0.75rem", flexShrink: 0 }}
-                          >
-                            View Evidence &rarr;
-                          </a>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", marginBottom: isVideo || isImage || isAudio ? "6px" : "0" }}>
+                            <span
+                              style={{
+                                color: "#f8fafc",
+                                fontSize: "0.78rem",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                flex: 1,
+                                minWidth: 0,
+                                fontWeight: 700,
+                              }}
+                            >
+                              {isImage ? "🖼️ Image" : isVideo ? "🎥 Video" : isAudio ? "🎵 Audio" : "📄 Document"}: {displayName}
+                            </span>
+                            <a
+                              href={url}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{ color: "#fbbf24", textDecoration: "none", fontWeight: "bold", fontSize: "0.75rem", flexShrink: 0 }}
+                            >
+                              Open File &rarr;
+                            </a>
+                          </div>
+
+                          {isVideo && (
+                            <video controls style={{ width: "100%", maxHeight: "180px", borderRadius: "6px", backgroundColor: "#000", marginTop: "4px" }}>
+                              <source src={url} />
+                              Your browser does not support HTML5 video streaming.
+                            </video>
+                          )}
+
+                          {isImage && (
+                            <img src={url} alt="Evidence" style={{ maxWidth: "100%", maxHeight: "160px", borderRadius: "6px", objectFit: "contain", marginTop: "4px" }} />
+                          )}
+
+                          {isAudio && (
+                            <audio controls style={{ width: "100%", marginTop: "4px" }}>
+                              <source src={url} />
+                            </audio>
+                          )}
                         </div>
                       );
                     })}
