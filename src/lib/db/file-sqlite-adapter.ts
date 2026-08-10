@@ -148,7 +148,8 @@ export class FileSqliteAdapter implements IDatabaseAdapter {
 
   public async getComplaintById(id: string): Promise<ComplaintData | null> {
     const records = this.readRecords();
-    return records.find((c) => c.id === id) ?? null;
+    const cleanId = (id || "").toLowerCase().trim();
+    return records.find((c) => (c.id || "").toLowerCase().trim() === cleanId) ?? null;
   }
 
   public async getComplaintByTrackingToken(token: string): Promise<ComplaintData | null> {

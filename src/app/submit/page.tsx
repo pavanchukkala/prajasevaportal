@@ -639,15 +639,15 @@ export default function SubmitPage() {
                 style={{ border: "2px dashed #0D9488", borderRadius: "16px", padding: "2rem", textAlign: "center", cursor: "pointer", background: "#F8FAFC", transition: "border-color 0.2s" }}
               >
                 <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>📎</div>
-                <div style={{ color: "#0D9488", fontWeight: 800, marginBottom: "0.3rem", fontSize: "0.95rem" }}>{lang === "en" ? "Click to upload files" : "ఫైళ్ళు అప్లోడ్ చేయండి"}</div>
-                <div style={{ color: "#64748B", fontSize: "0.82rem" }}>Photos, videos, audio, documents (max 5 files)</div>
+                <div style={{ color: "#0D9488", fontWeight: 800, marginBottom: "0.3rem", fontSize: "0.95rem" }}>{lang === "en" ? "Click to upload evidence files" : "ఫైళ్ళు అప్లోడ్ చేయండి"}</div>
+                <div style={{ color: "#64748B", fontSize: "0.82rem" }}>All photos, videos, voice notes, documents accepted without restriction</div>
               </div>
-              <input ref={fileRef} type="file" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx" style={{ display: "none" }} onChange={(e) => { const f = Array.from(e.target.files ?? []); setFiles((prev) => [...prev, ...f].slice(0, 5)); }} />
+              <input ref={fileRef} type="file" multiple style={{ display: "none" }} onChange={(e) => { const f = Array.from(e.target.files ?? []); setFiles((prev) => [...prev, ...f]); }} />
               {files.length > 0 && (
                 <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                   {files.map((f, i) => (
                     <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#F1F5F9", border: "1px solid #CBD5E1", borderRadius: "8px", padding: "0.6rem 0.875rem" }}>
-                      <span style={{ color: "#0F172A", fontSize: "0.85rem", fontWeight: 600 }}>📎 {f.name}</span>
+                      <span style={{ color: "#0F172A", fontSize: "0.85rem", fontWeight: 600 }}>📎 {f.name} ({Math.round(f.size / 1024)} KB)</span>
                       <button type="button" onClick={() => setFiles((prev) => prev.filter((_, j) => j !== i))} style={{ background: "none", border: "none", color: "#EF4444", cursor: "pointer", fontWeight: 800 }}>✕</button>
                     </div>
                   ))}

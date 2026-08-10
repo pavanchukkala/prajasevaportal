@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import Link from 'next/link';
+import MLAChatbot from '@/components/mla/MLAChatbot';
 
 export default async function ComplaintDetailPage({
   params,
@@ -63,13 +64,41 @@ export default async function ComplaintDetailPage({
               </div>
 
               <div style={theme.section}>
-                <h3 style={theme.sectionTitle}>Contact & Metadata</h3>
-                {complaint.mobileNumberMasked ? (
-                  <p><strong>Contact:</strong> {complaint.mobileNumberMasked} <span style={{color: '#ef4444', fontSize: '12px'}}>(Masked — full number not accessible via UI)</span></p>
+                <h3 style={theme.sectionTitle}>Citizen Contact & Manual Communication</h3>
+                {complaint.mobileNumber ? (
+                  <div>
+                    <p>
+                      <strong>Mobile Number:</strong>{" "}
+                      <span style={{ color: "#38bdf8", fontWeight: 800, fontFamily: "monospace", fontSize: "16px" }}>
+                        {complaint.mobileNumber}
+                      </span>
+                    </p>
+                    <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
+                      <a
+                        href={`tel:${complaint.mobileNumber}`}
+                        style={{ backgroundColor: "#10b981", color: "#000", padding: "6px 12px", borderRadius: "6px", textDecoration: "none", fontWeight: 800, fontSize: "13px" }}
+                      >
+                        📞 Call Citizen
+                      </a>
+                      <a
+                        href={`https://wa.me/${complaint.mobileNumber.replace(/\D/g, "")}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ backgroundColor: "#25d366", color: "#000", padding: "6px 12px", borderRadius: "6px", textDecoration: "none", fontWeight: 800, fontSize: "13px" }}
+                      >
+                        💬 Send WhatsApp Update
+                      </a>
+                    </div>
+                  </div>
+                ) : complaint.mobileNumberMasked ? (
+                  <p>
+                    <strong>Contact:</strong> {complaint.mobileNumberMasked}{" "}
+                    <span style={{ color: "#fbbf24", fontSize: "12px" }}>(Masked contact provided)</span>
+                  </p>
                 ) : (
-                  <p><strong>Contact:</strong> Not provided / Anonymous</p>
+                  <p><strong>Contact:</strong> Confidential / Anonymous Submission</p>
                 )}
-                <p><strong>Consent Given:</strong> {complaint.consentGiven ? 'Yes' : 'No'}</p>
+                <p style={{ marginTop: "8px" }}><strong>Consent Given:</strong> {complaint.consentGiven ? 'Yes (Consented to direct SMS/WhatsApp status updates)' : 'No'}</p>
                 <p><strong>Created:</strong> {new Date(complaint.createdAt).toLocaleString()}</p>
                 <p><strong>Updated:</strong> {complaint.updatedAt ? new Date(complaint.updatedAt).toLocaleString() : 'N/A'}</p>
               </div>
@@ -228,6 +257,7 @@ export default async function ComplaintDetailPage({
           </div>
         </div>
       </div>
+      <MLAChatbot />
     </div>
   );
 }
