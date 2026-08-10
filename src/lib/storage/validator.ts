@@ -2,11 +2,11 @@ import crypto from "node:crypto";
 import { PilotLimits } from "./provider";
 
 export const DEFAULT_PILOT_LIMITS: PilotLimits = {
-  maxVideoCount: parseInt(process.env.MAX_VIDEO_COUNT || "3", 10),
-  maxVideoSizeMB: parseInt(process.env.MAX_VIDEO_SIZE_MB || "50", 10),
-  maxFileSizeMB: parseInt(process.env.MAX_FILE_SIZE_MB || "10", 10),
-  maxTotalEvidenceMB: parseInt(process.env.MAX_TOTAL_EVIDENCE_MB || "100", 10),
-  retentionDays: parseInt(process.env.EVIDENCE_RETENTION_DAYS || "180", 10),
+  maxVideoCount: parseInt(process.env.MAX_VIDEO_COUNT || "50", 10),
+  maxVideoSizeMB: parseInt(process.env.MAX_VIDEO_SIZE_MB || "500", 10),
+  maxFileSizeMB: parseInt(process.env.MAX_FILE_SIZE_MB || "200", 10),
+  maxTotalEvidenceMB: parseInt(process.env.MAX_TOTAL_EVIDENCE_MB || "2000", 10),
+  retentionDays: parseInt(process.env.EVIDENCE_RETENTION_DAYS || "365", 10),
 };
 
 const ALLOWED_MIME_TYPES = new Set([

@@ -396,7 +396,7 @@ export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
 
 // ── Gemini LLM integration ───────────────────────────────────────────────────
 async function llmAnalysis(payload: ComplaintPayload): Promise<AIAnalysisResult> {
-  const apiKey = process.env.GOOGLE_AI_API_KEY;
+  const apiKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("No API key configured");
 
   const prompt = `You are a senior civic-technology safety analyst for Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh, India.
@@ -465,7 +465,7 @@ Return ONLY a JSON object:
 
 // ── Entry point ──────────────────────────────────────────────────────────────
 export async function analyzeComplaint(payload: ComplaintPayload): Promise<AIAnalysisResult> {
-  const apiKey = process.env.GOOGLE_AI_API_KEY;
+  const apiKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY;
   if (apiKey) {
     try {
       return await llmAnalysis(payload);

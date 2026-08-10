@@ -27,3 +27,40 @@ export function hasRole(user: SessionUser | null, requiredRole: string): boolean
   const requiredLevel = roleHierarchy.indexOf(requiredRole);
   return userLevel >= requiredLevel;
 }
+
+export function getDefaultRedirectForRole(role: SessionUser["role"]): string {
+  switch (role) {
+    case "administrator":
+      return "/admin/settings";
+    case "reviewer":
+      return "/reviewer/cases";
+    case "department_officer":
+      return "/department/workspace";
+    case "mla_staff":
+    default:
+      return "/mla/dashboard";
+  }
+}
+
+export function isRouteAllowedForRole(role: SessionUser["role"], pathname: string): boolean {
+  if (role === "administrator") return true;
+
+  if (pathname.startsWith("/admin")) {
+    return false;
+  }
+
+  if (pathname.startsWith("/department")) {
+    return role === "department_officer";
+  }
+
+  if (pathname.startsWith("/reviewer")) {
+    return role === "reviewer";
+  }
+
+  if (pathname.startsWith("/mla")) {
+    return role === "mla_staff" || role === "reviewer";
+  }
+
+  return true;
+}
+

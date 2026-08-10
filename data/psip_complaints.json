@@ -1021,16 +1021,46 @@
     "id": "SKT-2026-24772",
     "trackingToken": "TKN-24772-35GL52",
     "createdAt": "2026-08-09T09:41:16.142Z",
-    "updatedAt": "2026-08-09T09:41:16.142Z",
-    "status": "New",
+    "updatedAt": "2026-08-10T11:37:26.093Z",
+    "status": "Under Review",
     "auditLog": [
       {
         "timestamp": "2026-08-09T09:41:16.142Z",
         "action": "Complaint received via public portal",
         "actor": "system"
+      },
+      {
+        "timestamp": "2026-08-10T11:35:57.622Z",
+        "action": "Status changed from \"New\" to \"Under Review\"",
+        "actor": "test_reviewer"
+      },
+      {
+        "timestamp": "2026-08-10T11:35:57.622Z",
+        "action": "Department assigned: Panchayat Raj",
+        "actor": "test_reviewer"
+      },
+      {
+        "timestamp": "2026-08-10T11:35:57.622Z",
+        "action": "Internal note added",
+        "actor": "test_reviewer"
+      },
+      {
+        "timestamp": "2026-08-10T11:37:26.093Z",
+        "action": "Department assigned: Panchayat Raj",
+        "actor": "test_reviewer"
+      },
+      {
+        "timestamp": "2026-08-10T11:37:26.093Z",
+        "action": "Internal note added",
+        "actor": "test_reviewer"
       }
     ],
-    "notificationLog": []
+    "notificationLog": [],
+    "assignedDepartment": "Panchayat Raj",
+    "internalNotes": [
+      "Automated test triage verification note.",
+      "Automated test triage verification note."
+    ]
   },
   {
     "description": "A major underground drinking water pipeline has reportedly burst near the central junction in Ward 12 of Srikalahasti town. Local residents report water contamination affecting approximately 50 households.",

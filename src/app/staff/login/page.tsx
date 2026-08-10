@@ -170,37 +170,15 @@ export default function StaffLoginPage() {
           </button>
         </form>
 
-        {/* Demo Staff Role Selectors */}
-        <div style={{ background: "rgba(212,160,23,0.04)", border: "1px solid rgba(212,160,23,0.15)", borderRadius: "16px", padding: "1.25rem", marginBottom: "1rem" }}>
-          <div style={{ fontSize: "0.68rem", fontWeight: 700, color: "#D4A017", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.75rem" }}>
-            💡 {t.quickTitle}
+        {/* Security Notice */}
+        <div style={{ background: "rgba(212,160,23,0.04)", border: "1px solid rgba(212,160,23,0.15)", borderRadius: "16px", padding: "1.25rem", marginBottom: "1rem", textAlign: "center" }}>
+          <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#D4A017", marginBottom: "0.25rem" }}>
+            🔒 {lang === "en" ? "Authorized Personnel Only" : "అధికారిక సిబ్బందికి మాత్రమే"}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-            {[
-              { label: "MLA Staff Role", u: "mla_staff", p: "dev-mla-2026" },
-              { label: "Case Reviewer Role", u: "reviewer", p: "dev-reviewer-2026" },
-              { label: "Dept Officer Role", u: "dept_officer", p: "dev-dept-2026" },
-              { label: "Admin Role", u: "admin", p: "dev-admin-2026" },
-            ].map((btn) => (
-              <button
-                key={btn.u}
-                type="button"
-                onClick={() => fillCreds(btn.u, btn.p)}
-                style={{
-                  padding: "0.6rem 0.75rem",
-                  borderRadius: "8px",
-                  border: "1px solid rgba(212,160,23,0.25)",
-                  background: "rgba(13,33,55,0.8)",
-                  color: "#f0f4f8",
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  textAlign: "center",
-                }}
-              >
-                <div style={{ color: "#D4A017", fontWeight: 700 }}>{btn.label}</div>
-              </button>
-            ))}
+          <div style={{ fontSize: "0.78rem", color: "#94a3b8" }}>
+            {lang === "en"
+              ? "Access is restricted to authorized constituency staff. All login attempts are recorded in the system audit log."
+              : "అధికారిక సిబ్బందికి మాత్రమే ప్రవేశం. అన్ని లాగిన్ ప్రయత్నాలు నమోదు చేయబడతాయి."}
           </div>
         </div>
 
