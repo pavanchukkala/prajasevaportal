@@ -160,6 +160,12 @@ export default function SubmitPage() {
   const [email, setEmail] = useState("");
   // Step 4 — Evidence
   const [files, setFiles] = useState<File[]>([]);
+  // Upload Progress & Exception Handling State
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number; fileName: string; percent: number }>({ current: 0, total: 0, fileName: "", percent: 0 });
+  const [uploadErrors, setUploadErrors] = useState<string[]>([]);
+  const [createdComplaintData, setCreatedComplaintData] = useState<any>(null);
+
   // Submit
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SubmitResult | null>(null);
@@ -167,7 +173,9 @@ export default function SubmitPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const tx = T[lang];
 
-  // Persist language in localStorage
+  const STEPS = [tx.step1, tx.step2, tx.step3, tx.step4, tx.step5];
+  const TOTAL_STEPS = 5;
+
   useEffect(() => {
     const saved = localStorage.getItem("psip_lang") as Lang | null;
     if (saved && (saved === "en" || saved === "te")) setLang(saved);
@@ -178,8 +186,77 @@ export default function SubmitPage() {
     localStorage.setItem("psip_lang", l);
   }
 
-  const STEPS = [tx.step1, tx.step2, tx.step3, tx.step4, tx.step5];
-  const TOTAL_STEPS = 5;
+  // Real-time Evidence Upload Helper with Percentage Tracking & Exception Handling
+  function uploadFileWithProgress(file: File, complaintId: string, onProgress: (pct: number) => void): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("complaintId", complaintId);
+
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          onProgress(pct);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const res = JSON.parse(xhr.responseText);
+            const url = res.authorizedUrl || res.evidence?.storagePath;
+            if (url) resolve(url);
+            else reject(new Error(res.error || "Server response missing file path"));
+          } catch {
+            reject(new Error("Invalid server response format"));
+          }
+        } else {
+          try {
+            const res = JSON.parse(xhr.responseText);
+            reject(new Error(res.error || `Server HTTP ${xhr.status} error`));
+          } catch {
+            reject(new Error(`Server HTTP ${xhr.status} error`));
+          }
+        }
+      };
+
+      xhr.onerror = () => reject(new Error(`Network error while transmitting "${file.name}"`));
+      xhr.ontimeout = () => reject(new Error(`Upload timed out for "${file.name}"`));
+
+      xhr.open("POST", "/api/evidence/upload");
+      xhr.send(formData);
+    });
+  }
+
+  async function uploadAllFiles(complaintId: string, filesToUpload: File[], existingUrls: string[] = []): Promise<string[]> {
+    setIsUploading(true);
+    setUploadErrors([]);
+    const urls: string[] = [...existingUrls];
+    const errors: string[] = [];
+
+    for (let i = 0; i < filesToUpload.length; i++) {
+      const file = filesToUpload[i];
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      setUploadProgress({ current: i + 1, total: filesToUpload.length, fileName: `${file.name} (${sizeMB} MB)`, percent: 0 });
+
+      try {
+        const url = await uploadFileWithProgress(file, complaintId, (pct) => {
+          setUploadProgress((prev) => ({ ...prev, percent: pct }));
+        });
+        urls.push(url);
+      } catch (err: any) {
+        console.error("[Evidence Upload Exception]", err);
+        errors.push(`Failed to upload "${file.name}": ${err.message || "Unknown transmission error"}`);
+      }
+    }
+
+    setIsUploading(false);
+    if (errors.length > 0) {
+      setUploadErrors(errors);
+    }
+    return urls;
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -193,6 +270,7 @@ export default function SubmitPage() {
     }
     setError("");
     setLoading(true);
+    setUploadErrors([]);
 
     try {
       // Map Telugu mandal name to English for API
@@ -224,36 +302,20 @@ export default function SubmitPage() {
 
       const data = await res.json();
       if (res.ok && data.id) {
-        const uploadedUrls: string[] = [];
-        // Upload any attached evidence files
+        setCreatedComplaintData(data);
+        let uploadedUrls: string[] = [];
+
+        // Upload any attached evidence files with progress animation & exception handling
         if (files.length > 0) {
-          for (const file of files) {
-            try {
-              const fileFormData = new FormData();
-              fileFormData.append("file", file);
-              fileFormData.append("complaintId", data.id);
-              const upRes = await fetch("/api/evidence/upload", {
-                method: "POST",
-                body: fileFormData,
-              });
-              if (upRes.ok) {
-                const upData = await upRes.json();
-                const url = upData.authorizedUrl || upData.evidence?.storagePath;
-                if (url) {
-                  uploadedUrls.push(url);
-                }
-              }
-            } catch (upErr) {
-              console.warn("[Upload] Evidence upload error:", upErr);
-            }
-          }
+          uploadedUrls = await uploadAllFiles(data.id, files);
         }
+
         setResult({ ...data, mediaUrls: uploadedUrls } as any);
       } else {
         setError(data.error ?? "Submission failed. Please try again.");
       }
-    } catch {
-      setError("Network error. Please check your connection and try again.");
+    } catch (err: any) {
+      setError(`Network connection error: ${err.message || "Failed to submit grievance report"}`);
     } finally {
       setLoading(false);
     }
@@ -480,6 +542,62 @@ export default function SubmitPage() {
         {error && (
           <div style={{ background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "12px", padding: "0.875rem 1.25rem", marginBottom: "1.5rem", color: "#f87171", fontSize: "0.875rem" }}>
             ⚠ {error}
+          </div>
+        )}
+
+        {/* Real-time Upload Progress Overlay */}
+        {isUploading && (
+          <div style={{ background: "#0F172A", border: "2px solid #0D9488", borderRadius: "16px", padding: "1.5rem", marginBottom: "1.5rem", boxShadow: "0 10px 30px rgba(13,148,136,0.35)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.875rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                <div style={{ width: "22px", height: "22px", borderRadius: "50%", border: "3px solid rgba(13,148,136,0.3)", borderTopColor: "#0D9488", animation: "spin 1s linear infinite" }} />
+                <span style={{ color: "#FFFFFF", fontWeight: 800, fontSize: "0.95rem" }}>
+                  Uploading Evidence File {uploadProgress.current} of {uploadProgress.total}
+                </span>
+              </div>
+              <span style={{ color: "#14B8A6", fontWeight: 900, fontSize: "1.1rem", fontFamily: "monospace" }}>{uploadProgress.percent}%</span>
+            </div>
+
+            {/* Progress Track */}
+            <div style={{ width: "100%", height: "10px", background: "rgba(255,255,255,0.1)", borderRadius: "9999px", overflow: "hidden", marginBottom: "0.75rem" }}>
+              <div style={{ width: `${uploadProgress.percent}%`, height: "100%", background: "linear-gradient(90deg, #0D9488 0%, #34D399 100%)", transition: "width 0.2s ease" }} />
+            </div>
+
+            <div style={{ fontSize: "0.82rem", color: "#94A3B8" }}>
+              📄 {uploadProgress.fileName} — Transmitting securely...
+            </div>
+            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
+
+        {/* Upload Exception & Error Handling Banner */}
+        {uploadErrors.length > 0 && !isUploading && (
+          <div style={{ background: "rgba(239,68,68,0.1)", border: "2px solid #EF4444", borderRadius: "16px", padding: "1.5rem", marginBottom: "1.5rem" }}>
+            <div style={{ color: "#EF4444", fontWeight: 800, fontSize: "1rem", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span>⚠️ Evidence Upload Exception Occurred</span>
+            </div>
+            <p style={{ color: "#F87171", fontSize: "0.88rem", margin: "0 0 0.75rem", lineHeight: 1.5 }}>
+              The complaint record was created, but one or more evidence files encountered a transmission error:
+            </p>
+            <ul style={{ margin: "0 0 1.25rem", paddingLeft: "1.25rem", color: "#FCA5A5", fontSize: "0.84rem" }}>
+              {uploadErrors.map((err, idx) => (
+                <li key={idx} style={{ marginBottom: "0.35rem" }}>{err}</li>
+              ))}
+            </ul>
+            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+              <button
+                type="button"
+                onClick={async () => {
+                    if (createdComplaintData?.id && files.length > 0) {
+                      const newUrls = await uploadAllFiles(createdComplaintData.id, files);
+                      setResult((prev) => (prev ? ({ ...prev, mediaUrls: newUrls } as any) : prev));
+                    }
+                }}
+                style={btnPrimary}
+              >
+                🔄 Retry Uploading Failed Files
+              </button>
+            </div>
           </div>
         )}
 
