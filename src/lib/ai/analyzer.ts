@@ -394,6 +394,83 @@ export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
   };
 }
 
+// ── Groq LLM integration ─────────────────────────────────────────────────────
+async function groqAnalysis(payload: ComplaintPayload): Promise<AIAnalysisResult> {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) throw new Error("GROQ_API_KEY environment variable not configured.");
+
+  const prompt = `You are a senior civic-technology safety analyst for Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh, India.
+
+CRITICAL SAFETY DIRECTIVE:
+Evaluate safety classification FIRST.
+If the report describes rape, sexual assault, sexual violence, child abuse, missing child, trafficking, threat to life, kidnapping, or domestic violence in immediate danger:
+1. Set "safetyCategory" appropriately.
+2. Set "urgency" to "Emergency" or "Critical".
+3. NEVER downgrade urgency because optional fields or evidence are missing.
+4. Set "safetyEscalationRequired" to true.
+5. Set "humanReviewRequired" to true.
+
+COMPLAINT PAYLOAD:
+Description: ${payload.description}
+Mandal: ${payload.mandal}
+Village/Ward: ${payload.village ?? "Not specified"}
+Has photographic evidence: ${payload.hasImages ?? false}
+Has audio evidence: ${payload.hasAudio ?? false}
+
+Return ONLY a JSON object:
+{
+  "title": "Clear, objective executive summary of the issue (max 10 words)",
+  "category": "Issue category (e.g. Infrastructure - Water, Revenue, Electricity, Police, Welfare)",
+  "subcategory": "Specific Subcategory",
+  "department": "Responsible Government Department (e.g. Municipal Administration, Revenue, Panchayat Raj, R&B, AP Transco, Police)",
+  "urgency": "Routine|Priority|High|Emergency|Critical",
+  "safetyCategory": "Sexual Violence / Assault|Child Safety / Abuse|Threat to Life / Kidnapping|Domestic Violence in Immediate Danger|Trafficking|Self-Harm / Personal Emergency|Serious Physical Danger|Fire or Disaster|None",
+  "safetyEscalationRequired": true|false,
+  "evidenceCompleteness": "Sufficient|Partial|Insufficient|None provided",
+  "credibilityBand": "High preliminary confidence|Medium preliminary confidence|Low preliminary confidence|Insufficient information to assess",
+  "confidenceScore": 85,
+  "missingInformation": ["List key missing details if any"],
+  "recommendedAction": "Direct, actionable recommendation for department officer/MLA staff",
+  "humanReviewRequired": true
+}`;
+
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert AI civic intelligence officer for Srikalahasti constituency. Return valid JSON only.",
+        },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.2,
+      response_format: { type: "json_object" },
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Groq API error ${res.status}: ${errText}`);
+  }
+
+  const data = await res.json();
+  const content = data?.choices?.[0]?.message?.content ?? "";
+  const parsed = JSON.parse(content);
+  const isSafety = parsed.safetyCategory && parsed.safetyCategory !== "None";
+
+  return {
+    ...parsed,
+    analysisMode: "llm" as const,
+    legalDisclaimer: isSafety ? SEXUAL_CHILD_SAFETY_DISCLAIMER : LEGAL_DISCLAIMER,
+  };
+}
+
 // ── Gemini LLM integration ───────────────────────────────────────────────────
 async function llmAnalysis(payload: ComplaintPayload): Promise<AIAnalysisResult> {
   const apiKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY;
@@ -465,13 +542,24 @@ Return ONLY a JSON object:
 
 // ── Entry point ──────────────────────────────────────────────────────────────
 export async function analyzeComplaint(payload: ComplaintPayload): Promise<AIAnalysisResult> {
+  // Priority 1: Groq LLM (High speed Llama-3.3-70b)
+  try {
+    return await groqAnalysis(payload);
+  } catch (err) {
+    console.warn("[AI] Groq LLM analysis failed, trying Gemini:", err);
+  }
+
+  // Priority 2: Gemini LLM
   const apiKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY;
   if (apiKey) {
     try {
       return await llmAnalysis(payload);
     } catch (err) {
-      console.warn("[AI] LLM analysis failed, using local safety analyzer:", err);
+      console.warn("[AI] Gemini LLM analysis failed, using local safety analyzer:", err);
     }
   }
+
+  // Fallback: Local rule-based analyzer
   return localAnalysis(payload);
 }
+

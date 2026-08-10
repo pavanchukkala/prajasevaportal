@@ -66,51 +66,88 @@ export default async function MLADashboard({
         </div>
 
         {/* Cases Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
-          {filteredComplaints.map((c: any) => (
-            <div key={c.id} style={{ backgroundColor: '#1e293b', borderRadius: '8px', padding: '20px', border: '1px solid #334155', position: 'relative' }}>
-              {/* Badges */}
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
-                <Badge label={c.status} color="#3b82f6" />
-                {c.isSample && <Badge label="Sample" color="#8b5cf6" />}
-                {(!c.isSample && (c.isAnonymous || c.status === 'New')) && <Badge label="NEW" color="#ef4444" />}
-                {c.aiAnalysis?.urgency && (
-                  <Badge 
-                    label={c.aiAnalysis.urgency} 
-                    color={c.aiAnalysis.urgency === 'High' ? '#ef4444' : c.aiAnalysis.urgency === 'Medium' ? '#f59e0b' : '#10b981'} 
-                  />
-                )}
-              </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '24px' }}>
+          {filteredComplaints.map((c: any) => {
+            const ai = c.aiAnalysis;
+            const isEmergency = ai?.urgency === 'Emergency' || ai?.urgency === 'Critical' || ai?.urgency === 'High';
+            return (
+              <div
+                key={c.id}
+                style={{
+                  backgroundColor: '#1e293b',
+                  borderRadius: '12px',
+                  padding: '24px',
+                  border: isEmergency ? '1px solid rgba(239,68,68,0.4)' : '1px solid #334155',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justify: 'space-between',
+                }}
+              >
+                <div>
+                  {/* Badges */}
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <Badge label={c.status} color={c.status === 'Resolved' ? '#10b981' : '#3b82f6'} />
+                    {c.isSample ? (
+                      <Badge label="Sample Record" color="#8b5cf6" />
+                    ) : (
+                      <Badge label="LIVE SUBMISSION" color="#10b981" />
+                    )}
+                    {ai?.urgency && (
+                      <Badge
+                        label={`Urgency: ${ai.urgency}`}
+                        color={ai.urgency === 'Critical' || ai.urgency === 'Emergency' ? '#ef4444' : ai.urgency === 'High' ? '#f59e0b' : '#38bdf8'}
+                      />
+                    )}
+                    {ai?.analysisMode === 'llm' && (
+                      <Badge label="🧠 Llama-3.3 LLM" color="#38bdf8" />
+                    )}
+                  </div>
 
-              <h2 style={{ fontSize: '18px', color: '#fbbf24', margin: '0 0 12px', lineHeight: '1.4' }}>
-                {c.aiAnalysis?.title || (c.description ? c.description.slice(0, 60) + '...' : 'Untitled Case')}
-              </h2>
-              
-              <div style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '16px' }}>
-                <p style={{ margin: '4px 0' }}><strong>ID:</strong> {c.id}</p>
-                <p style={{ margin: '4px 0' }}><strong>Mandal:</strong> {c.mandal || 'N/A'}</p>
-                {c.mobileNumberMasked && (
-                  <p style={{ margin: '4px 0' }}><strong>Contact:</strong> {c.mobileNumberMasked}</p>
-                )}
-                {c.aiAnalysis?.credibilityBand && (
-                  <p style={{ margin: '4px 0' }}><strong>Credibility:</strong> {c.aiAnalysis.credibilityBand}</p>
-                )}
-              </div>
+                  {/* AI Title */}
+                  <h2 style={{ fontSize: '1.1rem', color: '#fbbf24', margin: '0 0 10px', lineHeight: '1.4', fontWeight: 800 }}>
+                    {ai?.title || (c.description ? c.description.slice(0, 70) + '...' : 'Grievance Case')}
+                  </h2>
 
-              <Link href={`/mla/complaint/${c.id}`} style={{
-                display: 'inline-block',
-                backgroundColor: '#fbbf24',
-                color: '#0f172a',
-                padding: '8px 16px',
-                borderRadius: '4px',
-                textDecoration: 'none',
-                fontWeight: 'bold',
-                fontSize: '14px',
-              }}>
-                Review Case &rarr;
-              </Link>
-            </div>
-          ))}
+                  <p style={{ fontSize: '0.875rem', color: '#cbd5e1', lineHeight: '1.5', marginBottom: '16px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    {c.description}
+                  </p>
+
+                  {/* AI Summary Box */}
+                  <div style={{ backgroundColor: 'rgba(15,23,42,0.7)', borderRadius: '8px', padding: '12px', marginBottom: '16px', border: '1px solid rgba(255,255,255,0.06)', fontSize: '0.82rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '6px' }}>
+                      <div><span style={{ color: '#64748b' }}>ID:</span> <strong style={{ color: '#38bdf8', fontFamily: 'monospace' }}>{c.id}</strong></div>
+                      <div><span style={{ color: '#64748b' }}>Mandal:</span> <strong style={{ color: '#f8fafc' }}>{c.mandal}</strong></div>
+                    </div>
+                    <div style={{ marginBottom: '6px' }}><span style={{ color: '#64748b' }}>Dept:</span> <strong style={{ color: '#f59e0b' }}>{c.assignedDepartment || c.department || ai?.department || 'Unassigned'}</strong></div>
+                    {ai?.recommendedAction && (
+                      <div style={{ color: '#94a3b8', marginTop: '6px', fontSize: '0.78rem', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '6px' }}>
+                        💡 <strong>AI Recommendation:</strong> {ai.recommendedAction}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <Link
+                  href={`/mla/complaint/${c.id}`}
+                  style={{
+                    display: 'block',
+                    textAlign: 'center',
+                    backgroundColor: '#fbbf24',
+                    color: '#0f172a',
+                    padding: '10px 16px',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                    marginTop: '8px',
+                  }}
+                >
+                  Review Full Case & Action Log &rarr;
+                </Link>
+              </div>
+            );
+          })}
           {filteredComplaints.length === 0 && (
             <div style={{ color: '#94a3b8', padding: '24px 0' }}>No cases found for this category.</div>
           )}
