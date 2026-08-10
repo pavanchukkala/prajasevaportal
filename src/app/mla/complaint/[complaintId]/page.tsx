@@ -74,6 +74,68 @@ export default async function ComplaintDetailPage({
                 <p><strong>Updated:</strong> {complaint.updatedAt ? new Date(complaint.updatedAt).toLocaleString() : 'N/A'}</p>
               </div>
 
+              {/* Evidence Media & Proof Dismantling Section */}
+              <div style={{ ...theme.section, backgroundColor: 'rgba(15,23,42,0.8)', padding: '16px', borderRadius: '8px', border: '1px solid #38bdf8' }}>
+                <h3 style={{ ...theme.sectionTitle, color: '#38bdf8' }}>
+                  🎥 Attached Evidence Files ({complaint.mediaUrls?.length ?? 0})
+                </h3>
+
+                {(!complaint.mediaUrls || complaint.mediaUrls.length === 0) ? (
+                  <p style={{ color: '#94a3b8', fontStyle: 'italic', margin: 0 }}>No evidence files currently attached to this case.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
+                    {complaint.mediaUrls.map((url: string, i: number) => {
+                      const isImage = url.match(/\.(jpeg|jpg|png|webp|gif)$/i);
+                      const isVideo = url.match(/\.(mp4|webm|mov|avi|3gp|mkv)$/i);
+                      const isAudio = url.match(/\.(mp3|wav|ogg|m4a)$/i);
+                      const filename = url.split('/').pop() || `File #${i+1}`;
+
+                      return (
+                        <div key={i} style={{ backgroundColor: '#1e293b', borderRadius: '8px', padding: '14px', border: '1px solid #334155' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center' }}>
+                            <span style={{ fontWeight: 'bold', color: '#f8fafc', fontSize: '13px' }}>📎 {filename}</span>
+                            <a href={url} target="_blank" rel="noreferrer" style={{ color: '#fbbf24', textDecoration: 'none', fontSize: '12px', fontWeight: 'bold' }}>
+                              Open File ↗
+                            </a>
+                          </div>
+
+                          {isImage && (
+                            <img src={url} alt={`Evidence #${i+1}`} style={{ maxWidth: '100%', maxHeight: '360px', borderRadius: '6px', border: '1px solid #334155' }} />
+                          )}
+
+                          {isVideo && (
+                            <video controls style={{ width: '100%', maxHeight: '360px', borderRadius: '6px', backgroundColor: '#000' }}>
+                              <source src={url} />
+                              Your browser does not support HTML5 video streaming.
+                            </video>
+                          )}
+
+                          {isAudio && (
+                            <audio controls style={{ width: '100%' }}>
+                              <source src={url} />
+                            </audio>
+                          )}
+
+                          {!isImage && !isVideo && !isAudio && (
+                            <div style={{ padding: '8px', background: '#0f172a', borderRadius: '4px', fontSize: '12px', color: '#94a3b8' }}>
+                              Document / Binary Evidence File. Click "Open File" above to inspect.
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {/* Proof Dismantling & Archiving Control */}
+                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #334155' }}>
+                      <span style={{ fontSize: '12px', color: '#f87171', fontWeight: 'bold' }}>🛡️ Proof Dismantling & Privacy Governance:</span>
+                      <p style={{ fontSize: '12px', color: '#94a3b8', margin: '4px 0 8px' }}>
+                        If this case is resolved or contains high-complexity sensitive evidence, authorized MLA staff can mark proof files as archived for privacy compliance.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {complaint.internalNotes && (
                 <div style={theme.section}>
                   <h3 style={theme.sectionTitle}>Internal Notes</h3>

@@ -44,8 +44,14 @@ export async function POST(req: NextRequest) {
       mimeType: file.type,
     });
 
-    // Generate authorized short-lived reviewer download URL
+    // Generate authorized short-lived download URL
     const authorizedUrl = await storage.getAuthorizedDownloadUrl(metadata);
+
+    // Persist evidence attachment on complaint in database
+    await db.complaints.updateStatus(complaintId, {
+      mediaUrl: authorizedUrl,
+      actor: "citizen_upload",
+    } as any);
 
     return NextResponse.json(
       {

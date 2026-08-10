@@ -224,6 +224,29 @@ export default function SubmitPage() {
 
       const data = await res.json();
       if (res.ok && data.id) {
+        // Upload any attached evidence files
+        if (files.length > 0) {
+          const uploadedUrls: string[] = [];
+          for (const file of files) {
+            try {
+              const fileFormData = new FormData();
+              fileFormData.append("file", file);
+              fileFormData.append("complaintId", data.id);
+              const upRes = await fetch("/api/evidence/upload", {
+                method: "POST",
+                body: fileFormData,
+              });
+              if (upRes.ok) {
+                const upData = await upRes.json();
+                if (upData.authorizedUrl || upData.evidence?.storagePath) {
+                  uploadedUrls.push(upData.authorizedUrl || upData.evidence.storagePath);
+                }
+              }
+            } catch (upErr) {
+              console.warn("[Upload] Evidence upload error:", upErr);
+            }
+          }
+        }
         setResult(data as SubmitResult);
       } else {
         setError(data.error ?? "Submission failed. Please try again.");

@@ -129,6 +129,15 @@ export class FileSqliteAdapter implements IDatabaseAdapter {
       auditLog.push({ timestamp: now, action: "Internal note added", actor });
     }
 
+    if (updates.mediaUrl) {
+      const media = complaint.mediaUrls ? [...complaint.mediaUrls] : [];
+      if (!media.includes(updates.mediaUrl)) {
+        media.push(updates.mediaUrl);
+        complaint.mediaUrls = media;
+        auditLog.push({ timestamp: now, action: `Evidence attached: ${updates.mediaUrl.split("/").pop()}`, actor });
+      }
+    }
+
     complaint.auditLog = auditLog;
     complaint.updatedAt = now;
     records[idx] = complaint;
