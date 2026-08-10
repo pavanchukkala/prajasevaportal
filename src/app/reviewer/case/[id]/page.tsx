@@ -230,20 +230,32 @@ function ReviewerActionForm({ complaintId, currentStatus, currentDept }: { compl
   return (
     <form
       style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-      action={async (formData: FormData) => {
-        "use server";
+      onSubmit={(e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
         const status = formData.get("status") as string;
         const assignedDepartment = formData.get("assignedDepartment") as string;
         const internalNote = formData.get("internalNote") as string;
 
-        await db.complaints.updateStatus(complaintId, {
-          status: status as any,
-          assignedDepartment,
-          internalNote,
-          actor: "case_reviewer",
-        });
-
-        redirect(`/reviewer/case/${complaintId}`);
+        fetch(`/api/complaints/${complaintId}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status,
+            assignedDepartment,
+            internalNote,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success || data.complaint) {
+              alert("Case successfully updated.");
+              window.location.reload();
+            } else {
+              alert("Failed to update case.");
+            }
+          })
+          .catch(() => alert("Error updating case status."));
       }}
     >
       <div>

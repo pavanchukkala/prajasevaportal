@@ -177,18 +177,30 @@ function DeptActionForm({ complaintId, currentStatus }: { complaintId: string; c
   return (
     <form
       style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-      action={async (formData: FormData) => {
-        "use server";
+      onSubmit={(e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
         const status = formData.get("status") as string;
         const internalNote = formData.get("internalNote") as string;
 
-        await db.complaints.updateStatus(complaintId, {
-          status: status as any,
-          internalNote,
-          actor: "dept_officer",
-        });
-
-        redirect(`/department/case/${complaintId}`);
+        fetch(`/api/complaints/${complaintId}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status,
+            internalNote,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success || data.complaint) {
+              alert("Department action logged successfully.");
+              window.location.reload();
+            } else {
+              alert("Failed to update status.");
+            }
+          })
+          .catch(() => alert("Error logging action."));
       }}
     >
       <div>
