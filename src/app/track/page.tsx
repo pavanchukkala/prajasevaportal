@@ -82,11 +82,14 @@ interface TrackResult {
 const STATUS_COLORS: Record<string, string> = {
   "New": "#D4A017",
   "AI Processed": "#60a5fa",
+  "Viewed": "#3b82f6",
+  "Contacted (No Response)": "#f97316",
   "Under Review": "#a78bfa",
   "More Information Requested": "#f97316",
   "Assigned": "#22c55e",
   "Escalated": "#ef4444",
   "Action Reported": "#10b981",
+  "Solved": "#10b981",
   "Resolved": "#22c55e",
   "Reopened": "#f97316",
   "Closed": "#64748b",
@@ -192,6 +195,46 @@ export default function TrackPage() {
                 <div style={{ fontSize: "0.78rem", color: "#94a3b8" }}>{t.sampleNote}</div>
               </div>
             )}
+
+            {/* 5-Step Visual Progress Stepper */}
+            <div style={{ background: "rgba(13,33,55,0.7)", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "16px", padding: "1.25rem" }}>
+              <div style={{ fontSize: "0.7rem", fontWeight: 800, color: "#D4A017", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "1rem" }}>
+                📍 Grievance Progress Pipeline
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "6px", textAlign: "center" }}>
+                {[
+                  { step: "1", title: "Submitted", active: true },
+                  { step: "2", title: "Viewed", active: ["Viewed", "Contacted (No Response)", "Under Review", "Assigned", "Escalated", "Action Reported", "Solved", "Resolved", "Closed"].includes(result.status) },
+                  { step: "3", title: "Contacted", active: ["Contacted (No Response)", "Under Review", "Assigned", "Escalated", "Action Reported", "Solved", "Resolved", "Closed"].includes(result.status) },
+                  { step: "4", title: "Assigned", active: ["Assigned", "Escalated", "Action Reported", "Solved", "Resolved", "Closed"].includes(result.status) },
+                  { step: "5", title: "Solved", active: ["Solved", "Resolved", "Closed"].includes(result.status) },
+                ].map((s) => (
+                  <div key={s.step} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <div
+                      style={{
+                        width: "28px",
+                        height: "28px",
+                        borderRadius: "50%",
+                        backgroundColor: s.active ? "#10b981" : "#1e293b",
+                        color: s.active ? "#000000" : "#64748b",
+                        border: s.active ? "2px solid #34d399" : "1px solid #334155",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: 900,
+                        fontSize: "0.75rem",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      {s.active ? "✓" : s.step}
+                    </div>
+                    <span style={{ fontSize: "0.68rem", fontWeight: s.active ? 800 : 500, color: s.active ? "#34d399" : "#64748b" }}>
+                      {s.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* Status card */}
             <div style={{ background: "rgba(13,33,55,0.6)", border: `1px solid rgba(212,160,23,0.15)`, borderRadius: "20px", padding: "1.75rem", backdropFilter: "blur(24px)" }}>

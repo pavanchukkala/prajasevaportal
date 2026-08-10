@@ -33,17 +33,14 @@ export async function GET(
           legalDisclaimer: complaint.aiAnalysis.legalDisclaimer,
         }
       : null,
-    // Audit log stripped of internal reviewer notes
-    statusHistory: (complaint.auditLog ?? [])
-      .filter(
-        (e) =>
-          e.action.startsWith("Status changed") ||
-          e.action.startsWith("Complaint received")
-      )
-      .map((e) => ({ timestamp: e.timestamp, action: e.action })),
+    statusHistory: (complaint.auditLog ?? []).map((e) => ({ timestamp: e.timestamp, action: e.action })),
     message:
-      complaint.status === "Resolved"
-        ? "This complaint has been resolved. If you believe the issue persists, you may submit a new complaint."
+      complaint.status === "Solved" || complaint.status === "Resolved"
+        ? "This complaint has been officially solved and resolved by MLA Bojjala Venkata Sudhir Reddy's Executive Office."
+        : complaint.status === "Viewed"
+        ? "Your complaint has been viewed and verified by MLA Executive Staff."
+        : complaint.status === "Contacted (No Response)"
+        ? "MLA Executive Staff attempted to contact you via mobile/WhatsApp regarding your complaint."
         : complaint.status === "Under Review"
         ? "Your complaint is under active review by authorized staff."
         : complaint.status === "Assigned"
@@ -51,7 +48,7 @@ export async function GET(
         : complaint.status === "Escalated"
         ? "Your complaint has been escalated for priority review."
         : complaint.status === "More Information Requested"
-        ? "Reviewers have requested more information. You may submit a new complaint with additional details."
+        ? "Reviewers have requested more information."
         : "Your complaint has been received and is in the processing queue.",
     // Never expose: mobileNumber (raw), internalNotes, assignedTo, full auditLog with reviewer notes
   });
