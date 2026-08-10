@@ -77,15 +77,35 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(`/mla/complaint/${id}`, request.url));
   }
 
-  // Security headers
+  // Security and Cache Freshness headers
   const response = NextResponse.next();
+  const APP_VERSION = process.env.RENDER_GIT_COMMIT?.slice(0, 7) || process.env.NEXT_PUBLIC_APP_VERSION || "8d92257";
+
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  response.headers.set(
-    "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=()"
-  );
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  response.headers.set("X-App-Version", APP_VERSION);
+  response.headers.set("X-Commit-SHA", APP_VERSION);
+
+  // Dynamic & protected routes MUST revalidate to prevent stale shells
+  if (pathname.startsWith("/api/")) {
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
+  } else if (
+    pathname.startsWith("/mla") ||
+    pathname.startsWith("/reviewer") ||
+    pathname.startsWith("/department") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/staff")
+  ) {
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    response.headers.set("Pragma", "no-cache");
+  } else if (!pathname.startsWith("/_next/static")) {
+    response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0, s-maxage=0");
+    response.headers.set("Pragma", "no-cache");
+  }
 
   return response;
 }

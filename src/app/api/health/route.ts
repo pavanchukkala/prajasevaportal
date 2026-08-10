@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { notifier } from "@/lib/notifications";
+import { APP_VERSION, BUILD_ID } from "@/lib/version";
 
 export async function GET() {
   try {
@@ -11,7 +12,9 @@ export async function GET() {
       {
         status: "ok",
         service: "Srikalahasti Praja Seva Intelligence Platform",
-        version: "1.0.0",
+        version: APP_VERSION,
+        commit_sha: APP_VERSION,
+        build_id: BUILD_ID,
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV || "development",
         database_provider: dbHealth.provider,
@@ -34,7 +37,11 @@ export async function GET() {
       {
         status: 200,
         headers: {
-          "Cache-Control": "no-store, no-cache, must-revalidate",
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+          "Pragma": "no-cache",
+          "Expires": "0",
+          "X-App-Version": APP_VERSION,
+          "X-Commit-SHA": APP_VERSION,
           "X-Content-Type-Options": "nosniff",
         },
       }
@@ -43,6 +50,8 @@ export async function GET() {
     return NextResponse.json(
       {
         status: "degraded",
+        version: APP_VERSION,
+        commit_sha: APP_VERSION,
         error: error instanceof Error ? error.message : "Unknown error",
         database_provider: "sqlite_file",
         database_connectivity: "error",
@@ -50,7 +59,14 @@ export async function GET() {
         notification_provider: notifier.providerName,
         ai_provider: "rule_based_analyzer",
       },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+          "X-App-Version": APP_VERSION,
+          "X-Commit-SHA": APP_VERSION,
+        },
+      }
     );
   }
 }

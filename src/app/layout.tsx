@@ -3,6 +3,7 @@ import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import MeetDeveloperButton from "@/components/layout/MeetDeveloperButton";
+import CacheFreshnessCleanup from "@/components/layout/CacheFreshnessCleanup";
 
 export const metadata: Metadata = {
   title: {
@@ -48,6 +49,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <LanguageProvider>
+            <CacheFreshnessCleanup />
             {children}
             <MeetDeveloperButton />
           </LanguageProvider>

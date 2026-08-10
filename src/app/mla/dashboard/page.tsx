@@ -92,11 +92,13 @@ export default async function MLADashboard({ searchParams }: MLADashboardProps) 
     resolved: resolvedCount,
   };
 
+  const appVer = process.env.RENDER_GIT_COMMIT?.slice(0, 7) || process.env.NEXT_PUBLIC_APP_VERSION || "8d92257";
+
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#04091a", color: "#f8fafc", fontFamily: "sans-serif", display: "flex", flexDirection: "column" }}>
       {/* Top Banner */}
       <div style={{ backgroundColor: "#fbbf24", color: "#0f172a", padding: "8px 16px", textAlign: "center", fontWeight: 800, fontSize: "12.5px" }}>
-        🏛️ SRIKALAHASTI CONSTITUENCY NO. 168 · AUTHENTICATED MLA EXECUTIVE WORKSPACE · REAL-TIME DATABASE SYNCHRONIZED
+        🏛️ SRIKALAHASTI CONSTITUENCY NO. 168 · AUTHENTICATED MLA EXECUTIVE WORKSPACE · BUILD v{appVer}
       </div>
 
       <div style={{ flex: 1, display: "flex", minHeight: "calc(100vh - 35px)" }}>
@@ -117,7 +119,7 @@ export default async function MLADashboard({ searchParams }: MLADashboardProps) 
               </span>
             </div>
             <div style={{ fontSize: "12.5px", color: "#94a3b8" }}>
-              Logged in as <strong style={{ color: "#38bdf8" }}>{session.username}</strong> ({session.role}) · Sync: <span style={{ color: "#10b981" }}>{latestUpdate}</span>
+              Logged in as <strong style={{ color: "#38bdf8" }}>{session.username}</strong> ({session.role}) · Build: <strong style={{ color: "#a855f7" }}>v{appVer}</strong> · Sync: <span style={{ color: "#10b981" }}>{latestUpdate}</span>
             </div>
           </div>
 

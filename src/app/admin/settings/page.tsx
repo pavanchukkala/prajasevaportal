@@ -115,15 +115,17 @@ export default async function AdminSettingsPage() {
               </p>
             </div>
 
-            {/* AI Provider Card */}
+            {/* Deployment Build & Cache Freshness Card */}
             <div style={theme.providerCard}>
-              <div style={theme.providerLabel}>AI Analysis Provider</div>
-              <div style={theme.providerVal}>Structural Rule Engine</div>
+              <div style={theme.providerLabel}>Deployment Build & Cache Governance</div>
+              <div style={{ ...theme.providerVal, color: "#a855f7" }}>
+                Version {process.env.RENDER_GIT_COMMIT?.slice(0, 7) || process.env.NEXT_PUBLIC_APP_VERSION || "8d92257"}
+              </div>
               <div style={theme.providerStatus}>
-                🟢 Active (`rule_based_analyzer`) · Local Priority Triage
+                🟢 Commit SHA: <span style={{ fontFamily: "monospace" }}>{process.env.RENDER_GIT_COMMIT?.slice(0, 7) || "8d92257"}</span>
               </div>
               <p style={theme.providerNote}>
-                Safety-first local priority evaluation engine. Configured with Gemini API fallback when `GEMINI_API_KEY` set.
+                Dynamic routes configured with <code>no-store, no-cache, must-revalidate</code>. Service Workers & stale app shells auto-invalidated on mount. Static hashed assets cached immutably.
               </p>
             </div>
           </div>
