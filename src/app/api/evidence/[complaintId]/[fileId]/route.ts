@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { getSession } from "@/lib/auth";
+import { db } from "@/lib/db";
 
 export async function GET(
   req: NextRequest,
@@ -68,8 +69,6 @@ export async function GET(
   }
 
   const filePath = path.join(uploadDir, targetFile);
-  const fileBuffer = fs.readFileSync(filePath);
-
   const ext = path.extname(targetFile).toLowerCase();
   const mimeTypes: Record<string, string> = {
     ".jpg": "image/jpeg",
@@ -93,13 +92,108 @@ export async function GET(
   };
 
   const contentType = mimeTypes[ext] || "application/octet-stream";
+  const stat = fs.statSync(filePath);
+  const fileSize = stat.size;
+  const range = req.headers.get("range");
 
+  // HTTP 206 Range Streaming for Video & Audio HTML5 playback
+  if (range && (contentType.startsWith("video/") || contentType.startsWith("audio/"))) {
+    const parts = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    const chunkSize = end - start + 1;
+
+    const fileStream = fs.createReadStream(filePath, { start, end });
+    const webStream = new ReadableStream({
+      start(controller) {
+        fileStream.on("data", (chunk) => controller.enqueue(chunk));
+        fileStream.on("end", () => controller.close());
+        fileStream.on("error", (err) => controller.error(err));
+      },
+      cancel() {
+        fileStream.destroy();
+      },
+    });
+
+    return new NextResponse(webStream as any, {
+      status: 206,
+      headers: {
+        "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+        "Accept-Ranges": "bytes",
+        "Content-Length": chunkSize.toString(),
+        "Content-Type": contentType,
+        "Cache-Control": "private, no-cache",
+        "X-Content-Type-Options": "nosniff",
+      },
+    });
+  }
+
+  // Full file fallback for images / documents
+  const fileBuffer = fs.readFileSync(filePath);
   return new NextResponse(fileBuffer, {
     status: 200,
     headers: {
       "Content-Type": contentType,
+      "Content-Length": fileSize.toString(),
+      "Accept-Ranges": "bytes",
       "Cache-Control": "private, max-age=86400",
       "X-Content-Type-Options": "nosniff",
     },
   });
+}
+
+// DELETE handler for staff to remove specific evidence files
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ complaintId: string; fileId: string }> }
+) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { complaintId, fileId } = await params;
+
+  // 1. Delete file from disk
+  const baseUploadsDir = path.join(process.cwd(), "data", "uploads");
+  let uploadDir = path.join(baseUploadsDir, complaintId);
+
+  if (!fs.existsSync(uploadDir) && fs.existsSync(baseUploadsDir)) {
+    const dirs = fs.readdirSync(baseUploadsDir);
+    const matchingDir = dirs.find((d) => d.toLowerCase() === complaintId.toLowerCase());
+    if (matchingDir) {
+      uploadDir = path.join(baseUploadsDir, matchingDir);
+    }
+  }
+
+  if (fs.existsSync(uploadDir)) {
+    const files = fs.readdirSync(uploadDir);
+    const targetFile = files.find((f) => f.toLowerCase().includes(fileId.toLowerCase()));
+    if (targetFile) {
+      try {
+        fs.unlinkSync(path.join(uploadDir, targetFile));
+      } catch (e) {
+        console.warn("[Evidence DELETE] Error removing file from disk:", e);
+      }
+    }
+  }
+
+  // 2. Update complaint record in DB
+  const complaint = await db.complaints.getById(complaintId);
+  if (complaint) {
+    const updatedMedia = (complaint.mediaUrls || []).filter(
+      (url) => !url.toLowerCase().includes(fileId.toLowerCase())
+    );
+    await db.complaints.updateStatus(complaintId, {
+      internalNote: `Evidence file deleted by ${session.username}: ${fileId}`,
+      actor: session.username,
+    });
+    // Directly update mediaUrls array
+    const records = (db as any).complaints;
+    if (complaint) {
+      complaint.mediaUrls = updatedMedia;
+    }
+  }
+
+  return NextResponse.json({ success: true, message: `Evidence file ${fileId} deleted successfully.` });
 }

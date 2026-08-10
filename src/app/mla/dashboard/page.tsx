@@ -70,6 +70,8 @@ export default async function MLADashboard({ searchParams }: MLADashboardProps) 
     (c) => c.aiAnalysis?.urgency === "Emergency" || c.aiAnalysis?.urgency === "Critical" || c.aiAnalysis?.urgency === "High"
   ).length;
 
+  const viewedCount = liveComplaints.filter((c) => c.status === "Viewed").length;
+  const contactedCount = liveComplaints.filter((c) => c.status === "Contacted (No Response)").length;
   const underReviewCount = liveComplaints.filter((c) =>
     ["New", "AI Processed", "Under Review", "More Information Requested"].includes(c.status)
   ).length;
@@ -79,7 +81,7 @@ export default async function MLADashboard({ searchParams }: MLADashboardProps) 
   ).length;
 
   const resolvedCount = liveComplaints.filter((c) =>
-    ["Resolved", "Closed"].includes(c.status)
+    ["Solved", "Resolved", "Closed"].includes(c.status)
   ).length;
 
   const latestUpdate = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -90,6 +92,8 @@ export default async function MLADashboard({ searchParams }: MLADashboardProps) 
     underReview: underReviewCount,
     assigned: assignedCount,
     resolved: resolvedCount,
+    viewed: viewedCount,
+    contacted: contactedCount,
   };
 
   const appVer = process.env.RENDER_GIT_COMMIT?.slice(0, 7) || process.env.NEXT_PUBLIC_APP_VERSION || "8d92257";
@@ -218,9 +222,11 @@ export default async function MLADashboard({ searchParams }: MLADashboardProps) 
               <div style={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "10px", padding: "14px", marginBottom: "20px", display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                   <TabFilterLink active={currentTab === "all"} href={`/mla/dashboard?nav=live-complaints&tab=all&mandal=${currentMandal}`} label={`All (${totalLive})`} />
-                  <TabFilterLink active={currentTab === "new"} href={`/mla/dashboard?nav=live-complaints&tab=new&mandal=${currentMandal}`} label={`New / Pending (${underReviewCount})`} />
+                  <TabFilterLink active={currentTab === "viewed"} href={`/mla/dashboard?nav=live-complaints&tab=viewed&mandal=${currentMandal}`} label={`👁️ Viewed (${viewedCount})`} />
+                  <TabFilterLink active={currentTab === "contacted"} href={`/mla/dashboard?nav=live-complaints&tab=contacted&mandal=${currentMandal}`} label={`📞 Contacted (${contactedCount})`} />
+                  <TabFilterLink active={currentTab === "new"} href={`/mla/dashboard?nav=live-complaints&tab=new&mandal=${currentMandal}`} label={`Pending (${underReviewCount})`} />
                   <TabFilterLink active={currentTab === "assigned"} href={`/mla/dashboard?nav=live-complaints&tab=assigned&mandal=${currentMandal}`} label={`Assigned (${assignedCount})`} />
-                  <TabFilterLink active={currentTab === "resolved"} href={`/mla/dashboard?nav=live-complaints&tab=resolved&mandal=${currentMandal}`} label={`Resolved (${resolvedCount})`} />
+                  <TabFilterLink active={currentTab === "solved" || currentTab === "resolved"} href={`/mla/dashboard?nav=live-complaints&tab=solved&mandal=${currentMandal}`} label={`✅ Solved (${resolvedCount})`} />
                 </div>
                 <MandalFilter currentTab={currentTab} currentMandal={currentMandal} />
               </div>
@@ -231,12 +237,16 @@ export default async function MLADashboard({ searchParams }: MLADashboardProps) 
                 if (currentMandal !== "all") {
                   filtered = filtered.filter((c) => (c.mandal || "").toLowerCase() === currentMandal.toLowerCase());
                 }
-                if (currentTab === "new") {
+                if (currentTab === "viewed") {
+                  filtered = filtered.filter((c) => c.status === "Viewed");
+                } else if (currentTab === "contacted") {
+                  filtered = filtered.filter((c) => c.status === "Contacted (No Response)");
+                } else if (currentTab === "new") {
                   filtered = filtered.filter((c) => ["New", "AI Processed", "Under Review", "More Information Requested"].includes(c.status));
                 } else if (currentTab === "assigned") {
                   filtered = filtered.filter((c) => ["Assigned", "Escalated", "Action Reported"].includes(c.status));
-                } else if (currentTab === "resolved") {
-                  filtered = filtered.filter((c) => ["Resolved", "Closed"].includes(c.status));
+                } else if (currentTab === "solved" || currentTab === "resolved") {
+                  filtered = filtered.filter((c) => ["Solved", "Resolved", "Closed"].includes(c.status));
                 }
 
                 if (filtered.length === 0) {

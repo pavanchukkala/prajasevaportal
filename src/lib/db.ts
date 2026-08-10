@@ -28,11 +28,14 @@ export interface AuditEntry {
 export type ComplaintStatus =
   | "New"
   | "AI Processed"
+  | "Viewed"
+  | "Contacted (No Response)"
   | "Under Review"
   | "More Information Requested"
   | "Assigned"
   | "Escalated"
   | "Action Reported"
+  | "Solved"
   | "Resolved"
   | "Reopened"
   | "Closed";
@@ -91,11 +94,14 @@ export interface ComplaintData {
 export const VALID_STATUSES: ComplaintStatus[] = [
   "New",
   "AI Processed",
+  "Viewed",
+  "Contacted (No Response)",
   "Under Review",
   "More Information Requested",
   "Assigned",
   "Escalated",
   "Action Reported",
+  "Solved",
   "Resolved",
   "Reopened",
   "Closed",
@@ -223,11 +229,14 @@ function statusMessage(status: ComplaintStatus): string {
   const map: Record<ComplaintStatus, string> = {
     "New": "Your complaint has been received and is queued for review.",
     "AI Processed": "Your complaint has been analysed by the AI system and is awaiting human review.",
+    "Viewed": "Your complaint has been viewed and verified by executive staff.",
+    "Contacted (No Response)": "Staff attempted to contact you via mobile/WhatsApp regarding your complaint.",
     "Under Review": "Your complaint is under active review by authorized staff.",
     "More Information Requested": "Reviewers have requested more information.",
     "Assigned": "Your complaint has been assigned to the relevant department.",
     "Escalated": "Your complaint has been escalated for priority review.",
     "Action Reported": "Action has been reported on this complaint.",
+    "Solved": "This complaint has been solved and resolved by executive office.",
     "Resolved": "This complaint has been resolved.",
     "Reopened": "This complaint has been reopened for further review.",
     "Closed": "This complaint has been closed.",
