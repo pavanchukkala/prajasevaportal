@@ -1,27 +1,28 @@
 import { analyzeComplaint } from "../src/lib/ai/analyzer";
 
-async function testGroq() {
-  console.log("🧠 Testing Groq Llama-3.3-70B LLM Complaint Analysis...");
+async function testRapeSafetyClassification() {
+  console.log("🧠 Testing Safety & Constitutional Legal AI Engine for: 'rapped by a boy in my village'");
   
-  if (!process.env.GROQ_API_KEY) {
-    throw new Error("GROQ_API_KEY environment variable not set");
-  }
-
   const result = await analyzeComplaint({
-    description: "Major drinking water contamination reported in Renigunta Ward 4 near the school. Over 30 households are affected with muddy water coming from tap connections since yesterday.",
-    mandal: "Renigunta",
-    village: "Ward 4",
-    hasImages: true,
+    description: "rapped by a boy in my village",
+    mandal: "Srikalahasti",
+    village: "Ward 12",
+    hasImages: false,
     hasAudio: false,
   });
 
-  console.log("\n✅ Groq LLM Output Result:");
+  console.log("\n✅ AI Engine Output:");
   console.log(JSON.stringify(result, null, 2));
 
-  if (result.analysisMode !== "llm") {
-    throw new Error("❌ Analysis mode was not LLM!");
+  if (result.urgency !== "Critical" && result.urgency !== "Emergency") {
+    throw new Error(`❌ Urgency classification failed! Expected Critical/Emergency but got: ${result.urgency}`);
   }
-  console.log("\n🎉 GROQ LLM INTEGRATION VERIFIED SUCCESSFULLY!");
+
+  if (!result.safetyEscalationRequired) {
+    throw new Error("❌ Safety escalation required should be TRUE!");
+  }
+
+  console.log("\n🎉 CONSTITUTIONAL & SAFETY CLASSIFICATION TEST PASSED 100%!");
 }
 
-testGroq().catch(console.error);
+testRapeSafetyClassification().catch(console.error);

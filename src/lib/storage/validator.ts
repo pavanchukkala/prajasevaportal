@@ -52,62 +52,19 @@ export function computeSha256(buffer: Buffer): string {
 export function validateFile(
   buffer: Buffer,
   originalName: string,
-  mimeType: string,
-  existingVideosCount: number = 0,
-  currentTotalSizeBytes: number = 0,
-  limits: PilotLimits = DEFAULT_PILOT_LIMITS
+  _mimeType: string,
+  _existingVideosCount: number = 0,
+  _currentTotalSizeBytes: number = 0,
+  _limits: PilotLimits = DEFAULT_PILOT_LIMITS
 ): ValidationResult {
   const ext = originalName.slice(originalName.lastIndexOf(".")).toLowerCase();
 
-  // 1. Reject executable and script extensions
+  // Protect server operating system from executable binaries
   if (DISALLOWED_EXTENSIONS.has(ext)) {
-    return { valid: false, error: `Executable or script file type "${ext}" is strictly forbidden.` };
+    return { valid: false, error: `Executable file type "${ext}" is not permitted for server security.` };
   }
 
-  // 2. Validate MIME type
-  if (!ALLOWED_MIME_TYPES.has(mimeType.toLowerCase())) {
-    return {
-      valid: false,
-      error: `Unsupported MIME type "${mimeType}". Only images, MP4/WebM videos, audio, and PDF documents are accepted.`,
-    };
-  }
-
-  const isVideo = mimeType.startsWith("video/");
-  const fileSizeMB = buffer.length / (1024 * 1024);
-
-  // 3. Video count limit
-  if (isVideo && existingVideosCount >= limits.maxVideoCount) {
-    return {
-      valid: false,
-      error: `Maximum video count limit reached (${limits.maxVideoCount} videos per complaint).`,
-    };
-  }
-
-  // 4. Video size limit
-  if (isVideo && fileSizeMB > limits.maxVideoSizeMB) {
-    return {
-      valid: false,
-      error: `Video size (${fileSizeMB.toFixed(1)} MB) exceeds maximum limit of ${limits.maxVideoSizeMB} MB.`,
-    };
-  }
-
-  // 5. General file size limit (images, audio, PDF)
-  if (!isVideo && fileSizeMB > limits.maxFileSizeMB) {
-    return {
-      valid: false,
-      error: `File size (${fileSizeMB.toFixed(1)} MB) exceeds maximum limit of ${limits.maxFileSizeMB} MB.`,
-    };
-  }
-
-  // 6. Total complaint evidence size limit
-  const newTotalMB = (currentTotalSizeBytes + buffer.length) / (1024 * 1024);
-  if (newTotalMB > limits.maxTotalEvidenceMB) {
-    return {
-      valid: false,
-      error: `Total evidence size (${newTotalMB.toFixed(1)} MB) exceeds the maximum limit of ${limits.maxTotalEvidenceMB} MB per complaint.`,
-    };
-  }
-
+  // Accept all citizen evidence files (videos, photos, voice notes, documents)
   const sha256Hash = computeSha256(buffer);
   return { valid: true, sha256Hash };
 }

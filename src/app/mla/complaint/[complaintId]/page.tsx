@@ -7,14 +7,15 @@ import Link from 'next/link';
 export default async function ComplaintDetailPage({
   params,
 }: {
-  params: { complaintId: string };
+  params: Promise<{ complaintId: string }> | { complaintId: string };
 }) {
   const session = await getSession();
   if (!session) {
     redirect('/staff/login');
   }
 
-  const { complaintId } = params;
+  const resolvedParams = await Promise.resolve(params);
+  const complaintId = resolvedParams.complaintId;
   const complaint = await db.complaints.getById(complaintId);
 
   if (!complaint) {
