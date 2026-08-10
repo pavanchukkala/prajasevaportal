@@ -1021,7 +1021,7 @@
     "id": "SKT-2026-24772",
     "trackingToken": "TKN-24772-35GL52",
     "createdAt": "2026-08-09T09:41:16.142Z",
-    "updatedAt": "2026-08-10T12:01:54.046Z",
+    "updatedAt": "2026-08-10T12:04:20.726Z",
     "status": "Under Review",
     "auditLog": [
       {
@@ -1063,11 +1063,22 @@
         "timestamp": "2026-08-10T12:01:54.046Z",
         "action": "Internal note added",
         "actor": "test_reviewer"
+      },
+      {
+        "timestamp": "2026-08-10T12:04:20.726Z",
+        "action": "Department assigned: Panchayat Raj",
+        "actor": "test_reviewer"
+      },
+      {
+        "timestamp": "2026-08-10T12:04:20.726Z",
+        "action": "Internal note added",
+        "actor": "test_reviewer"
       }
     ],
     "notificationLog": [],
     "assignedDepartment": "Panchayat Raj",
     "internalNotes": [
+      "Automated test triage verification note.",
       "Automated test triage verification note.",
       "Automated test triage verification note.",
       "Automated test triage verification note."
