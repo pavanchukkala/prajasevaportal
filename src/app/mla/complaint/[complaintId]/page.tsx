@@ -117,13 +117,18 @@ export default async function ComplaintDetailPage({
                       const isImage = url.match(/\.(jpeg|jpg|png|webp|gif)$/i);
                       const isVideo = url.match(/\.(mp4|webm|mov|avi|3gp|mkv)$/i);
                       const isAudio = url.match(/\.(mp3|wav|ogg|m4a)$/i);
-                      const filename = url.split('/').pop() || `File #${i+1}`;
+                      
+                      let filename = url.split("?")[0].split("/").pop() || `File #${i + 1}`;
+                      try { filename = decodeURIComponent(filename); } catch {}
+                      if (filename.length > 32) filename = filename.slice(0, 29) + "...";
 
                       return (
                         <div key={i} style={{ backgroundColor: '#1e293b', borderRadius: '8px', padding: '14px', border: '1px solid #334155' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center' }}>
-                            <span style={{ fontWeight: 'bold', color: '#f8fafc', fontSize: '13px' }}>📎 {filename}</span>
-                            <a href={url} target="_blank" rel="noreferrer" style={{ color: '#fbbf24', textDecoration: 'none', fontSize: '12px', fontWeight: 'bold' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center', gap: '12px' }}>
+                            <span style={{ fontWeight: 'bold', color: '#f8fafc', fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
+                              📎 {filename}
+                            </span>
+                            <a href={url} target="_blank" rel="noreferrer" style={{ color: '#fbbf24', textDecoration: 'none', fontSize: '12px', fontWeight: 'bold', flexShrink: 0 }}>
                               Open File ↗
                             </a>
                           </div>

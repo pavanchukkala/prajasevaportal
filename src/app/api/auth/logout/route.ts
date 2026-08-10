@@ -5,3 +5,9 @@ export async function POST() {
   response.cookies.delete("psip_session");
   return response;
 }
+
+export async function GET(request: Request) {
+  const response = NextResponse.redirect(new URL("/staff/login", request.url));
+  response.cookies.delete("psip_session");
+  return response;
+}
