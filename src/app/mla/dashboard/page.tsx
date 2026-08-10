@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import Link from "next/link";
 import MLAChatbot from "@/components/mla/MLAChatbot";
+import MandalFilter from "@/components/mla/MandalFilter";
 
 export default async function MLADashboard({
   searchParams,
@@ -92,23 +93,7 @@ export default async function MLADashboard({
           </div>
 
           {/* Mandal Filter */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "13px", color: "#94a3b8" }}>Mandal:</span>
-            <select
-              defaultValue={currentMandal}
-              onChange={(e) => {
-                const val = e.target.value;
-                window.location.href = `?tab=${currentTab}&mandal=${val}`;
-              }}
-              style={{ backgroundColor: "#1e293b", border: "1px solid #334155", color: "#f8fafc", padding: "6px 12px", borderRadius: "6px", fontSize: "13px", outline: "none" }}
-            >
-              <option value="all">All Mandals</option>
-              <option value="Srikalahasti">Srikalahasti</option>
-              <option value="Yerpedu">Yerpedu</option>
-              <option value="Thottambedu">Thottambedu</option>
-              <option value="Renigunta">Renigunta</option>
-            </select>
-          </div>
+          <MandalFilter currentTab={currentTab} currentMandal={currentMandal} />
         </div>
 
         {/* Cases Grid */}
