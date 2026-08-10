@@ -96,9 +96,6 @@ export async function GET(
     return NextResponse.json({ error: "Complaint not found." }, { status: 404 });
   }
 
-  // Return full complaint to authorized reviewers — but NEVER return raw mobile number
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { mobileNumber: _raw, ...safeComplaint } = complaint;
-
-  return NextResponse.json(safeComplaint);
+  // Return full complaint to authorized reviewers including citizen contact number
+  return NextResponse.json(complaint);
 }

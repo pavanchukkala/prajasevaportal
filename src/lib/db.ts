@@ -237,7 +237,5 @@ function statusMessage(status: ComplaintStatus): string {
 
 // ── Staff-safe projection ────────────────────────────────────────────────────
 export function toStaffView(c: ComplaintData) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { mobileNumber: _raw, ...safe } = c;
-  return safe;
+  return c;
 }

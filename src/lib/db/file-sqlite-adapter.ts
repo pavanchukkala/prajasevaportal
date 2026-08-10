@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { ComplaintData, ComplaintStatus } from "../db";
 import { IDatabaseAdapter, DatabaseHealthInfo } from "./provider";
+import { INITIAL_COMPLAINTS } from "./initial-data";
 
 export class FileSqliteAdapter implements IDatabaseAdapter {
   public providerName = "sqlite_file" as const;
@@ -13,21 +14,39 @@ export class FileSqliteAdapter implements IDatabaseAdapter {
       fs.mkdirSync(dataDir, { recursive: true });
     }
     this.dbPath = path.join(dataDir, "psip_complaints.json");
+    this.initSync();
+  }
+
+  private initSync(): void {
+    try {
+      if (!fs.existsSync(this.dbPath)) {
+        fs.writeFileSync(this.dbPath, JSON.stringify(INITIAL_COMPLAINTS, null, 2), "utf-8");
+      } else {
+        const raw = fs.readFileSync(this.dbPath, "utf-8").trim();
+        if (!raw || raw === "[]") {
+          fs.writeFileSync(this.dbPath, JSON.stringify(INITIAL_COMPLAINTS, null, 2), "utf-8");
+        }
+      }
+    } catch (err) {
+      console.warn("[DB] Error initializing seed data:", err);
+    }
   }
 
   public async init(): Promise<void> {
-    if (!fs.existsSync(this.dbPath)) {
-      fs.writeFileSync(this.dbPath, JSON.stringify([], null, 2), "utf-8");
-    }
+    this.initSync();
   }
 
   private readRecords(): ComplaintData[] {
     try {
-      if (!fs.existsSync(this.dbPath)) return [];
-      const content = fs.readFileSync(this.dbPath, "utf-8");
-      return JSON.parse(content || "[]");
+      if (!fs.existsSync(this.dbPath)) return INITIAL_COMPLAINTS;
+      const content = fs.readFileSync(this.dbPath, "utf-8").trim();
+      if (!content || content === "[]") {
+        fs.writeFileSync(this.dbPath, JSON.stringify(INITIAL_COMPLAINTS, null, 2), "utf-8");
+        return INITIAL_COMPLAINTS;
+      }
+      return JSON.parse(content);
     } catch {
-      return [];
+      return INITIAL_COMPLAINTS;
     }
   }
 
