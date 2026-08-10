@@ -97,7 +97,9 @@ export default async function ReviewerCasesPage() {
 
           {liveCases.length === 0 ? (
             <div style={theme.emptyBox}>
-              <p style={{ color: "#94a3b8", margin: 0 }}>No live citizen submissions recorded yet in persistent database.</p>
+              <p style={{ color: "#94a3b8", margin: 0, fontSize: "0.95rem" }}>
+                🟢 No pending citizen complaints in the queue. Submissions via `/submit` will appear here instantly in real-time.
+              </p>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -106,26 +108,6 @@ export default async function ReviewerCasesPage() {
               ))}
             </div>
           )}
-        </section>
-
-        {/* Sample Presentation Records Section */}
-        <section style={{ ...theme.section, marginTop: "2rem" }}>
-          <div style={theme.sectionHeader}>
-            <div>
-              <h2 style={{ ...theme.sectionTitle, color: "#c084fc" }}>
-                🟣 Sample Presentation Records <span style={{ ...theme.badgeCount, background: "rgba(192,132,252,0.15)", color: "#c084fc", border: "1px solid rgba(192,132,252,0.3)" }}>{sampleCases.length}</span>
-              </h2>
-              <p style={{ color: "#94a3b8", fontSize: "0.82rem", margin: "4px 0 0" }}>
-                Pre-seeded demonstration cases for training and workflow testing. Separated from live data.
-              </p>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            {sampleCases.map((c) => (
-              <CaseReviewCard key={c.id} complaint={c} />
-            ))}
-          </div>
         </section>
       </main>
 

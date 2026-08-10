@@ -51,18 +51,9 @@ export default async function MLADashboard({
 
         {/* Stats Row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
-          <StatCard title="Total Cases" value={total} />
-          <StatCard title="Live Submissions" value={liveCount} highlight />
-          <StatCard title="High Priority" value={highPriority} danger />
-          <StatCard title="Under Review" value={underReview} />
-          <StatCard title="Sample Data" value={sampleCount} />
-        </div>
-
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', borderBottom: '1px solid #1e293b', paddingBottom: '12px' }}>
-          <TabLink active={currentTab === 'all'} href="?tab=all" label="All Cases" />
-          <TabLink active={currentTab === 'live'} href="?tab=live" label="Live Submissions" />
-          <TabLink active={currentTab === 'sample'} href="?tab=sample" label="Sample Data" />
+          <StatCard title="Total Citizen Cases" value={total} highlight />
+          <StatCard title="High Priority / Emergency" value={highPriority} danger />
+          <StatCard title="Under Active Review" value={underReview} />
         </div>
 
         {/* Cases Grid */}

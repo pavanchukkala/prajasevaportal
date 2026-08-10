@@ -130,17 +130,9 @@ export default async function AdminSettingsPage() {
 
           {/* Records Breakdown Metrics */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem", marginTop: "1.5rem" }}>
-            <div style={theme.metricMiniCard}>
-              <div style={theme.metricMiniLabel}>Total Complaint Records</div>
-              <div style={theme.metricMiniVal}>{health.totalRecords}</div>
-            </div>
             <div style={{ ...theme.metricMiniCard, borderLeft: "4px solid #10b981" }}>
               <div style={theme.metricMiniLabel}>Live Citizen Submissions</div>
               <div style={{ ...theme.metricMiniVal, color: "#34d399" }}>{health.liveRecords}</div>
-            </div>
-            <div style={{ ...theme.metricMiniCard, borderLeft: "4px solid #c084fc" }}>
-              <div style={theme.metricMiniLabel}>Sample Presentation Records</div>
-              <div style={{ ...theme.metricMiniVal, color: "#c084fc" }}>{health.sampleRecords}</div>
             </div>
             <div style={{ ...theme.metricMiniCard, borderLeft: "4px solid #ef4444" }}>
               <div style={theme.metricMiniLabel}>High Urgency Cases</div>

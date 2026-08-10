@@ -150,36 +150,13 @@ export default async function DepartmentWorkspacePage({
 
           {liveDeptCases.length === 0 ? (
             <div style={theme.emptyBox}>
-              <p style={{ color: "#94a3b8", margin: 0 }}>
-                No active live citizen complaints assigned to {activeDept} department at this time.
+              <p style={{ color: "#94a3b8", margin: 0, fontSize: "0.95rem" }}>
+                No active complaints assigned to {activeDept} department at this time.
               </p>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               {liveDeptCases.map((c) => (
-                <DeptCaseCard key={c.id} complaint={c} />
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* Sample Presentation Records */}
-        <section style={{ ...theme.section, marginTop: "2rem" }}>
-          <div style={theme.sectionHeader}>
-            <div>
-              <h2 style={{ ...theme.sectionTitle, color: "#c084fc" }}>
-                🟣 Sample Presentation Records ({activeDept}) <span style={{ ...theme.badgeCount, background: "rgba(192,132,252,0.15)", color: "#c084fc", border: "1px solid rgba(192,132,252,0.3)" }}>{sampleDeptCases.length}</span>
-              </h2>
-            </div>
-          </div>
-
-          {sampleDeptCases.length === 0 ? (
-            <div style={theme.emptyBox}>
-              <p style={{ color: "#94a3b8", margin: 0 }}>No sample records assigned to {activeDept}.</p>
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {sampleDeptCases.map((c) => (
                 <DeptCaseCard key={c.id} complaint={c} />
               ))}
             </div>
