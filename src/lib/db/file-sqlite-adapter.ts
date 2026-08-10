@@ -90,6 +90,7 @@ export class FileSqliteAdapter implements IDatabaseAdapter {
       assignedTo?: string;
       assignedDepartment?: string;
       internalNote?: string;
+      mediaUrl?: string;
       actor?: string;
     }
   ): Promise<ComplaintData | null> {

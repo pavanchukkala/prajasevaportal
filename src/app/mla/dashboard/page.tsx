@@ -129,7 +129,7 @@ export default async function MLADashboard({
                   boxShadow: "0 6px 24px rgba(0,0,0,0.25)",
                   display: "flex",
                   flexDirection: "column",
-                  justify: "space-between",
+                  justifyContent: "space-between",
                 }}
               >
                 <div>

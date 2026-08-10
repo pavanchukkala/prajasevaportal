@@ -89,7 +89,7 @@ export default function MLAChatbot() {
               padding: "14px 16px",
               borderBottom: "1px solid #334155",
               display: "flex",
-              justify: "space-between",
+              justifyContent: "space-between",
               alignItems: "center",
             }}
           >

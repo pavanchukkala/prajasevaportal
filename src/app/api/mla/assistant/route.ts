@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       department: c.assignedDepartment || c.department || c.aiAnalysis?.department || "Unassigned",
       status: c.status,
       urgency: c.aiAnalysis?.urgency || "Routine",
-      safetyCategory: c.aiAnalysis?.safetyCategory || "None",
+      safetyCategory: (c.aiAnalysis as any)?.safetyCategory || "None",
       title: c.aiAnalysis?.title || c.description.slice(0, 60),
       createdAt: c.createdAt,
     }));
