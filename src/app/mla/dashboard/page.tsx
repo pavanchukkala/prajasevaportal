@@ -633,8 +633,53 @@ function ComplaintsGrid({ complaints }: { complaints: any[] }) {
                   <span style={{ color: "#64748b" }}>Dept:</span> <strong style={{ color: "#f59e0b" }}>{c.assignedDepartment || c.department || ai?.department || "Unassigned"}</strong>
                 </div>
                 <div>
-                  <span style={{ color: "#64748b" }}>Citizen Contact:</span> <strong style={{ color: "#cbd5e1" }}>{maskMobile(c.mobileNumber || c.mobileNumberMasked)}</strong>
+                  <span style={{ color: "#64748b" }}>Citizen Contact:</span>{" "}
+                  {c.mobileNumber ? (
+                    <span style={{ color: "#38bdf8", fontWeight: 800, fontFamily: "monospace", fontSize: "0.85rem" }}>
+                      {c.mobileNumber}
+                    </span>
+                  ) : c.mobileNumberMasked ? (
+                    <span style={{ color: "#fbbf24", fontWeight: 700, fontFamily: "monospace", fontSize: "0.85rem" }}>
+                      {c.mobileNumberMasked}
+                    </span>
+                  ) : (
+                    <span style={{ color: "#94a3b8", fontStyle: "italic" }}>Confidential / Anonymous</span>
+                  )}
                 </div>
+                {c.mobileNumber && (
+                  <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+                    <a
+                      href={`tel:${c.mobileNumber}`}
+                      style={{
+                        backgroundColor: "#10b981",
+                        color: "#000000",
+                        padding: "3px 10px",
+                        borderRadius: "4px",
+                        textDecoration: "none",
+                        fontWeight: 800,
+                        fontSize: "0.75rem",
+                      }}
+                    >
+                      📞 Call Citizen
+                    </a>
+                    <a
+                      href={`https://wa.me/${c.mobileNumber.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        backgroundColor: "#25d366",
+                        color: "#000000",
+                        padding: "3px 10px",
+                        borderRadius: "4px",
+                        textDecoration: "none",
+                        fontWeight: 800,
+                        fontSize: "0.75rem",
+                      }}
+                    >
+                      💬 WhatsApp Update
+                    </a>
+                  </div>
+                )}
                 {ai?.recommendedAction && (
                   <div style={{ color: "#94a3b8", marginTop: "6px", fontSize: "0.76rem", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "6px", lineHeight: 1.4 }}>
                     💡 <strong>Legal Directive:</strong> {ai.recommendedAction}
