@@ -95,7 +95,8 @@ export class FileSqliteAdapter implements IDatabaseAdapter {
     }
   ): Promise<ComplaintData | null> {
     const records = this.readRecords();
-    const idx = records.findIndex((c) => c.id === id);
+    const cleanId = (id || "").toLowerCase().trim();
+    const idx = records.findIndex((c) => (c.id || "").toLowerCase().trim() === cleanId);
     if (idx === -1) return null;
 
     const now = new Date().toISOString();

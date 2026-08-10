@@ -6,7 +6,7 @@ export default function MLAChatbot() {
   const [messages, setMessages] = useState<Array<{ sender: "user" | "assistant"; text: string }>>([
     {
       sender: "assistant",
-      text: "Namaste MLA Sir/Staff! I am your Srikalahasti Executive Intelligence Assistant. How can I assist you with live constituency cases, mandal stats, or legal directives today?",
+      text: "Namaste! I am your Srikalahasti Intelligence Assistance engine. How can I assist you with live constituency cases, mandal stats, or legal directives today?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -38,7 +38,7 @@ export default function MLAChatbot() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { sender: "assistant", text: "Network connection issue. Unable to reach assistant." },
+        { sender: "assistant", text: "Network connection issue. Unable to reach Intelligence Assistance." },
       ]);
     } finally {
       setLoading(false);
@@ -65,7 +65,7 @@ export default function MLAChatbot() {
             gap: "8px",
           }}
         >
-          <span>🤖 MLA Intelligence Assistant</span>
+          <span>🧠 Intelligence Assistance</span>
         </button>
       ) : (
         <div
@@ -94,13 +94,13 @@ export default function MLAChatbot() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "20px" }}>🤖</span>
+              <span style={{ fontSize: "20px" }}>🧠</span>
               <div>
                 <h3 style={{ color: "#fbbf24", margin: 0, fontSize: "14px", fontWeight: 800 }}>
-                  Constituency AI Assistant
+                  Intelligence Assistance
                 </h3>
                 <span style={{ color: "#10b981", fontSize: "11px", fontWeight: 600 }}>
-                  🟢 Groq Llama-3.3 Live Intel
+                  🟢 Real-Time Platform Engine
                 </span>
               </div>
             </div>
@@ -204,7 +204,7 @@ export default function MLAChatbot() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask assistant about cases, mandals..."
+              placeholder="Ask Intelligence Assistance..."
               style={{
                 flex: 1,
                 backgroundColor: "#0f172a",
