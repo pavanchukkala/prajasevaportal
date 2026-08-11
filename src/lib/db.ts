@@ -80,6 +80,7 @@ export interface ComplaintData {
     humanReviewRequired: boolean;
     analysisMode: "local_fallback" | "llm";
     legalDisclaimer: string;
+    safetyEscalationRequired?: boolean;
   };
   dataSource: "citizen_submission" | "sample_presentation";
   isSample: boolean;
