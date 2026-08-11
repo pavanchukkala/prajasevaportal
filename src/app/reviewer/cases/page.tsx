@@ -7,6 +7,9 @@ import RoleNavHeader from "@/components/layout/RoleNavHeader";
 import GlobalFooter from "@/components/layout/GlobalFooter";
 import { normalizeDepartmentKey, getDepartmentLabel } from "@/lib/departments";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
   title: "Case Reviewer Triage Portal — Srikalahasti Praja Seva",
   description: "AI-assisted triage and preliminary review workspace for authorized case reviewers.",

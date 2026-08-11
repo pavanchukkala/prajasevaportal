@@ -7,6 +7,9 @@ import RoleNavHeader from "@/components/layout/RoleNavHeader";
 import GlobalFooter from "@/components/layout/GlobalFooter";
 import { CANONICAL_DEPARTMENTS, isSameDepartment, normalizeDepartmentKey, getDepartmentLabel } from "@/lib/departments";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
   title: "Department Officer Workspace — Srikalahasti Praja Seva",
   description: "Field department resolution workspace and SLA tracking dashboard for departmental officers.",

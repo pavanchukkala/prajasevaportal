@@ -6,6 +6,9 @@ import Link from 'next/link';
 import MLAChatbot from '@/components/mla/MLAChatbot';
 import { EvidenceAndActionManager } from './EvidenceAndActionManager';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function ComplaintDetailPage({
   params,
 }: {

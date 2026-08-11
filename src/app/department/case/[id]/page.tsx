@@ -8,6 +8,9 @@ import GlobalFooter from "@/components/layout/GlobalFooter";
 import DeptActionForm from "./DeptActionForm";
 import { getDepartmentLabel } from "@/lib/departments";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   return {

@@ -5,6 +5,9 @@ import { db } from "@/lib/db";
 import RoleNavHeader from "@/components/layout/RoleNavHeader";
 import GlobalFooter from "@/components/layout/GlobalFooter";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
   title: "System Admin Governance & Health Panel — Srikalahasti Praja Seva",
   description: "System administration, provider health inspection, and security audit log governance.",

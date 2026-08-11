@@ -9,6 +9,7 @@ import MLAChatbot from "@/components/mla/MLAChatbot";
 import MandalFilter from "@/components/mla/MandalFilter";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export interface MLADashboardProps {
   searchParams?: Promise<{ nav?: string; tab?: string; mandal?: string; search?: string }> | { nav?: string; tab?: string; mandal?: string; search?: string };
