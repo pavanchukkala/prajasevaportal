@@ -1,1 +1,255 @@
-[]
+[
+  {
+    "description": "Urgent water pipe burst near Yerpedu MRO office causing road flooding.",
+    "mandal": "Yerpedu",
+    "village": "Yerpedu Main Road",
+    "mediaUrls": [],
+    "aiAnalysis": {
+      "title": "Urgent Water Pipe Burst Near Yerpedu MRO Office",
+      "category": "Infrastructure",
+      "subcategory": "Water Supply and Road Maintenance",
+      "department": "Municipal Administration",
+      "urgency": "Priority",
+      "safetyCategory": "None",
+      "safetyEscalationRequired": false,
+      "evidenceCompleteness": "Insufficient",
+      "credibilityBand": "Medium preliminary confidence",
+      "confidenceScore": 70,
+      "missingInformation": [
+        "Photographic evidence",
+        "Details of affected area and population"
+      ],
+      "recommendedAction": "Immediate attention from Municipal Administration to repair the water pipe and clear road flooding, ensuring public safety and convenience. Reference: Article 21 of the Constitution of India for right to safe and healthy environment.",
+      "humanReviewRequired": false,
+      "analysisMode": "llm",
+      "legalDisclaimer": "AI-generated preliminary assessment for human review. This is not a legal finding, factual determination, finding of guilt, or replacement for official investigation or judicial process."
+    },
+    "dataSource": "citizen_submission",
+    "isSample": false,
+    "isAnonymous": false,
+    "mobileNumber": "919876543210",
+    "mobileNumberMasked": "+91 ******3210",
+    "mobileVerified": false,
+    "consentGiven": true,
+    "consentTimestamp": "2026-08-11T16:19:44.114Z",
+    "consentPurpose": "Complaint status updates only",
+    "notificationPreference": "whatsapp",
+    "id": "SKT-2026-28067",
+    "trackingToken": "TKN-28067-PDPS14",
+    "createdAt": "2026-08-11T16:19:44.116Z",
+    "updatedAt": "2026-08-11T16:19:44.204Z",
+    "status": "Assigned",
+    "auditLog": [
+      {
+        "timestamp": "2026-08-11T16:19:44.116Z",
+        "action": "Complaint received via public portal",
+        "actor": "system"
+      },
+      {
+        "timestamp": "2026-08-11T16:19:44.204Z",
+        "action": "Status changed from \"New\" to \"Assigned\"",
+        "actor": "reviewer"
+      },
+      {
+        "timestamp": "2026-08-11T16:19:44.204Z",
+        "action": "Department assigned: revenue",
+        "actor": "reviewer"
+      },
+      {
+        "timestamp": "2026-08-11T16:19:44.204Z",
+        "action": "Internal note added",
+        "actor": "reviewer"
+      }
+    ],
+    "notificationLog": [],
+    "assignedDepartment": "revenue",
+    "internalNotes": [
+      "Assigned to Revenue MRO for field inspection."
+    ]
+  },
+  {
+    "description": "Urgent water pipe burst near Yerpedu MRO office causing road flooding.",
+    "mandal": "Yerpedu",
+    "village": "Yerpedu Main Road",
+    "mediaUrls": [],
+    "aiAnalysis": {
+      "title": "Urgent Water Pipe Burst Near Yerpedu MRO Office",
+      "category": "Infrastructure",
+      "subcategory": "Water Supply and Road Maintenance",
+      "department": "Municipal Administration",
+      "urgency": "Priority",
+      "safetyCategory": "None",
+      "safetyEscalationRequired": false,
+      "evidenceCompleteness": "None provided",
+      "credibilityBand": "Medium preliminary confidence",
+      "confidenceScore": 70,
+      "missingInformation": [
+        "Photographic or video evidence of the burst pipe",
+        "Details of affected residents or businesses"
+      ],
+      "recommendedAction": "Immediate attention is required from the Municipal Administration to repair the water pipe and clear the road flooding. Cite Article 21 of the Constitution of India for the right to a safe and healthy environment. The authorities should also consider the Andhra Pradesh Water Supply and Sewerage Act for guidelines on maintenance and repair of water infrastructure.",
+      "humanReviewRequired": false,
+      "analysisMode": "llm",
+      "legalDisclaimer": "AI-generated preliminary assessment for human review. This is not a legal finding, factual determination, finding of guilt, or replacement for official investigation or judicial process."
+    },
+    "dataSource": "citizen_submission",
+    "isSample": false,
+    "isAnonymous": false,
+    "mobileNumber": "919876543210",
+    "mobileNumberMasked": "+91 ******3210",
+    "mobileVerified": false,
+    "consentGiven": true,
+    "consentTimestamp": "2026-08-11T16:19:30.890Z",
+    "consentPurpose": "Complaint status updates only",
+    "notificationPreference": "whatsapp",
+    "id": "SKT-2026-73534",
+    "trackingToken": "TKN-73534-N9T084",
+    "createdAt": "2026-08-11T16:19:30.892Z",
+    "updatedAt": "2026-08-11T16:19:30.962Z",
+    "status": "Assigned",
+    "auditLog": [
+      {
+        "timestamp": "2026-08-11T16:19:30.892Z",
+        "action": "Complaint received via public portal",
+        "actor": "system"
+      },
+      {
+        "timestamp": "2026-08-11T16:19:30.962Z",
+        "action": "Status changed from \"New\" to \"Assigned\"",
+        "actor": "reviewer"
+      },
+      {
+        "timestamp": "2026-08-11T16:19:30.962Z",
+        "action": "Department assigned: revenue",
+        "actor": "reviewer"
+      },
+      {
+        "timestamp": "2026-08-11T16:19:30.962Z",
+        "action": "Internal note added",
+        "actor": "reviewer"
+      }
+    ],
+    "notificationLog": [],
+    "assignedDepartment": "revenue",
+    "internalNotes": [
+      "Assigned to Revenue MRO for field inspection."
+    ]
+  },
+  {
+    "description": "Urgent water pipe burst near Yerpedu MRO office causing road flooding.",
+    "mandal": "Yerpedu",
+    "village": "Yerpedu Main Road",
+    "mediaUrls": [],
+    "aiAnalysis": {
+      "title": "Urgent Water Pipe Burst Near Yerpedu MRO Office",
+      "category": "Infrastructure",
+      "subcategory": "Public Works - Water Supply",
+      "department": "Municipal Administration / Public Works Department",
+      "urgency": "Priority",
+      "safetyCategory": "None",
+      "safetyEscalationRequired": false,
+      "evidenceCompleteness": "None provided",
+      "credibilityBand": "Medium preliminary confidence",
+      "confidenceScore": 70,
+      "missingInformation": [
+        "Photographic or video evidence of the burst pipe",
+        "Details of affected residents or businesses"
+      ],
+      "recommendedAction": "Immediate dispatch of municipal repair team to fix the water pipe burst. Cite Article 21 of the Constitution of India for the right to a safe and healthy environment. Ensure compliance with relevant municipal regulations and public safety standards.",
+      "humanReviewRequired": false,
+      "analysisMode": "llm",
+      "legalDisclaimer": "AI-generated preliminary assessment for human review. This is not a legal finding, factual determination, finding of guilt, or replacement for official investigation or judicial process."
+    },
+    "dataSource": "citizen_submission",
+    "isSample": false,
+    "isAnonymous": false,
+    "mobileNumber": "919876543210",
+    "mobileNumberMasked": "+91 ******3210",
+    "mobileVerified": false,
+    "consentGiven": true,
+    "consentTimestamp": "2026-08-11T16:19:13.293Z",
+    "consentPurpose": "Complaint status updates only",
+    "notificationPreference": "whatsapp",
+    "id": "SKT-2026-19507",
+    "trackingToken": "TKN-19507-YM9V10",
+    "createdAt": "2026-08-11T16:19:13.294Z",
+    "updatedAt": "2026-08-11T16:19:13.405Z",
+    "status": "Assigned",
+    "auditLog": [
+      {
+        "timestamp": "2026-08-11T16:19:13.294Z",
+        "action": "Complaint received via public portal",
+        "actor": "system"
+      },
+      {
+        "timestamp": "2026-08-11T16:19:13.405Z",
+        "action": "Status changed from \"New\" to \"Assigned\"",
+        "actor": "reviewer"
+      },
+      {
+        "timestamp": "2026-08-11T16:19:13.405Z",
+        "action": "Department assigned: revenue",
+        "actor": "reviewer"
+      },
+      {
+        "timestamp": "2026-08-11T16:19:13.405Z",
+        "action": "Internal note added",
+        "actor": "reviewer"
+      }
+    ],
+    "notificationLog": [],
+    "assignedDepartment": "revenue",
+    "internalNotes": [
+      "Assigned to Revenue MRO for field inspection."
+    ]
+  },
+  {
+    "description": "Urgent water pipe burst near Yerpedu MRO office causing road flooding.",
+    "mandal": "Yerpedu",
+    "village": "Yerpedu Main Road",
+    "mediaUrls": [],
+    "aiAnalysis": {
+      "title": "Urgent Water Pipe Burst Near Yerpedu MRO Office",
+      "category": "Infrastructure",
+      "subcategory": "Water Supply and Road Maintenance",
+      "department": "Municipal Administration",
+      "urgency": "Priority",
+      "safetyCategory": "None",
+      "safetyEscalationRequired": false,
+      "evidenceCompleteness": "Insufficient",
+      "credibilityBand": "Medium preliminary confidence",
+      "confidenceScore": 70,
+      "missingInformation": [
+        "Photographic evidence",
+        "Details of damage caused"
+      ],
+      "recommendedAction": "Immediate attention from Municipal Administration to repair the water pipe and clear road flooding, ensuring public safety and preventing further damage. Reference: Article 21 of the Constitution of India for right to safe and healthy environment.",
+      "humanReviewRequired": false,
+      "analysisMode": "llm",
+      "legalDisclaimer": "AI-generated preliminary assessment for human review. This is not a legal finding, factual determination, finding of guilt, or replacement for official investigation or judicial process."
+    },
+    "dataSource": "citizen_submission",
+    "isSample": false,
+    "isAnonymous": false,
+    "mobileNumber": "919876543210",
+    "mobileNumberMasked": "+91 ******3210",
+    "mobileVerified": false,
+    "consentGiven": true,
+    "consentTimestamp": "2026-08-11T16:18:57.124Z",
+    "consentPurpose": "Complaint status updates only",
+    "notificationPreference": "whatsapp",
+    "id": "SKT-2026-50224",
+    "trackingToken": "TKN-50224-HX8GXO",
+    "createdAt": "2026-08-11T16:18:57.126Z",
+    "updatedAt": "2026-08-11T16:18:57.126Z",
+    "status": "New",
+    "auditLog": [
+      {
+        "timestamp": "2026-08-11T16:18:57.126Z",
+        "action": "Complaint received via public portal",
+        "actor": "system"
+      }
+    ],
+    "notificationLog": []
+  }
+]

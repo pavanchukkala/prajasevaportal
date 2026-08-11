@@ -45,7 +45,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(home, request.url));
     }
 
-    if (pathname.startsWith("/mla") && role !== "mla_staff" && role !== "reviewer" && role !== "administrator") {
+    if (pathname.startsWith("/mla") && role !== "mla_staff" && role !== "administrator") {
       const home = ROLE_HOME[role] ?? "/department/workspace";
       return NextResponse.redirect(new URL(home, request.url));
     }

@@ -58,7 +58,7 @@ export function isRouteAllowedForRole(role: SessionUser["role"], pathname: strin
   }
 
   if (pathname.startsWith("/mla")) {
-    return role === "mla_staff" || role === "reviewer";
+    return role === "mla_staff";
   }
 
   return true;

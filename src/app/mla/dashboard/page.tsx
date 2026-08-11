@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import Link from "next/link";
+import RoleNavHeader from "@/components/layout/RoleNavHeader";
 import MLASidebarNav from "@/components/mla/MLASidebarNav";
 import MLAChatbot from "@/components/mla/MLAChatbot";
 import MandalFilter from "@/components/mla/MandalFilter";
@@ -40,7 +41,7 @@ function maskMobile(mobile?: string): string {
 
 export default async function MLADashboard({ searchParams }: MLADashboardProps) {
   const session = await getSession();
-  if (!session) {
+  if (!session || (session.role !== "mla_staff" && session.role !== "administrator")) {
     redirect("/staff/login?redirect=/mla/dashboard");
   }
 
@@ -99,6 +100,7 @@ export default async function MLADashboard({ searchParams }: MLADashboardProps) 
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#04091a", color: "#f8fafc", fontFamily: "sans-serif", display: "flex", flexDirection: "column" }}>
+      <RoleNavHeader user={session} buildId={appVer} />
       {/* Top Banner */}
       <div style={{ backgroundColor: "#fbbf24", color: "#0f172a", padding: "8px 16px", textAlign: "center", fontWeight: 800, fontSize: "12.5px" }}>
         🏛️ SRIKALAHASTI CONSTITUENCY NO. 168 · AUTHENTICATED MLA EXECUTIVE WORKSPACE · BUILD v{appVer}

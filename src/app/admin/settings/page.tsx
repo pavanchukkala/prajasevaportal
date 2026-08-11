@@ -2,8 +2,7 @@ import React from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-import Link from "next/link";
-import GlobalHeader from "@/components/layout/GlobalHeader";
+import RoleNavHeader from "@/components/layout/RoleNavHeader";
 import GlobalFooter from "@/components/layout/GlobalFooter";
 
 export const metadata = {
@@ -14,17 +13,27 @@ export const metadata = {
 export default async function AdminSettingsPage() {
   const session = await getSession();
   if (!session || session.role !== "administrator") {
-    redirect("/staff/login");
+    redirect("/staff/login?redirect=/admin/settings");
   }
 
-  const health = await db.getHealth();
-  const stats = await db.complaints.getStats();
-  const complaints = await db.complaints.list();
+  let health: any = { provider: "sqlite_file", connected: true, latencyMs: 2, liveRecords: 0 };
+  let stats: any = { total: 0, highPriority: 0, resolved: 0 };
+  let complaints: any[] = [];
+  let dbError: string | null = null;
+
+  try {
+    health = await db.getHealth();
+    stats = await db.complaints.getStats();
+    complaints = await db.complaints.list();
+  } catch (err: any) {
+    console.error("[Admin Health DB Error]:", err);
+    dbError = "Database unavailable. Please retry.";
+  }
 
   // Aggregate audit log entries across all complaints
   const allAuditEntries = complaints
     .flatMap((c) =>
-      (c.auditLog ?? []).map((e) => ({
+      (c.auditLog ?? []).map((e: any) => ({
         ...e,
         complaintId: c.id,
         isSample: c.isSample,
@@ -35,7 +44,7 @@ export default async function AdminSettingsPage() {
 
   return (
     <div style={theme.page}>
-      <GlobalHeader />
+      <RoleNavHeader user={session} />
 
       <main style={theme.main}>
         {/* Header */}
@@ -50,20 +59,15 @@ export default async function AdminSettingsPage() {
                 Logged in as <strong style={{ color: "#f8fafc" }}>{session.username}</strong> ({session.role}) · Srikalahasti Constituency Platform
               </p>
             </div>
-
-            <div style={{ display: "flex", gap: "0.75rem" }}>
-              <Link href="/reviewer/cases" style={theme.secondaryBtn}>
-                Reviewer Workspace
-              </Link>
-              <Link href="/department/workspace" style={theme.secondaryBtn}>
-                Department Workspace
-              </Link>
-              <Link href="/mla/dashboard" style={theme.secondaryBtn}>
-                MLA Dashboard
-              </Link>
-            </div>
           </div>
         </div>
+
+        {/* DB Error State */}
+        {dbError && (
+          <div style={{ background: "rgba(239,68,68,0.15)", border: "1px solid #ef4444", padding: "1rem", borderRadius: "12px", color: "#f87171", marginBottom: "1.5rem" }}>
+            <strong>⚠ {dbError}</strong>
+          </div>
+        )}
 
         {/* Real Active System Health Overview */}
         <section style={theme.section}>
@@ -72,34 +76,34 @@ export default async function AdminSettingsPage() {
               🏥 Active System Health & Provider Metrics
             </h2>
             <p style={{ color: "#94a3b8", fontSize: "0.82rem", margin: "4px 0 0" }}>
-              Empirical status reported directly by provider health layer (`/api/health`). Truthful status enforced.
+              Empirical status reported directly by provider health layer (`/api/health`).
             </p>
           </div>
 
           <div style={theme.providerGrid}>
             {/* Database Provider Card */}
             <div style={theme.providerCard}>
-              <div style={theme.providerLabel}>Database Provider</div>
+              <div style={theme.providerLabel}>Database Provider Identifier</div>
               <div style={theme.providerVal}>
-                {health.provider === "sqlite_file" ? "SQLite File Storage" : "PostgreSQL Database"}
+                {health.provider === "sqlite_file" ? "FileSqliteAdapter (SQLite JSON Storage)" : "PostgreSQL Database"}
               </div>
               <div style={theme.providerStatus}>
-                🟢 Connected (`data/psip_complaints.json`) · {health.latencyMs}ms latency
+                🟢 Provider ID: <strong style={{ color: "#fbbf24", fontFamily: "monospace" }}>{db.getProviderName()}</strong> · Path: <code style={{ color: "#34d399" }}>data/psip_complaints.json</code>
               </div>
               <p style={theme.providerNote}>
-                Active file-backed persistent SQLite storage adapter. Change to `POSTGRES` by configuring `DATABASE_URL`.
+                Active file-backed persistent SQLite storage adapter. Shared across all routes.
               </p>
             </div>
 
             {/* Storage Provider Card */}
             <div style={theme.providerCard}>
               <div style={theme.providerLabel}>Evidence Storage Provider</div>
-              <div style={theme.providerVal}>Local Server Storage</div>
+              <div style={theme.providerVal}>Local Server Disk Storage</div>
               <div style={theme.providerStatus}>
-                🟢 Active (`data/uploads/`) · HMAC Restricted
+                🟢 Active (`data/uploads/`) · HMAC Access Controlled
               </div>
               <p style={theme.providerNote}>
-                Private local disk evidence storage. Public URLs rejected (HTTP 403). Set Firebase credentials for cloud bucket.
+                Private local disk evidence storage. Streaming supported for HTML5 video/audio.
               </p>
             </div>
 
@@ -111,7 +115,7 @@ export default async function AdminSettingsPage() {
                 🟡 Active (`SMS_PROVIDER=none`) · Logged to Audit Log
               </div>
               <p style={theme.providerNote}>
-                Notifications written to system audit log without external SMS claims. Configure MSG91/Twilio env vars for live SMS.
+                Notifications written to system audit log without external SMS claims.
               </p>
             </div>
 
@@ -119,13 +123,13 @@ export default async function AdminSettingsPage() {
             <div style={theme.providerCard}>
               <div style={theme.providerLabel}>Deployment Build & Cache Governance</div>
               <div style={{ ...theme.providerVal, color: "#a855f7" }}>
-                Version {process.env.RENDER_GIT_COMMIT?.slice(0, 7) || process.env.NEXT_PUBLIC_APP_VERSION || "8d92257"}
+                Version {process.env.RENDER_GIT_COMMIT?.slice(0, 7) || process.env.NEXT_PUBLIC_APP_VERSION || "v1e601de"}
               </div>
               <div style={theme.providerStatus}>
-                🟢 Commit SHA: <span style={{ fontFamily: "monospace" }}>{process.env.RENDER_GIT_COMMIT?.slice(0, 7) || "8d92257"}</span>
+                🟢 Commit SHA: <span style={{ fontFamily: "monospace" }}>{process.env.RENDER_GIT_COMMIT?.slice(0, 7) || "v1e601de"}</span>
               </div>
               <p style={theme.providerNote}>
-                Dynamic routes configured with <code>no-store, no-cache, must-revalidate</code>. Service Workers & stale app shells auto-invalidated on mount. Static hashed assets cached immutably.
+                Dynamic routes configured with <code>no-store, no-cache, must-revalidate</code>.
               </p>
             </div>
           </div>
@@ -165,7 +169,7 @@ export default async function AdminSettingsPage() {
               <div style={{ fontWeight: 800, color: "#38bdf8", fontSize: "1rem" }}>2. Case Reviewer</div>
               <div style={{ fontSize: "0.78rem", color: "#94a3b8", marginTop: "4px" }}>Role ID: `reviewer`</div>
               <div style={{ fontSize: "0.82rem", color: "#cbd5e1", marginTop: "8px" }}>
-                First-line triage workspace (`/reviewer/*`, `/mla/*`). Reviews AI safety assessment, credibility scores, and assigns target departments.
+                First-line triage workspace (`/reviewer/*`). Reviews AI safety assessment, credibility scores, and assigns target departments.
               </div>
             </div>
 
@@ -197,27 +201,31 @@ export default async function AdminSettingsPage() {
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-            {allAuditEntries.map((entry, idx) => (
-              <div key={idx} style={theme.auditItem}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontFamily: "monospace", fontSize: "0.78rem", fontWeight: 800, color: "#38bdf8" }}>
-                      {entry.complaintId}
-                    </span>
-                    {entry.isSample && (
-                      <span style={{ fontSize: "0.65rem", padding: "1px 6px", borderRadius: "4px", background: "rgba(168,85,247,0.2)", color: "#c084fc" }}>
-                        SAMPLE
+            {allAuditEntries.length === 0 ? (
+              <div style={{ color: "#94a3b8", fontSize: "0.85rem", fontStyle: "italic" }}>No audit log entries recorded yet.</div>
+            ) : (
+              allAuditEntries.map((entry, idx) => (
+                <div key={idx} style={theme.auditItem}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <span style={{ fontFamily: "monospace", fontSize: "0.78rem", fontWeight: 800, color: "#38bdf8" }}>
+                        {entry.complaintId}
                       </span>
-                    )}
-                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#f8fafc" }}>{entry.action}</span>
-                  </div>
+                      {entry.isSample && (
+                        <span style={{ fontSize: "0.65rem", padding: "1px 6px", borderRadius: "4px", background: "rgba(168,85,247,0.2)", color: "#c084fc" }}>
+                          SAMPLE
+                        </span>
+                      )}
+                      <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#f8fafc" }}>{entry.action}</span>
+                    </div>
 
-                  <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
-                    {new Date(entry.timestamp).toLocaleString()} · Actor: <strong style={{ color: "#94a3b8" }}>{entry.actor}</strong>
+                    <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
+                      {new Date(entry.timestamp).toLocaleString()} · Actor: <strong style={{ color: "#94a3b8" }}>{entry.actor}</strong>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </section>
       </main>
@@ -232,7 +240,6 @@ const theme = {
   main: { flex: 1, maxWidth: "1200px", width: "100%", margin: "0 auto", padding: "2rem 1rem" },
   headerBox: { background: "rgba(13,33,55,0.7)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "16px", padding: "1.5rem", backdropFilter: "blur(20px)", marginBottom: "2rem" },
   pageTitle: { fontSize: "1.75rem", fontWeight: 900, color: "#ffffff", margin: "0.25rem 0 0.5rem", letterSpacing: "-0.02em" },
-  secondaryBtn: { padding: "0.5rem 1rem", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "#f0f4f8", fontSize: "0.8rem", fontWeight: 700, textDecoration: "none" },
   section: { background: "rgba(13,33,55,0.4)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "16px", padding: "1.5rem" },
   sectionTitle: { fontSize: "1.25rem", fontWeight: 800, color: "#ffffff", margin: 0 },
   providerGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem" },
