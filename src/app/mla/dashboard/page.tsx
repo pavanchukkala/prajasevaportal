@@ -60,9 +60,8 @@ export default async function MLADashboard({ searchParams }: MLADashboardProps) 
   const currentMandal = resolvedSearchParams.mandal || "all";
   const searchQuery = (resolvedSearchParams.search || "").toLowerCase().trim();
 
-  // Separate Live Citizen Records from Sample Records
-  const liveComplaints = allComplaints.filter((c) => !c.isSample);
-  const sampleComplaints = allComplaints.filter((c) => c.isSample);
+  // Live Citizen Records Only
+  const liveComplaints = allComplaints;
 
   // Exact Metric Calculations from Database Records
   const totalLive = liveComplaints.length;
@@ -430,7 +429,6 @@ export default async function MLADashboard({ searchParams }: MLADashboardProps) 
                   <div><span style={{ color: "#64748b" }}>Constituency Jurisdiction:</span> <strong style={{ color: "#f8fafc" }}>Srikalahasti Assembly No. 168</strong></div>
                   <div><span style={{ color: "#64748b" }}>Active Database Provider:</span> <strong style={{ color: "#34d399" }}>sqlite_file (Connected)</strong></div>
                   <div><span style={{ color: "#64748b" }}>Live Database Records:</span> <strong style={{ color: "#38bdf8" }}>{totalLive}</strong></div>
-                  <div><span style={{ color: "#64748b" }}>Sample Presentation Records:</span> <strong style={{ color: "#c084fc" }}>{sampleComplaints.length}</strong></div>
                 </div>
 
                 <div style={{ borderTop: "1px solid #334155", marginTop: "20px", paddingTop: "16px" }}>
