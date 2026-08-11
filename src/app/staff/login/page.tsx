@@ -7,24 +7,23 @@ type Lang = "en" | "te";
 
 const T = {
   en: {
-    title: "Staff Secure Role-Based Login",
-    subtitle: "Select a role or enter authorized credentials to access your protected workspace.",
+    title: "Authorized Constituency Staff Portal",
+    subtitle: "Secure access for Assembly Constituency No. 168 authorized personnel only.",
     userLabel: "Username",
-    userPlaceholder: "Enter username",
+    userPlaceholder: "Enter authorized username",
     passLabel: "Password",
-    passPlaceholder: "Enter password",
-    submit: "Sign In to Workspace",
-    submitting: "Authenticating & Redirecting...",
-    errorGeneric: "Invalid credentials. All login attempts are logged.",
-    back: "← Back to Home",
-    auditNote: "All login attempts are recorded in the system audit log.",
-    accessNote: "If you believe you should have access, contact the constituency administration office.",
-    systemNote: "Protected Area · Constituency Administration · Srikalahasti No. 168",
-    quickTitle: "1-Click Role Login Access",
+    passPlaceholder: "Enter security password",
+    submit: "Sign In to Protected Workspace",
+    submitting: "Authenticating Session...",
+    errorGeneric: "Invalid credentials. All login attempts are recorded in the audit log.",
+    back: "← Back to Public Portal",
+    auditNote: "Restricted environment. Unapproved login attempts are logged with IP & timestamp.",
+    accessNote: "Access is strictly restricted to authorized constituency officers and staff.",
+    systemNote: "Protected System · Assembly Constituency No. 168 · Srikalahasti",
   },
   te: {
-    title: "సిబ్బంది సురక్షిత రకం ఆధారిత లాగిన్",
-    subtitle: "మీ రక్షిత వర్క్‌స్పేస్‌ను యాక్సెస్ చేయడానికి రకాన్ని ఎంచుకోండి లేదా ఆధారాలను నమోదు చేయండి.",
+    title: "అధికారిక నియోజకవర్గ సిబ్బంది పోర్టల్",
+    subtitle: "అసెంబ్లీ నియోజకవర్గం నెం. 168 అధికారిక సిబ్బందికి మాత్రమే సురక్షిత ప్రవేశం.",
     userLabel: "వినియోగదారు పేరు",
     userPlaceholder: "వినియోగదారు పేరు నమోదు చేయండి",
     passLabel: "పాస్‌వర్డ్",
@@ -32,11 +31,10 @@ const T = {
     submit: "లాగిన్ అవ్వండి",
     submitting: "ధృవీకరిస్తున్నది...",
     errorGeneric: "తప్పు ఆధారపత్రాలు. అన్ని లాగిన్ ప్రయత్నాలు నమోదు చేయబడ్డాయి.",
-    back: "← హోమ్‌కు తిరిగి వెళ్ళండి",
-    auditNote: "అన్ని లాగిన్ ప్రయత్నాలు సిస్టమ్ ఆడిట్ లాగ్‌లో నమోదు చేయబడ్డాయి.",
-    accessNote: "మీకు యాక్సెస్ ఉండాలని భావిస్తే, నియోజకవర్గ నిర్వాహణ కార్యాలయాన్ని సంప్రదించండి.",
+    back: "← ప్రజా సేవ పోర్టల్‌కు తిరిగి వెళ్ళండి",
+    auditNote: "రక్షిత ప్రాంతం. అనుమతి లేని లాగిన్ ప్రయత్నాలు లాగ్ చేయబడతాయి.",
+    accessNote: "ప్రవేశం అధికారిక సిబ్బందికి మాత్రమే పరిమితం చేయబడింది.",
     systemNote: "రక్షిత ప్రాంతం · నియోజకవర్గ నిర్వాహణ · శ్రీకాళహస్తి No. 168",
-    quickTitle: "1-క్లిక్ రోల్ లాగిన్ యాక్సెస్",
   },
 } as const;
 
@@ -55,18 +53,18 @@ export default function StaffLoginPage() {
 
   const t = T[lang];
 
-  async function performLogin(u: string, p: string) {
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
     setError("");
     setLoading(true);
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: u.trim(), password: p.trim() }),
+        body: JSON.stringify({ username: username.trim(), password: password.trim() }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        // Redirect strictly based on authenticated server session role
         router.push(data.redirect || "/mla/dashboard");
       } else {
         setError(data.error ?? t.errorGeneric);
@@ -79,21 +77,10 @@ export default function StaffLoginPage() {
     }
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    await performLogin(username, password);
-  }
-
-  async function handleQuickRoleLogin(u: string, p: string) {
-    setUsername(u);
-    setPassword(p);
-    await performLogin(u, p);
-  }
-
   const inp: React.CSSProperties = {
     width: "100%",
     background: "rgba(4,9,26,0.8)",
-    border: "1px solid rgba(212,160,23,0.2)",
+    border: "1px solid rgba(212,160,23,0.25)",
     borderRadius: "12px",
     padding: "0.875rem 1rem",
     color: "#f0f4f8",
@@ -105,15 +92,12 @@ export default function StaffLoginPage() {
 
   return (
     <main style={{ minHeight: "100vh", background: "#04091A", color: "#f0f4f8", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem 1rem" }}>
-
       {/* Ambient Lighting */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none" }}>
         <div style={{ position: "absolute", top: "20%", left: "20%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,160,23,0.04) 0%, transparent 70%)" }} />
-        <div style={{ position: "absolute", bottom: "20%", right: "20%", width: "300px", height: "300px", borderRadius: "50%", background: "radial-gradient(circle, rgba(239,68,68,0.03) 0%, transparent 70%)" }} />
       </div>
 
-      <div style={{ maxWidth: "560px", width: "100%", position: "relative", zIndex: 1 }}>
-
+      <div style={{ maxWidth: "460px", width: "100%", position: "relative", zIndex: 1 }}>
         {/* Lang toggle */}
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1.5rem", gap: "0.5rem" }}>
           {(["en", "te"] as Lang[]).map((l) => (
@@ -124,95 +108,18 @@ export default function StaffLoginPage() {
         </div>
 
         {/* Header Icon */}
-        <div style={{ textAlign: "center", marginBottom: "1.75rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <div style={{ width: "72px", height: "72px", borderRadius: "50%", background: "rgba(212,160,23,0.1)", border: "1px solid rgba(212,160,23,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1rem", fontSize: "1.75rem", boxShadow: "0 0 30px rgba(212,160,23,0.1)" }}>
-            🔐
+            🔒
           </div>
-          <h1 style={{ fontSize: "1.75rem", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", marginBottom: "0.4rem" }}>{t.title}</h1>
-          <p style={{ color: "#94a3b8", fontSize: "0.88rem", lineHeight: 1.5, margin: 0 }}>{t.subtitle}</p>
+          <h1 style={{ fontSize: "1.65rem", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em", marginBottom: "0.4rem" }}>{t.title}</h1>
+          <p style={{ color: "#94a3b8", fontSize: "0.85rem", lineHeight: 1.5, margin: 0 }}>{t.subtitle}</p>
         </div>
 
-        {/* 1-Click Role Login Selector Cards */}
-        <div style={{ background: "rgba(13,33,55,0.7)", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "16px", padding: "1.25rem", marginBottom: "1.5rem" }}>
-          <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#D4A017", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.875rem", textAlign: "center" }}>
-            ⚡ {t.quickTitle}
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-            <button
-              type="button"
-              onClick={() => handleQuickRoleLogin("mla_staff", "dev-mla-2026")}
-              style={{
-                background: "rgba(4,9,26,0.8)",
-                border: "1px solid rgba(251,191,36,0.3)",
-                borderRadius: "10px",
-                padding: "0.875rem",
-                textAlign: "left",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#fbbf24" }}>📊 MLA Staff</div>
-              <div style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "2px" }}>Dashboard & Case Tracking</div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickRoleLogin("reviewer", "dev-reviewer-2026")}
-              style={{
-                background: "rgba(4,9,26,0.8)",
-                border: "1px solid rgba(56,189,248,0.3)",
-                borderRadius: "10px",
-                padding: "0.875rem",
-                textAlign: "left",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#38bdf8" }}>🛡 Case Reviewer</div>
-              <div style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "2px" }}>Triage & Dept Assignment</div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickRoleLogin("dept_officer", "dev-dept-2026")}
-              style={{
-                background: "rgba(4,9,26,0.8)",
-                border: "1px solid rgba(16,185,129,0.3)",
-                borderRadius: "10px",
-                padding: "0.875rem",
-                textAlign: "left",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#34d399" }}>🏢 Department Officer</div>
-              <div style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "2px" }}>Field Action & Resolution</div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickRoleLogin("admin", "dev-admin-2026")}
-              style={{
-                background: "rgba(4,9,26,0.8)",
-                border: "1px solid rgba(239,68,68,0.3)",
-                borderRadius: "10px",
-                padding: "0.875rem",
-                textAlign: "left",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#f87171" }}>⚙️ Administrator</div>
-              <div style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "2px" }}>Master Governance & Health</div>
-            </button>
-          </div>
-        </div>
-
-        {/* Manual Credentials Form */}
-        <form onSubmit={handleSubmit} style={{ background: "rgba(13,33,55,0.6)", border: "1px solid rgba(212,160,23,0.15)", borderRadius: "20px", padding: "1.75rem", backdropFilter: "blur(24px)", marginBottom: "1rem" }}>
+        {/* Manual Secure Credentials Form */}
+        <form onSubmit={handleSubmit} style={{ background: "rgba(13,33,55,0.7)", border: "1px solid rgba(212,160,23,0.2)", borderRadius: "20px", padding: "2rem", backdropFilter: "blur(24px)", marginBottom: "1.5rem" }}>
           {error && (
-            <div style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "10px", padding: "0.875rem", marginBottom: "1.25rem", color: "#f87171", fontSize: "0.82rem", lineHeight: 1.5 }}>
+            <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: "10px", padding: "0.875rem", marginBottom: "1.25rem", color: "#f87171", fontSize: "0.82rem", lineHeight: 1.5 }}>
               ⚠ {error}
             </div>
           )}
@@ -253,17 +160,15 @@ export default function StaffLoginPage() {
         </form>
 
         {/* Security notice */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.5rem" }}>
-          <div style={{ background: "rgba(239,68,68,0.04)", border: "1px solid rgba(239,68,68,0.1)", borderRadius: "10px", padding: "0.75rem 1rem", fontSize: "0.75rem", color: "#64748b", lineHeight: 1.5 }}>
-            🛡 {t.auditNote}
-          </div>
+        <div style={{ background: "rgba(239,68,68,0.04)", border: "1px solid rgba(239,68,68,0.12)", borderRadius: "12px", padding: "0.875rem 1rem", fontSize: "0.75rem", color: "#94a3b8", lineHeight: 1.5, marginBottom: "1.5rem", textAlign: "center" }}>
+          🛡 {t.auditNote}
         </div>
 
         <div style={{ textAlign: "center" }}>
           <Link href="/" style={{ color: "#D4A017", textDecoration: "none", fontWeight: 600, fontSize: "0.85rem" }}>{t.back}</Link>
         </div>
 
-        <div style={{ textAlign: "center", marginTop: "1.75rem", fontSize: "0.68rem", color: "#475569" }}>
+        <div style={{ textAlign: "center", marginTop: "2rem", fontSize: "0.68rem", color: "#475569" }}>
           {t.systemNote}
         </div>
       </div>
