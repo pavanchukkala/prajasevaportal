@@ -3,8 +3,10 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import Link from "next/link";
-import GlobalHeader from "@/components/layout/GlobalHeader";
+import RoleNavHeader from "@/components/layout/RoleNavHeader";
 import GlobalFooter from "@/components/layout/GlobalFooter";
+import DeptActionForm from "./DeptActionForm";
+import { getDepartmentLabel } from "@/lib/departments";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -20,7 +22,7 @@ export default async function DeptCaseDetailPage({
 }) {
   const session = await getSession();
   if (!session || (session.role !== "department_officer" && session.role !== "administrator")) {
-    redirect("/staff/login");
+    redirect("/staff/login?redirect=/department/workspace");
   }
 
   const { id } = await params;
@@ -29,7 +31,7 @@ export default async function DeptCaseDetailPage({
   if (!complaint) {
     return (
       <div style={theme.page}>
-        <GlobalHeader />
+        <RoleNavHeader user={session} />
         <main style={{ ...theme.main, textAlign: "center", padding: "4rem 1rem" }}>
           <h1 style={{ color: "#ef4444" }}>Complaint Not Found</h1>
           <p style={{ color: "#94a3b8" }}>No record found matching identifier: {id}</p>
@@ -43,10 +45,11 @@ export default async function DeptCaseDetailPage({
   }
 
   const ai = complaint.aiAnalysis;
+  const deptLabel = getDepartmentLabel(complaint.assignedDepartment || complaint.department || ai?.department);
 
   return (
     <div style={theme.page}>
-      <GlobalHeader />
+      <RoleNavHeader user={session} />
 
       <main style={theme.main}>
         <div style={{ marginBottom: "1.5rem" }}>
@@ -74,7 +77,7 @@ export default async function DeptCaseDetailPage({
                     {complaint.status}
                   </span>
                   <span style={{ fontSize: "0.72rem", color: "#64748b" }}>
-                    Assigned Dept: <strong style={{ color: "#f8fafc" }}>{complaint.assignedDepartment || complaint.department || ai?.department || "Unassigned"}</strong>
+                    Assigned Dept: <strong style={{ color: "#f8fafc" }}>{deptLabel}</strong>
                   </span>
                 </div>
 
@@ -82,7 +85,7 @@ export default async function DeptCaseDetailPage({
                   {ai?.title ?? "Field Grievance Action Task"}
                 </h1>
                 <p style={{ color: "#94a3b8", fontSize: "0.85rem", margin: 0 }}>
-                  📍 Mandal: <strong style={{ color: "#f8fafc" }}>{complaint.mandal}</strong> · Village: <strong style={{ color: "#f8fafc" }}>{complaint.village || "N/A"}</strong>
+                  📍 Mandal: <strong style={{ color: "#f8fafc" }}>{complaint.mandal || "Srikalahasti"}</strong> · Village: <strong style={{ color: "#f8fafc" }}>{complaint.village || "N/A"}</strong>
                 </p>
               </div>
 
@@ -102,6 +105,47 @@ export default async function DeptCaseDetailPage({
                   {complaint.description}
                 </div>
               </div>
+
+              {/* Attached Evidence Media */}
+              {complaint.mediaUrls && complaint.mediaUrls.length > 0 && (
+                <div style={theme.card}>
+                  <h3 style={theme.cardTitle}>📎 Attached Evidence Files ({complaint.mediaUrls.length})</h3>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                    {complaint.mediaUrls.map((url: string, idx: number) => {
+                      const isVideo = url.match(/\.(mp4|webm|mov|avi|3gp|mkv)/i);
+                      const isImage = url.match(/\.(jpeg|jpg|png|webp|gif)/i);
+                      const isAudio = url.match(/\.(mp3|wav|ogg|m4a)/i);
+
+                      return (
+                        <div key={idx} style={{ background: "rgba(4,9,26,0.8)", padding: "0.875rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                            <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#34d399" }}>
+                              {isVideo ? "🎥 Video File" : isImage ? "🖼️ Image File" : isAudio ? "🎵 Audio File" : "📄 File Attachment"}
+                            </span>
+                            <a href={url} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "#fbbf24", textDecoration: "none", fontWeight: 700 }}>
+                              Open File →
+                            </a>
+                          </div>
+
+                          {isVideo && (
+                            <video controls style={{ width: "100%", maxHeight: "240px", borderRadius: "6px", background: "#000" }}>
+                              <source src={url} />
+                            </video>
+                          )}
+                          {isImage && (
+                            <img src={url} alt="Evidence" style={{ maxWidth: "100%", maxHeight: "240px", borderRadius: "6px", objectFit: "contain" }} />
+                          )}
+                          {isAudio && (
+                            <audio controls style={{ width: "100%" }}>
+                              <source src={url} />
+                            </audio>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               <div style={theme.card}>
                 <h3 style={theme.cardTitle}>Contact Details & Consent Status</h3>
@@ -126,7 +170,7 @@ export default async function DeptCaseDetailPage({
                 <h3 style={theme.cardTitle}>Department Action & Resolution Log</h3>
                 {complaint.internalNotes && complaint.internalNotes.length > 0 ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    {complaint.internalNotes.map((note, idx) => (
+                    {complaint.internalNotes.map((note: string, idx: number) => (
                       <div key={idx} style={{ background: "rgba(16,185,129,0.05)", borderLeft: "3px solid #10b981", padding: "0.75rem", borderRadius: "6px", fontSize: "0.85rem", color: "#a7f3d0" }}>
                         {note}
                       </div>
@@ -143,7 +187,7 @@ export default async function DeptCaseDetailPage({
               <div style={theme.card}>
                 <h3 style={theme.cardTitle}>System Action Timeline</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
-                  {complaint.auditLog?.map((entry, idx) => (
+                  {complaint.auditLog?.map((entry: any, idx: number) => (
                     <div key={idx} style={{ borderLeft: "2px solid #10b981", paddingLeft: "1rem" }}>
                       <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
                         {new Date(entry.timestamp).toLocaleString()} · <strong style={{ color: "#94a3b8" }}>{entry.actor}</strong>
@@ -173,61 +217,6 @@ export default async function DeptCaseDetailPage({
   );
 }
 
-function DeptActionForm({ complaintId, currentStatus }: { complaintId: string; currentStatus: string }) {
-  return (
-    <form
-      style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-      onSubmit={(e) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const status = formData.get("status") as string;
-        const internalNote = formData.get("internalNote") as string;
-
-        fetch(`/api/complaints/${complaintId}/status`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            status,
-            internalNote,
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.success || data.complaint) {
-              alert("Department action logged successfully.");
-              window.location.reload();
-            } else {
-              alert("Failed to update status.");
-            }
-          })
-          .catch(() => alert("Error logging action."));
-      }}
-    >
-      <div>
-        <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", marginBottom: "0.35rem" }}>Update Field Progress</label>
-        <select name="status" defaultValue={currentStatus} style={theme.input}>
-          <option value="Under Review">Under Review (Field Inspection Planned)</option>
-          <option value="More Information Requested">More Information Requested from Citizen</option>
-          <option value="Assigned">Assigned to Field Team</option>
-          <option value="Action Reported">Action Reported (Work Order Issued / Work In Progress)</option>
-          <option value="Escalated">Escalated to Higher Authority</option>
-          <option value="Resolved">Resolved (Work Completed)</option>
-          <option value="Closed">Closed</option>
-        </select>
-      </div>
-
-      <div>
-        <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", marginBottom: "0.35rem" }}>Resolution / Action Report Note</label>
-        <textarea name="internalNote" rows={4} placeholder="Describe field inspection, work order number, or resolution proof..." style={{ ...theme.input, resize: "vertical" }} required />
-      </div>
-
-      <button type="submit" style={theme.submitBtn}>
-        Submit Department Action & Update Status
-      </button>
-    </form>
-  );
-}
-
 const theme = {
   page: { minHeight: "100vh", background: "#04091A", color: "#f8fafc", display: "flex", flexDirection: "column" as const },
   main: { flex: 1, maxWidth: "1200px", width: "100%", margin: "0 auto", padding: "2rem 1rem" },
@@ -235,7 +224,5 @@ const theme = {
   card: { background: "rgba(13,33,55,0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "1.25rem" },
   cardTitle: { fontSize: "1rem", fontWeight: 800, color: "#ffffff", margin: "0 0 1rem", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.5rem" },
   sampleBanner: { background: "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.3)", color: "#c084fc", padding: "0.75rem 1rem", borderRadius: "8px", fontWeight: 700, fontSize: "0.85rem", marginBottom: "1rem" },
-  input: { width: "100%", padding: "0.6rem 0.875rem", background: "rgba(4,9,26,0.8)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "8px", color: "#f8fafc", fontSize: "0.85rem", outline: "none", boxSizing: "border-box" as const },
-  submitBtn: { width: "100%", padding: "0.75rem", background: "linear-gradient(135deg, #059669, #10b981)", color: "#ffffff", fontWeight: 800, fontSize: "0.9rem", border: "none", borderRadius: "8px", cursor: "pointer" },
   secondaryBtn: { padding: "0.5rem 1rem", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "#f0f4f8", fontSize: "0.8rem", fontWeight: 700, textDecoration: "none" },
 };
