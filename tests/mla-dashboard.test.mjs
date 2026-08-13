@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const requiredRoutes = ['dashboard','cases','cases/[id]','priority','mandals','departments','actions','reports','profile'];
+for (const route of requiredRoutes) assert.ok(fs.existsSync(`src/app/mla/${route}/page.tsx`), `${route} route exists`);
+const mlaLib = fs.readFileSync('src/lib/mla.ts', 'utf8');
+assert.match(mlaLib, /role === "mla_staff" \|\| role === "administrator"/);
+assert.match(mlaLib, /\/staff\/login\?redirect=\/mla\/dashboard/);
+const workspace = fs.readFileSync('src/components/mla/MLAWorkspace.tsx', 'utf8');
+for (const label of ['Overview','Live Cases','Priority & Safety','Mandal Intelligence','Department Performance','Action Taken','Reports','Profile','Sign Out']) assert.ok(workspace.includes(label));
+assert.ok(!workspace.includes('Reviewer Queue') && !workspace.includes('Department Workspace'));
+const dashboard = fs.readFileSync('src/app/mla/dashboard/page.tsx', 'utf8');
+for (const label of ['Total live complaints','Emergency/safety cases','High-priority cases','Unassigned cases','Under review','Assigned to departments','Overdue action','Resolved','Reopened']) assert.ok(dashboard.includes(label));
+assert.match(dashboard, /getMLAData\(\)/);
+assert.doesNotMatch(dashboard, /const\s+complaints\s*=\s*\[/);
+const detail = fs.readFileSync('src/app/mla/cases/[id]/page.tsx', 'utf8');
+for (const label of ['Complaint summary','Original citizen description','Location and constituency mapping','Department and routing','AI preliminary assessment','Safety escalation status','Evidence list','Masked citizen contact','Current status','Department assignment','Action timeline','MLA monitoring notes','Escalation controls','Case not found']) assert.ok(detail.includes(label));
+const actionApi = fs.readFileSync('src/app/api/mla/cases/[id]/action/route.ts', 'utf8');
+assert.match(actionApi, /isMLARole\(s\.role\)/);
+assert.match(actionApi, /Cache-Control':'no-store'/);
+console.log('MLA dashboard checks passed');
