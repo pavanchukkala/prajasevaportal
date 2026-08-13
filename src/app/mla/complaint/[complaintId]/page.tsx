@@ -40,14 +40,14 @@ export default async function ComplaintDetailPage({
     <div style={theme.page}>
       <div style={theme.container}>
         <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Link href="/mla/dashboard" style={theme.backLink}>&larr; Back to MLA Dashboard</Link>
+          <Link href="/mla/dashboard" style={theme.backLink}>&larr; Back to Action Dashboard</Link>
           <span style={{ color: '#94a3b8', fontSize: '13px' }}>
             Current Status: <strong style={{ color: '#fbbf24' }}>{complaint.status}</strong>
           </span>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
-          {/* Main Content */}
+          
           <div>
             <div style={theme.card}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
@@ -127,7 +127,7 @@ export default async function ComplaintDetailPage({
                 </div>
               </div>
 
-              {/* Evidence Player & Manager */}
+              
               <EvidenceAndActionManager
                 complaintId={complaint.id}
                 initialMediaUrls={complaint.mediaUrls || []}
@@ -169,7 +169,7 @@ export default async function ComplaintDetailPage({
             </div>
           </div>
 
-          {/* Sidebar */}
+          
           <div>
             <div style={theme.card}>
               <h2 style={theme.title}>Intelligence Assessment</h2>

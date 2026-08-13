@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
     const qRaw = message.trim();
     const qLower = qRaw.toLowerCase();
 
-    // 1. Handle Greetings Warmly
     const isGreeting = ["hi", "hello", "hey", "namaste", "namaskaram", "good morning", "good evening", "help"].includes(qLower);
     if (isGreeting) {
       const liveCount = stats.live || complaints.filter(c => !c.isSample).length;
@@ -40,7 +39,6 @@ How may I assist you today? You can ask me:
       return NextResponse.json({ reply: greetingReply });
     }
 
-    // 2. Build rich live complaint records context
     const fullContext = complaints.map((c) => ({
       caseId: c.id,
       mandal: c.mandal,
@@ -108,8 +106,6 @@ DIRECTIVES:
       console.warn("[Intelligence Assistance API] LLM API call error, relying on local knowledge engine:", groqErr);
     }
 
-    // 3. Smart Local Knowledge & Legal Intelligence Fallback Engine
-    // Check General Knowledge & Legal Queries
     if (qLower.includes("pocso")) {
       return NextResponse.json({
         reply: `⚖️ POCSO Act (Protection of Children from Sexual Offences Act, 2012):
@@ -162,7 +158,6 @@ DIRECTIVES:
       });
     }
 
-    // 4. Database Keyword Search Fallback
     const matchingCases = fullContext.filter((c) =>
       c.caseId.toLowerCase().includes(qLower) ||
       c.fullDescription.toLowerCase().includes(qLower) ||
@@ -186,7 +181,6 @@ DIRECTIVES:
       return NextResponse.json({ reply: replyText });
     }
 
-    // 5. Intelligent Fallback for Unmatched Queries
     const intelligentDefaultReply = `Srikalahasti Intelligence Assistance:
 
 I received your query regarding "${qRaw}".

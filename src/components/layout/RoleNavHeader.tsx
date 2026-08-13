@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SessionUser } from "@/lib/auth";
+import ActionDashboardSignOut from "@/components/mla/ActionDashboardSignOut";
 
 interface RoleNavHeaderProps {
   user: SessionUser;
@@ -13,7 +14,6 @@ interface RoleNavHeaderProps {
 export default function RoleNavHeader({ user, buildId = "v1e601de" }: RoleNavHeaderProps) {
   const pathname = usePathname();
 
-  // Role-specific navigation links strict scoping
   const navItems = getNavItemsForRole(user.role);
 
   return (
@@ -31,7 +31,7 @@ export default function RoleNavHeader({ user, buildId = "v1e601de" }: RoleNavHea
     >
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
         <span style={{ fontSize: "1.1rem", fontWeight: 900, color: "#fbbf24", letterSpacing: "-0.02em" }}>
-          🏛️ Srikalahasti Executive Portal
+          🏛️ Srikalahasti Action Dashboard
         </span>
         <span
           style={{
@@ -48,7 +48,6 @@ export default function RoleNavHeader({ user, buildId = "v1e601de" }: RoleNavHea
         </span>
       </div>
 
-      {/* Role-Specific Navigation Links */}
       <nav style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
@@ -74,25 +73,11 @@ export default function RoleNavHeader({ user, buildId = "v1e601de" }: RoleNavHea
         })}
       </nav>
 
-      {/* User Session Info & Sign Out */}
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "0.8rem", color: "#94a3b8" }}>
         <span>
           Logged in as <strong style={{ color: "#38bdf8" }}>{user.username}</strong> (<strong style={{ color: "#facc15" }}>{getRoleLabel(user.role)}</strong>)
         </span>
-        <a
-          href="/api/auth/logout"
-          style={{
-            padding: "0.35rem 0.75rem",
-            borderRadius: "6px",
-            backgroundColor: "#ef4444",
-            color: "#ffffff",
-            fontWeight: 800,
-            fontSize: "0.78rem",
-            textDecoration: "none",
-          }}
-        >
-          🚪 Sign Out
-        </a>
+        <ActionDashboardSignOut label="🚪 Sign Out" />
       </div>
     </header>
   );
@@ -102,31 +87,21 @@ function getRoleLabel(role: SessionUser["role"]): string {
   switch (role) {
     case "administrator":
       return "System Administrator";
-    case "reviewer":
-      return "Case Reviewer";
-    case "department_officer":
-      return "Department Officer";
     case "mla_staff":
     default:
-      return "MLA Executive Staff";
+      return "Action Dashboard Staff";
   }
 }
 
 function getNavItemsForRole(role: SessionUser["role"]): { href: string; label: string }[] {
   switch (role) {
-    case "department_officer":
-      return [{ href: "/department/workspace", label: "🏢 Department Workspace" }];
-    case "reviewer":
-      return [{ href: "/reviewer/cases", label: "🛡 Reviewer Triage Queue" }];
     case "mla_staff":
-      return [{ href: "/mla/dashboard", label: "📊 MLA Command Dashboard" }];
+      return [{ href: "/mla/dashboard", label: "📊 Action Dashboard" }];
     case "administrator":
     default:
       return [
-        { href: "/mla/dashboard", label: "📊 MLA Dashboard" },
-        { href: "/reviewer/cases", label: "🛡 Reviewer Queue" },
-        { href: "/department/workspace", label: "🏢 Dept Workspace" },
-        { href: "/admin/settings", label: "⚙️ System Admin" },
+        { href: "/mla/dashboard", label: "📊 Action Dashboard" },
+        { href: "/admin/settings", label: "⚙️ Administrative Access" },
       ];
   }
 }

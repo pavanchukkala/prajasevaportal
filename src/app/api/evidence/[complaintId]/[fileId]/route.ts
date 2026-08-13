@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
-import crypto from "node:crypto";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -14,7 +13,6 @@ export async function GET(
   const expires = searchParams.get("expires");
   const sig = searchParams.get("sig");
 
-  // 1. Authorization: Allow staff sessions, valid HMAC tokens, or existing complaint media access
   const session = await getSession();
   let isAuthorized = Boolean(session);
 
@@ -26,7 +24,6 @@ export async function GET(
     }
   }
 
-  // Fallback: If complaint exists in DB, permit viewing evidence media
   if (!isAuthorized && complaintId) {
     const complaint = await db.complaints.getById(complaintId);
     if (complaint) {
@@ -41,7 +38,6 @@ export async function GET(
     );
   }
 
-  // 2. Read file from private upload storage (Linux case-insensitive resolution)
   const baseUploadsDir = path.join(process.cwd(), "data", "uploads");
   let uploadDir = path.join(baseUploadsDir, complaintId);
 
@@ -92,7 +88,6 @@ export async function GET(
   const fileSize = stat.size;
   const range = req.headers.get("range");
 
-  // HTTP 206 Range Streaming for Video & Audio HTML5 playback
   if (range && (contentType.startsWith("video/") || contentType.startsWith("audio/"))) {
     const parts = range.replace(/bytes=/, "").split("-");
     const start = parseInt(parts[0], 10);
@@ -100,9 +95,9 @@ export async function GET(
     const chunkSize = end - start + 1;
 
     const fileStream = fs.createReadStream(filePath, { start, end });
-    const webStream = new ReadableStream({
+    const webStream = new ReadableStream<Uint8Array>({
       start(controller) {
-        fileStream.on("data", (chunk) => controller.enqueue(chunk));
+        fileStream.on("data", (chunk) => controller.enqueue(typeof chunk === "string" ? new TextEncoder().encode(chunk) : new Uint8Array(chunk)));
         fileStream.on("end", () => controller.close());
         fileStream.on("error", (err) => controller.error(err));
       },
@@ -111,7 +106,7 @@ export async function GET(
       },
     });
 
-    return new NextResponse(webStream as any, {
+    return new NextResponse(webStream, {
       status: 206,
       headers: {
         "Content-Range": `bytes ${start}-${end}/${fileSize}`,
@@ -124,7 +119,6 @@ export async function GET(
     });
   }
 
-  // Full file fallback for images / documents
   const fileBuffer = fs.readFileSync(filePath);
   return new NextResponse(fileBuffer, {
     status: 200,
@@ -138,7 +132,6 @@ export async function GET(
   });
 }
 
-// DELETE handler for staff to remove specific evidence files
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ complaintId: string; fileId: string }> }
@@ -150,7 +143,6 @@ export async function DELETE(
 
   const { complaintId, fileId } = await params;
 
-  // 1. Delete file from disk
   const baseUploadsDir = path.join(process.cwd(), "data", "uploads");
   let uploadDir = path.join(baseUploadsDir, complaintId);
 
@@ -174,21 +166,12 @@ export async function DELETE(
     }
   }
 
-  // 2. Update complaint record in DB
   const complaint = await db.complaints.getById(complaintId);
   if (complaint) {
-    const updatedMedia = (complaint.mediaUrls || []).filter(
-      (url) => !url.toLowerCase().includes(fileId.toLowerCase())
-    );
     await db.complaints.updateStatus(complaintId, {
-      internalNote: `Evidence file deleted by ${session.username}: ${fileId}`,
+      internalNote: `Evidence file removed by ${session.username}: ${fileId}`,
       actor: session.username,
     });
-    // Directly update mediaUrls array
-    const records = (db as any).complaints;
-    if (complaint) {
-      complaint.mediaUrls = updatedMedia;
-    }
   }
 
   return NextResponse.json({ success: true, message: `Evidence file ${fileId} deleted successfully.` });

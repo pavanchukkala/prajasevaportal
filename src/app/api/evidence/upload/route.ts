@@ -4,7 +4,7 @@ import { validateFile, DEFAULT_PILOT_LIMITS } from "@/lib/storage/validator";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60; // Allow large video uploads
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,11 +21,9 @@ export async function POST(req: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Resolve exact complaint ID from database to prevent case mismatches on Linux
     const complaint = await db.complaints.getById(complaintId);
     const targetId = complaint ? complaint.id : complaintId;
 
-    // Validate security rules (permits all citizen videos, audio, images, docs)
     const validation = validateFile(
       buffer,
       file.name,
@@ -39,21 +37,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    // Perform upload via active storage provider
     const metadata = await storage.uploadEvidence(buffer, {
       complaintId: targetId,
       originalName: file.name,
       mimeType: file.type,
     });
 
-    // Generate authorized download URL
-    const authorizedUrl = await storage.getAuthorizedDownloadUrl(metadata, 86400 * 30); // 30-day link
+    const authorizedUrl = await storage.getAuthorizedDownloadUrl(metadata, 86400 * 30);
 
-    // Persist evidence attachment directly into database complaint record
     await db.complaints.updateStatus(targetId, {
       mediaUrl: authorizedUrl,
       actor: "citizen_upload",
-    } as any);
+    });
 
     return NextResponse.json(
       {
@@ -63,13 +58,14 @@ export async function POST(req: NextRequest) {
         storageProvider: storage.providerName,
         message: `File "${file.name}" uploaded successfully.`,
       },
-      { status: 201 }
+      { status: 201, headers: { "Cache-Control": "no-store" } }
     );
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "File upload failed.";
     console.error("[Storage] Evidence upload error:", error);
     return NextResponse.json(
-      { error: error?.message || "File upload failed." },
-      { status: 500 }
+      { error: message },
+      { status: 500, headers: { "Cache-Control": "no-store" } }
     );
   }
 }

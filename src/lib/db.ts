@@ -1,9 +1,3 @@
-// ============================================================
-// Database Abstraction & Persistent Provider Layer
-// Supported Adapters:
-// - SQLite Persistent File Adapter (data/psip_complaints.json)
-// - PostgreSQL Adapter (if DATABASE_URL configured)
-// ============================================================
 
 import { FileSqliteAdapter } from "./db/file-sqlite-adapter";
 import { IDatabaseAdapter, DatabaseHealthInfo } from "./db/provider";
@@ -54,13 +48,12 @@ export interface ComplaintData {
   updatedAt?: string;
   status: ComplaintStatus;
 
-  // Contact — stored ONLY when consent given; NEVER exposed publicly
-  mobileNumber?: string;        // raw — server only, never returned via API
-  mobileNumberMasked?: string;  // e.g. +91 ******4321 — shown to staff only
+  mobileNumber?: string;
+  mobileNumberMasked?: string;
   mobileVerified?: boolean;
   consentGiven?: boolean;
-  consentTimestamp?: string;    // ISO timestamp when consent was given
-  consentPurpose?: string;      // "Complaint status updates only"
+  consentTimestamp?: string;
+  consentPurpose?: string;
   notificationPreference?: "sms" | "whatsapp" | "none";
   isAnonymous?: boolean;
   email?: string;
@@ -91,7 +84,6 @@ export interface ComplaintData {
   notificationLog?: NotificationLog[];
 }
 
-// ── Valid status values ──────────────────────────────────────────────────────
 export const VALID_STATUSES: ComplaintStatus[] = [
   "New",
   "AI Processed",
@@ -108,9 +100,7 @@ export const VALID_STATUSES: ComplaintStatus[] = [
   "Closed",
 ];
 
-// ── Singleton adapter initialization ─────────────────────────────────────────
 declare global {
-  // eslint-disable-next-line no-var
   var __psipAdapterInstance: IDatabaseAdapter | undefined;
 }
 
@@ -125,7 +115,6 @@ function getAdapter(): IDatabaseAdapter {
 
 const adapter = getAdapter();
 
-// ── DB interface ─────────────────────────────────────────────────────────────
 export const db = {
   getProviderName(): "postgres" | "sqlite_file" {
     return adapter.providerName;
@@ -149,6 +138,7 @@ export const db = {
         assignedTo?: string;
         assignedDepartment?: string;
         internalNote?: string;
+        mediaUrl?: string;
         actor?: string;
       }
     ): Promise<ComplaintData | null> {
@@ -195,7 +185,6 @@ export const db = {
   },
 };
 
-// ── Safe public projection ───────────────────────────────────────────────────
 export function toPublicSummary(c: ComplaintData) {
   return {
     id: c.id,
@@ -245,7 +234,6 @@ function statusMessage(status: ComplaintStatus): string {
   return map[status] ?? "Your complaint is in the processing queue.";
 }
 
-// ── Staff-safe projection ────────────────────────────────────────────────────
 export function toStaffView(c: ComplaintData) {
   return c;
 }

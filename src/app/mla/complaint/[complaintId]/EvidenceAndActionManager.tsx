@@ -123,7 +123,7 @@ export function EvidenceAndActionManager({
 
   return (
     <div>
-      {/* Evidence Files Section */}
+      
       <div style={{ backgroundColor: "rgba(15,23,42,0.8)", padding: "16px", borderRadius: "8px", border: "1px solid #38bdf8", marginBottom: "20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <h3 style={{ fontSize: "14px", color: "#38bdf8", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0, fontWeight: 800 }}>
@@ -198,7 +198,7 @@ export function EvidenceAndActionManager({
         )}
       </div>
 
-      {/* Action Panel Controls */}
+      
       <div style={{ backgroundColor: "#1e293b", borderRadius: "8px", padding: "20px", border: "1px solid #fbbf24", marginTop: "24px" }}>
         <h2 style={{ fontSize: "18px", color: "#fbbf24", margin: "0 0 14px", borderBottom: "1px solid #334155", paddingBottom: "10px", fontWeight: 800 }}>
           ⚡ Executive Status Actions & Triage
@@ -221,7 +221,7 @@ export function EvidenceAndActionManager({
           </div>
         )}
 
-        {/* Quick Action Status Buttons */}
+        
         <div style={{ marginBottom: "16px" }}>
           <label style={{ display: "block", fontSize: "12px", color: "#94a3b8", marginBottom: "8px", fontWeight: 700, textTransform: "uppercase" }}>
             Quick Status Update
@@ -254,7 +254,7 @@ export function EvidenceAndActionManager({
           </div>
         </div>
 
-        {/* Detailed Status & Assignment Form */}
+        
         <form style={{ display: "flex", flexDirection: "column", gap: "14px" }} onSubmit={handleDetailedUpdate}>
           <div>
             <label style={{ display: "block", fontSize: "13px", color: "#94a3b8", marginBottom: "6px" }}>Detailed Status</label>

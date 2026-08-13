@@ -82,7 +82,7 @@ export default function MLAChatbot() {
             fontFamily: "sans-serif",
           }}
         >
-          {/* Header */}
+          
           <div
             style={{
               backgroundColor: "#1e293b",
@@ -112,7 +112,7 @@ export default function MLAChatbot() {
             </button>
           </div>
 
-          {/* Quick prompt chips */}
+          
           <div
             style={{
               padding: "8px 12px",
@@ -149,7 +149,7 @@ export default function MLAChatbot() {
             ))}
           </div>
 
-          {/* Messages list */}
+          
           <div
             style={{
               flex: 1,
@@ -186,7 +186,7 @@ export default function MLAChatbot() {
             )}
           </div>
 
-          {/* Input box */}
+          
           <form
             onSubmit={(e) => {
               e.preventDefault();

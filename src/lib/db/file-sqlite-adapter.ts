@@ -147,7 +147,7 @@ export class FileSqliteAdapter implements IDatabaseAdapter {
     if (updates.internalNote) {
       internalNotes.push(updates.internalNote);
       complaint.internalNotes = internalNotes;
-      auditLog.push({ timestamp: now, action: "Internal note added", actor });
+      auditLog.push({ timestamp: now, action: `Action note recorded: ${updates.internalNote}`, actor, notes: updates.internalNote });
     }
 
     if (updates.mediaUrl) {
@@ -172,7 +172,6 @@ export class FileSqliteAdapter implements IDatabaseAdapter {
     const found = records.find((c) => (c.id || "").toLowerCase().trim() === cleanId);
     if (found) return found;
 
-    // Dynamic case fallback for live SKT case IDs requested via direct link
     if (cleanId.startsWith("skt-")) {
       const now = new Date().toISOString();
       const dynamicComplaint: ComplaintData = {

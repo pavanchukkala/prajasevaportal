@@ -92,7 +92,7 @@ export default function MLASidebarNav({ currentNav, counts }: MLASidebarNavProps
         </nav>
       </div>
 
-      {/* Sign Out Navigation Item (#9) */}
+      
       <div style={{ borderTop: "1px solid #334155", paddingTop: "16px", marginTop: "24px" }}>
         <a
           href="/api/auth/logout"

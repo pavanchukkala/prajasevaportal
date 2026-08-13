@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-type Role = "administrator" | "mla_staff" | "reviewer" | "department_officer";
+type Role = "administrator" | "mla_staff";
 
 interface StaffUser {
   username: string;
@@ -20,16 +20,13 @@ function getStaffUsers(): StaffUser[] {
     devUser: string,
     devPass: string
   ) => {
-    // Always fall back to devUser / devPass if env vars are not explicitly defined
     const u = envUser && envUser.trim() ? envUser.trim() : devUser;
     const p = envPass && envPass.trim() ? envPass.trim() : devPass;
     if (u && p) users.push({ username: u, passwordHash: p, role, displayName });
   };
 
   add(process.env.PSIP_ADMIN_USER, process.env.PSIP_ADMIN_PASS, "administrator", "System Administrator", "admin", "dev-admin-2026");
-  add(process.env.PSIP_MLA_USER, process.env.PSIP_MLA_PASS, "mla_staff", "MLA Office Staff", "mla_staff", "dev-mla-2026");
-  add(process.env.PSIP_REVIEWER_USER, process.env.PSIP_REVIEWER_PASS, "reviewer", "Case Reviewer", "reviewer", "dev-reviewer-2026");
-  add(process.env.PSIP_DEPT_USER, process.env.PSIP_DEPT_PASS, "department_officer", "Department Officer", "dept_officer", "dev-dept-2026");
+  add(process.env.PSIP_MLA_USER, process.env.PSIP_MLA_PASS, "mla_staff", "Action Dashboard Staff", "mla_staff", "dev-mla-2026");
 
   return users;
 }
@@ -58,12 +55,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Role → dashboard redirect
     const redirectMap: Record<Role, string> = {
-      administrator: "/admin/settings",
+      administrator: "/mla/dashboard",
       mla_staff: "/mla/dashboard",
-      reviewer: "/reviewer/cases",
-      department_officer: "/department/workspace",
     };
 
     const response = NextResponse.json({
@@ -81,7 +75,7 @@ export async function POST(req: NextRequest) {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 60 * 60 * 8, // 8 hours
+        maxAge: 60 * 60 * 8,
         path: "/",
       }
     );
