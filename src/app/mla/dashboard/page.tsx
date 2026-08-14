@@ -1,3 +1,29 @@
-import Link from "next/link"; import { requireMLASession, getMLAData, isSafety, isOverdue, priority, department, titleOf } from "@/lib/mla"; import { MLAWorkspace, Panel, Empty } from "@/components/mla/MLAWorkspace";
-export const dynamic="force-dynamic"; export const revalidate=0;
-export default async function Page(){ const user=await requireMLASession(); const d=await getMLAData(); const m=d.metrics; const cards=[['Total live complaints',m.totalLive,'/mla/cases?source=live'],['Emergency/safety cases',m.safety,'/mla/cases?safety=true'],['High-priority cases',m.highPriority,'/mla/cases?sort=urgency'],['Unassigned cases',m.unassigned,'/mla/cases?department=unassigned'],['Under review',m.underReview,'/mla/cases?status=Under%20Review'],['Assigned to departments',m.assigned,'/mla/cases?status=Assigned'],['Overdue action',m.overdue,'/mla/cases?sort=overdue'],['Resolved',m.resolved,'/mla/cases?status=Resolved'],['Reopened',m.reopened,'/mla/cases?status=Reopened']]; return <MLAWorkspace user={user} current="/mla/dashboard" buildId={d.system.buildId} commitSha={d.system.commitSha} refreshedAt={d.refreshedAt}><h1>Constituency Command Centre</h1><div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:12}}>{cards.map(([n,v,h])=><Link key={n as string} href={h as string} style={{padding:16,border:'1px solid var(--border-main)',borderRadius:12,textDecoration:'none'}}><b>{n}</b><div style={{fontSize:30,fontWeight:900}}>{v}</div></Link>)}</div><p>Live citizen complaints: {d.live.length} · Sample presentation records: {d.sample.length} · Last database update: {m.lastDatabaseUpdate||'No records'} · Last dashboard refresh: {m.lastDashboardRefresh}</p><Panel title="Priority and safety alert panel">{d.live.filter(isSafety).slice(0,5).map(c=><p key={c.id}><Link href={`/mla/cases/${c.id}`}>{c.id}</Link> · {priority(c)} · {department(c)} · AI triage is preliminary, not proof.</p>) || <Empty/>}</Panel><Panel title="Recent live complaint intelligence">{d.live.slice(0,6).map(c=><p key={c.id}><Link href={`/mla/cases/${c.id}`}>{c.id}</Link> · {titleOf(c)} · {c.mandal}</p>)}{d.live.length===0&&<Empty/>}</Panel><Panel title="Mandal distribution">{['Srikalahasti','Renigunta','Yerpedu','Thottambedu'].map(x=><Link key={x} href={`/mla/cases?mandal=${x}`}>{x}: {d.live.filter(c=>c.mandal===x).length} </Link>)}</Panel><Panel title="Department workload">{Array.from(new Set(d.live.map(department))).map(x=><p key={x}><Link href={`/mla/cases?department=${x}`}>{x}</Link>: {d.live.filter(c=>department(c)===x).length}</p>)}</Panel><Panel title="Action-taken summary">Action logs: {d.live.reduce((s,c)=>s+(c.auditLog?.length||0),0)}</Panel><Panel title="Overdue response panel">{d.live.filter(isOverdue).slice(0,5).map(c=><p key={c.id}><Link href={`/mla/cases/${c.id}`}>{c.id}</Link> overdue since {c.updatedAt||c.createdAt}</p>)}{d.live.filter(isOverdue).length===0&&<Empty label="No overdue live cases."/>}</Panel><Panel title="Live system status"><pre>{JSON.stringify(d.system,null,2)}</pre></Panel><Panel title="Quick actions"><Link href="/mla/cases">View all live cases</Link> · <Link href="/mla/priority">View safety escalations</Link> · <Link href="/mla/cases?department=unassigned">View unassigned cases</Link> · <Link href="/mla/departments">View department performance</Link> · <Link href="/mla/reports">Generate report</Link></Panel></MLAWorkspace>}
+import React from "react";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { ActionDashboard } from "@/components/mla/ActionDashboard";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export const metadata = {
+  title: "Action Dashboard — Srikalahasti Executive Command Centre",
+  description: "Executive Action Dashboard for reviewing citizen grievances, assigning field operations, and resolving constituency issues.",
+};
+
+export default async function ActionDashboardPage() {
+  const session = await getSession();
+  if (!session) {
+    redirect("/staff/login?redirect=/mla/dashboard");
+  }
+
+  let complaints: any[] = [];
+  try {
+    complaints = await db.complaints.list();
+  } catch (err) {
+    console.error("[Action Dashboard DB Error]:", err);
+  }
+
+  return <ActionDashboard user={session} complaints={complaints} buildId="v1e601de" />;
+}

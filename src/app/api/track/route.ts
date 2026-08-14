@@ -49,17 +49,21 @@ export async function GET(req: NextRequest) {
     })),
     message:
       complaint.status === "Resolved" || complaint.status === "Solved"
-        ? "This complaint has been verified and resolved by field officers."
-        : complaint.status === "Under Review" || complaint.status === "Viewed"
-        ? "Your complaint has been viewed and is under active review."
+        ? "This complaint has been verified and resolved by executive field officers."
+        : complaint.status === "Closed"
+        ? "This case file has been officially closed."
+        : complaint.status === "Viewed"
+        ? "Your complaint has been marked as viewed by MLA office staff."
+        : complaint.status === "More Information Requested"
+        ? "Staff attempted contact to request additional details regarding your grievance."
+        : complaint.status === "Contacted (No Response)"
+        ? "Staff attempted to reach your contact number; follow-up is in progress."
         : complaint.status === "Assigned"
         ? `Your complaint has been assigned to ${deptLabel} for field inspection.`
         : complaint.status === "Action Reported"
-        ? `Work order issued by ${deptLabel}. Resolution in progress.`
+        ? `Work order & field action report issued by ${deptLabel}.`
         : complaint.status === "Escalated"
         ? "Your complaint has been escalated for priority executive intervention."
-        : complaint.status === "More Information Requested"
-        ? "Reviewers have requested additional details. You may submit an updated report."
         : "Your complaint has been received and is queued for reviewer triage.",
   });
 }

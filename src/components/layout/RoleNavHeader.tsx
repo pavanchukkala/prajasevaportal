@@ -119,11 +119,11 @@ function getNavItemsForRole(role: SessionUser["role"]): { href: string; label: s
     case "reviewer":
       return [{ href: "/reviewer/cases", label: "🛡 Reviewer Triage Queue" }];
     case "mla_staff":
-      return [{ href: "/mla/dashboard", label: "📊 MLA Command Dashboard" }];
+      return [{ href: "/mla/dashboard", label: "⚡ Action Dashboard" }];
     case "administrator":
     default:
       return [
-        { href: "/mla/dashboard", label: "📊 MLA Dashboard" },
+        { href: "/mla/dashboard", label: "⚡ Action Dashboard" },
         { href: "/reviewer/cases", label: "🛡 Reviewer Queue" },
         { href: "/department/workspace", label: "🏢 Dept Workspace" },
         { href: "/admin/settings", label: "⚙️ System Admin" },

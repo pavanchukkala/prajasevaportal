@@ -40,7 +40,7 @@ export default async function ComplaintDetailPage({
     <div style={theme.page}>
       <div style={theme.container}>
         <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Link href="/mla/dashboard" style={theme.backLink}>&larr; Back to MLA Dashboard</Link>
+          <Link href="/mla/dashboard" style={theme.backLink}>&larr; Back to Action Dashboard</Link>
           <span style={{ color: '#94a3b8', fontSize: '13px' }}>
             Current Status: <strong style={{ color: '#fbbf24' }}>{complaint.status}</strong>
           </span>
@@ -52,12 +52,15 @@ export default async function ComplaintDetailPage({
             <div style={theme.card}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
                 <div>
-                  <h1 style={theme.title}>{ai?.title ?? 'Citizen Grievance Record'}</h1>
+                  <div style={{ fontSize: "11px", fontWeight: 800, color: "#fbbf24", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
+                    ⚡ RELEVANT AI CASE TITLE
+                  </div>
+                  <h1 style={theme.title}>{ai?.title ?? (complaint.description ? complaint.description.slice(0, 75) + "..." : 'Citizen Grievance Record')}</h1>
                   <p style={{ color: '#38bdf8', fontSize: '15px', fontWeight: 800, fontFamily: 'monospace', margin: 0 }}>
                     Case ID: {complaint.id} &bull; Token: {complaint.trackingToken}
                   </p>
                 </div>
-                <span style={{ backgroundColor: complaint.status === 'Solved' ? '#059669' : complaint.status === 'Contacted (No Response)' ? '#d97706' : '#2563eb', color: '#fff', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 800 }}>
+                <span style={{ backgroundColor: complaint.status === 'Solved' || complaint.status === 'Resolved' ? '#059669' : complaint.status === 'Contacted (No Response)' ? '#d97706' : '#2563eb', color: '#fff', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 800 }}>
                   {complaint.status}
                 </span>
               </div>

@@ -27,7 +27,7 @@ export function EvidenceAndActionManager({
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
-  async function updateQuickStatus(newStatus: string) {
+  async function updateStageAction(newStatus: string, notePrefix?: string) {
     setIsSubmitting(true);
     setFeedback(null);
     try {
@@ -38,21 +38,24 @@ export function EvidenceAndActionManager({
           status: newStatus,
           assignedDepartment,
           assignedTo,
-          internalNote: `Quick Action: Status updated to ${newStatus}`,
+          internalNote: notePrefix ? `${notePrefix}: ${newStatus}` : `Stage updated to ${newStatus}`,
         }),
       });
       const data = await res.json();
       if (res.ok && (data.success || data.id)) {
         setStatus(newStatus);
-        setFeedback({ text: `✓ Status updated to "${newStatus}". Reflected in tracking.`, type: "success" });
+        setFeedback({
+          text: `✓ Case stage updated to "${newStatus}". Reflected in public tracking and Action Dashboard.`,
+          type: "success",
+        });
         setTimeout(() => {
           window.location.reload();
         }, 1000);
       } else {
-        setFeedback({ text: data.error || "Failed to update status.", type: "error" });
+        setFeedback({ text: data.error || "Failed to update case stage.", type: "error" });
       }
     } catch {
-      setFeedback({ text: "Error updating status.", type: "error" });
+      setFeedback({ text: "Error updating case stage.", type: "error" });
     } finally {
       setIsSubmitting(false);
     }
@@ -77,7 +80,7 @@ export function EvidenceAndActionManager({
 
       const data = await res.json();
       if (res.ok && (data.success || data.id)) {
-        setFeedback({ text: "✓ Executive status & case updates saved successfully. Reflected in public tracking.", type: "success" });
+        setFeedback({ text: "✓ Action saved successfully. Reflected in tracking.", type: "success" });
         setInternalNote("");
         setTimeout(() => {
           window.location.reload();
@@ -123,8 +126,8 @@ export function EvidenceAndActionManager({
 
   return (
     <div>
-      {/* Evidence Files Section */}
-      <div style={{ backgroundColor: "rgba(15,23,42,0.8)", padding: "16px", borderRadius: "8px", border: "1px solid #38bdf8", marginBottom: "20px" }}>
+      {/* Evidence Files Section & Deletion Controls */}
+      <div style={{ backgroundColor: "rgba(15,23,42,0.8)", padding: "16px", borderRadius: "10px", border: "1px solid #38bdf8", marginBottom: "20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <h3 style={{ fontSize: "14px", color: "#38bdf8", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0, fontWeight: 800 }}>
             🎥 Attached Evidence Files ({mediaUrls.length})
@@ -160,7 +163,7 @@ export function EvidenceAndActionManager({
                         type="button"
                         onClick={() => handleDeleteEvidence(url)}
                         disabled={isDeleting === filename}
-                        style={{ backgroundColor: "rgba(239, 68, 68, 0.15)", color: "#f87171", border: "1px solid #ef4444", borderRadius: "4px", padding: "3px 8px", fontSize: "11px", fontWeight: 700, cursor: "pointer" }}
+                        style={{ backgroundColor: "rgba(239, 68, 68, 0.15)", color: "#f87171", border: "1px solid #ef4444", borderRadius: "4px", padding: "4px 10px", fontSize: "11px", fontWeight: 800, cursor: "pointer" }}
                       >
                         {isDeleting === filename ? "Deleting..." : "🗑️ Delete Evidence"}
                       </button>
@@ -198,10 +201,10 @@ export function EvidenceAndActionManager({
         )}
       </div>
 
-      {/* Action Panel Controls */}
-      <div style={{ backgroundColor: "#1e293b", borderRadius: "8px", padding: "20px", border: "1px solid #fbbf24", marginTop: "24px" }}>
+      {/* Expanded Action Panel Controls */}
+      <div style={{ backgroundColor: "#1e293b", borderRadius: "10px", padding: "22px", border: "1px solid #fbbf24", marginTop: "24px" }}>
         <h2 style={{ fontSize: "18px", color: "#fbbf24", margin: "0 0 14px", borderBottom: "1px solid #334155", paddingBottom: "10px", fontWeight: 800 }}>
-          ⚡ Executive Status Actions & Triage
+          ⚡ Executive Stage Actions & Resolution Workflow
         </h2>
 
         {feedback && (
@@ -211,7 +214,7 @@ export function EvidenceAndActionManager({
               borderRadius: "6px",
               marginBottom: "14px",
               fontSize: "0.85rem",
-              fontWeight: 700,
+              fontWeight: 800,
               background: feedback.type === "success" ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.15)",
               border: feedback.type === "success" ? "1px solid #10b981" : "1px solid #ef4444",
               color: feedback.type === "success" ? "#34d399" : "#f87171",
@@ -221,61 +224,189 @@ export function EvidenceAndActionManager({
           </div>
         )}
 
-        {/* Quick Action Status Buttons */}
-        <div style={{ marginBottom: "16px" }}>
-          <label style={{ display: "block", fontSize: "12px", color: "#94a3b8", marginBottom: "8px", fontWeight: 700, textTransform: "uppercase" }}>
-            Quick Status Update
+        {/* EXPANDED STAGE ACTION BUTTONS */}
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ display: "block", fontSize: "12px", color: "#94a3b8", marginBottom: "10px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            Direct Action Stage Controls (Updates Public Tracking & Action Dashboard)
           </label>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px" }}>
+            {/* 1. Mark Viewed */}
             <button
               type="button"
               disabled={isSubmitting}
-              onClick={() => updateQuickStatus("Viewed")}
-              style={{ backgroundColor: status === "Viewed" ? "#2563eb" : "#1e40af", color: "#ffffff", padding: "9px 6px", borderRadius: "6px", border: "none", fontWeight: 800, fontSize: "12px", cursor: isSubmitting ? "not-allowed" : "pointer" }}
+              onClick={() => updateStageAction("Viewed", "Marked as Viewed by Staff")}
+              style={{
+                backgroundColor: status === "Viewed" ? "#2563eb" : "rgba(37,99,235,0.15)",
+                color: status === "Viewed" ? "#ffffff" : "#60a5fa",
+                border: "1px solid #2563eb",
+                padding: "10px 8px",
+                borderRadius: "8px",
+                fontWeight: 800,
+                fontSize: "12px",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+              }}
             >
-              👁️ Marked Viewed
+              👁️ Mark Viewed
             </button>
+
+            {/* 2. Contacted - More Details Requested */}
             <button
               type="button"
               disabled={isSubmitting}
-              onClick={() => updateQuickStatus("Contacted (No Response)")}
-              style={{ backgroundColor: status === "Contacted (No Response)" ? "#d97706" : "#b45309", color: "#ffffff", padding: "9px 6px", borderRadius: "6px", border: "none", fontWeight: 800, fontSize: "12px", cursor: isSubmitting ? "not-allowed" : "pointer" }}
+              onClick={() => updateStageAction("More Information Requested", "Contacted Citizen for Details")}
+              style={{
+                backgroundColor: status === "More Information Requested" ? "#d97706" : "rgba(217,119,6,0.15)",
+                color: status === "More Information Requested" ? "#ffffff" : "#fbbf24",
+                border: "1px solid #d97706",
+                padding: "10px 8px",
+                borderRadius: "8px",
+                fontWeight: 800,
+                fontSize: "12px",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+              }}
             >
-              📞 Contacted (No Resp)
+              📞 Contacted (More Details)
             </button>
+
+            {/* 3. Contacted - No Response */}
             <button
               type="button"
               disabled={isSubmitting}
-              onClick={() => updateQuickStatus("Solved")}
-              style={{ backgroundColor: status === "Solved" ? "#059669" : "#047857", color: "#ffffff", padding: "9px 6px", borderRadius: "6px", border: "none", fontWeight: 800, fontSize: "12px", cursor: isSubmitting ? "not-allowed" : "pointer" }}
+              onClick={() => updateStageAction("Contacted (No Response)", "Contacted Citizen - No Answer")}
+              style={{
+                backgroundColor: status === "Contacted (No Response)" ? "#ea580c" : "rgba(234,88,12,0.15)",
+                color: status === "Contacted (No Response)" ? "#ffffff" : "#fb923c",
+                border: "1px solid #ea580c",
+                padding: "10px 8px",
+                borderRadius: "8px",
+                fontWeight: 800,
+                fontSize: "12px",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+              }}
             >
-              ✅ Marked Solved
+              📵 Contacted (No Response)
+            </button>
+
+            {/* 4. Assign Department */}
+            <button
+              type="button"
+              disabled={isSubmitting}
+              onClick={() => updateStageAction("Assigned", `Assigned to ${getDepartmentLabel(assignedDepartment)}`)}
+              style={{
+                backgroundColor: status === "Assigned" ? "#0284c7" : "rgba(2,132,199,0.15)",
+                color: status === "Assigned" ? "#ffffff" : "#38bdf8",
+                border: "1px solid #0284c7",
+                padding: "10px 8px",
+                borderRadius: "8px",
+                fontWeight: 800,
+                fontSize: "12px",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+              }}
+            >
+              🏢 Assign Department
+            </button>
+
+            {/* 5. Escalate Case */}
+            <button
+              type="button"
+              disabled={isSubmitting}
+              onClick={() => updateStageAction("Escalated", "Escalated for Priority Review")}
+              style={{
+                backgroundColor: status === "Escalated" ? "#dc2626" : "rgba(220,38,38,0.15)",
+                color: status === "Escalated" ? "#ffffff" : "#f87171",
+                border: "1px solid #dc2626",
+                padding: "10px 8px",
+                borderRadius: "8px",
+                fontWeight: 800,
+                fontSize: "12px",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+              }}
+            >
+              🚨 Escalate Case
+            </button>
+
+            {/* 6. Field Action Reported */}
+            <button
+              type="button"
+              disabled={isSubmitting}
+              onClick={() => updateStageAction("Action Reported", "Field Action Report Filed")}
+              style={{
+                backgroundColor: status === "Action Reported" ? "#7c3aed" : "rgba(124,58,237,0.15)",
+                color: status === "Action Reported" ? "#ffffff" : "#c084fc",
+                border: "1px solid #7c3aed",
+                padding: "10px 8px",
+                borderRadius: "8px",
+                fontWeight: 800,
+                fontSize: "12px",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+              }}
+            >
+              ⚙️ Field Action Reported
+            </button>
+
+            {/* 7. Mark Solved (Moves to Solved Cases List) */}
+            <button
+              type="button"
+              disabled={isSubmitting}
+              onClick={() => updateStageAction("Solved", "Case Solved & Verified")}
+              style={{
+                backgroundColor: status === "Solved" ? "#059669" : "rgba(5,150,105,0.2)",
+                color: status === "Solved" ? "#ffffff" : "#34d399",
+                border: "1.5px solid #059669",
+                padding: "10px 8px",
+                borderRadius: "8px",
+                fontWeight: 900,
+                fontSize: "12px",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+                gridColumn: "span 1",
+              }}
+            >
+              ✅ Mark Solved (Move to Solved)
+            </button>
+
+            {/* 8. Close Case */}
+            <button
+              type="button"
+              disabled={isSubmitting}
+              onClick={() => updateStageAction("Closed", "Case Closed")}
+              style={{
+                backgroundColor: status === "Closed" ? "#475569" : "rgba(71,85,105,0.2)",
+                color: status === "Closed" ? "#ffffff" : "#94a3b8",
+                border: "1px solid #475569",
+                padding: "10px 8px",
+                borderRadius: "8px",
+                fontWeight: 800,
+                fontSize: "12px",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+              }}
+            >
+              🔒 Close Case
             </button>
           </div>
         </div>
 
-        {/* Detailed Status & Assignment Form */}
+        {/* Detailed Status & Department Assignment Form */}
         <form style={{ display: "flex", flexDirection: "column", gap: "14px" }} onSubmit={handleDetailedUpdate}>
           <div>
-            <label style={{ display: "block", fontSize: "13px", color: "#94a3b8", marginBottom: "6px" }}>Detailed Status</label>
+            <label style={{ display: "block", fontSize: "13px", color: "#94a3b8", marginBottom: "6px" }}>Detailed Stage Status</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              style={{ width: "100%", padding: "10px", backgroundColor: "#0f172a", border: "1px solid #334155", color: "#f8fafc", borderRadius: "4px" }}
+              style={{ width: "100%", padding: "10px", backgroundColor: "#0f172a", border: "1px solid #334155", color: "#f8fafc", borderRadius: "6px" }}
             >
               <option value="New">New</option>
               <option value="AI Processed">AI Processed</option>
               <option value="Viewed">👁️ Viewed</option>
-              <option value="Contacted (No Response)">📞 Contacted (No Response)</option>
+              <option value="More Information Requested">📞 More Information Requested</option>
+              <option value="Contacted (No Response)">📵 Contacted (No Response)</option>
               <option value="Under Review">Under Review</option>
-              <option value="More Information Requested">More Information Requested</option>
-              <option value="Assigned">Assigned</option>
-              <option value="Escalated">Escalated</option>
-              <option value="Action Reported">Action Reported</option>
-              <option value="Solved">✅ Solved</option>
+              <option value="Assigned">🏢 Assigned</option>
+              <option value="Escalated">🚨 Escalated</option>
+              <option value="Action Reported">⚙️ Action Reported</option>
+              <option value="Solved">✅ Solved (Moves to Solved Cases List)</option>
               <option value="Resolved">Resolved</option>
-              <option value="Reopened">Reopened</option>
-              <option value="Closed">Closed</option>
+              <option value="Closed">🔒 Closed</option>
             </select>
           </div>
 
@@ -284,7 +415,7 @@ export function EvidenceAndActionManager({
             <select
               value={assignedDepartment}
               onChange={(e) => setAssignedDepartment(e.target.value)}
-              style={{ width: "100%", padding: "10px", backgroundColor: "#0f172a", border: "1px solid #334155", color: "#f8fafc", borderRadius: "4px" }}
+              style={{ width: "100%", padding: "10px", backgroundColor: "#0f172a", border: "1px solid #334155", color: "#f8fafc", borderRadius: "6px" }}
             >
               {CANONICAL_DEPARTMENTS.map((d) => (
                 <option key={d.key} value={d.key}>
@@ -301,7 +432,7 @@ export function EvidenceAndActionManager({
               value={assignedTo}
               onChange={(e) => setAssignedTo(e.target.value)}
               placeholder="e.g. Officer Name or ID (Optional)"
-              style={{ width: "100%", padding: "10px", backgroundColor: "#0f172a", border: "1px solid #334155", color: "#f8fafc", borderRadius: "4px" }}
+              style={{ width: "100%", padding: "10px", backgroundColor: "#0f172a", border: "1px solid #334155", color: "#f8fafc", borderRadius: "6px" }}
             />
           </div>
 
@@ -311,15 +442,15 @@ export function EvidenceAndActionManager({
               value={internalNote}
               onChange={(e) => setInternalNote(e.target.value)}
               rows={3}
-              placeholder="Describe action taken, field inspection details, or resolution status..."
-              style={{ width: "100%", padding: "10px", backgroundColor: "#0f172a", border: "1px solid #334155", color: "#f8fafc", borderRadius: "4px", resize: "vertical" }}
+              placeholder="Describe action taken, constituent phone conversation notes, or resolution status..."
+              style={{ width: "100%", padding: "10px", backgroundColor: "#0f172a", border: "1px solid #334155", color: "#f8fafc", borderRadius: "6px", resize: "vertical" }}
             />
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            style={{ width: "100%", padding: "12px", backgroundColor: isSubmitting ? "#d97706" : "#fbbf24", color: "#0f172a", border: "none", borderRadius: "4px", fontWeight: "bold", cursor: isSubmitting ? "not-allowed" : "pointer", fontSize: "15px" }}
+            style={{ width: "100%", padding: "12px", backgroundColor: isSubmitting ? "#d97706" : "#fbbf24", color: "#0f172a", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: isSubmitting ? "not-allowed" : "pointer", fontSize: "15px" }}
           >
             {isSubmitting ? "Saving Case Updates..." : "Save Case Updates"}
           </button>
