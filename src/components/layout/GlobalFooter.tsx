@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import CivicLogo from "./CivicLogo";
-import NationalEmblemIndia from "./NationalEmblemIndia";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function GlobalFooter() {
@@ -30,9 +29,8 @@ export default function GlobalFooter() {
         >
           {/* Brand Info */}
           <div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.25rem" }}>
+            <div style={{ marginBottom: "1.25rem" }}>
               <CivicLogo size="lg" />
-              <NationalEmblemIndia size={42} showMotto={true} showBadge={true} theme="gold" />
             </div>
             <p
               style={{
