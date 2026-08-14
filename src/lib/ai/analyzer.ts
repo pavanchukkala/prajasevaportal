@@ -1,5 +1,5 @@
 // ============================================================
-// AI Complaint Analyzer — Safety-First Architecture
+// AI Complaint Analyzer — Safety-First & Executive Intelligence
 // Priority & Safety classification happens BEFORE completeness scoring.
 // Missing optional fields NEVER downgrade emergency/safety urgency.
 // ============================================================
@@ -27,6 +27,7 @@ export type SafetyCategory =
 
 export interface AIAnalysisResult {
   title: string;
+  summary: string;
   category: string;
   subcategory?: string;
   department: string;
@@ -63,7 +64,7 @@ export function detectSafetyCategory(text: string): {
 } {
   const lower = text.toLowerCase();
 
-  // 1. Detect false context (e.g. news mentions, policy discussions, awareness events)
+  // Detect false context (e.g. news mentions, policy discussions)
   const falseContextIndicators = [
     "awareness program",
     "awareness campaign",
@@ -88,155 +89,85 @@ export function detectSafetyCategory(text: string): {
     return { category: "None", isFalseContext: true, matchedTerms: [] };
   }
 
-  // 2. Safety category rules with expanded typos & phonetic spellings (English + Telugu)
+  // Safety terms
   const sexualViolenceTerms = [
-    "rape",
-    "raped",
-    "rapped",
-    "raping",
-    "rapist",
-    "sexual assault",
-    "sexually assaulted",
-    "sexual violence",
-    "attempted rape",
-    "molest",
-    "molested",
-    "molestation",
-    "bad touch",
-    "harass",
-    "harassed",
-    "harassment",
-    "లైంగిక దాడి",
-    "లైంగిక వేధింపులు",
-    "రేప్",
-    "చెరపట్టడం",
+    "rape", "raped", "rapped", "raping", "rapist", "sexual assault",
+    "sexually assaulted", "sexual violence", "attempted rape", "molest",
+    "molested", "molestation", "bad touch", "harass", "harassed", "harassment",
+    "లైంగిక దాడి", "లైంగిక వేధింపులు", "రేప్", "చెరపట్టడం"
   ];
 
   const childSafetyTerms = [
-    "child sexual abuse",
-    "child abuse",
-    "pocso",
-    "pedophile",
-    "missing child",
-    "abducted child",
-    "child kidnapping",
-    "చిన్నారుల వేధింపులు",
-    "పిల్లల కిడ్నాప్",
-    "పిల్లలు అపహరణ",
+    "child sexual abuse", "child abuse", "pocso", "pedophile",
+    "missing child", "abducted child", "child kidnapping",
+    "చిన్నారుల వేధింపులు", "పిల్లల కిడ్నాప్", "పిల్లలు అపహరణ"
   ];
 
   const traffickingTerms = [
-    "trafficking",
-    "human trafficking",
-    "forced prostitution",
-    "మానవ అక్రమ రవాణా",
+    "trafficking", "human trafficking", "forced prostitution", "మానవ అక్రమ రవాణా"
   ];
 
   const domesticViolenceDangerTerms = [
-    "domestic violence danger",
-    "dowry torture immediate",
-    "beating wife dangerously",
-    "కుటుంబ వేధింపులు ప్రాణాపాయం",
+    "domestic violence danger", "dowry torture immediate", "beating wife dangerously", "కుటుంబ వేధింపులు ప్రాణాపాయం"
   ];
 
   const kidnappingTerms = [
-    "kidnap",
-    "kidnapped",
-    "kidnaped",
-    "abduction",
-    "abducted",
-    "held hostage",
-    "కిడ్నాప్",
-    "అపహరణ",
+    "kidnap", "kidnapped", "kidnaped", "abduction", "abducted", "held hostage", "కిడ్నాప్", "అపహరణ"
   ];
 
   const threatToLifeTerms = [
-    "threat to life",
-    "attempted murder",
-    "trying to kill",
-    "weapon attack",
-    "stabbing",
-    "shooting",
-    "ongoing violence",
-    "ప్రాణాపాయం",
-    "హత్యాయత్నం",
-    "దాడి చేస్తున్నారు",
+    "threat to life", "attempted murder", "trying to kill", "weapon attack",
+    "stabbing", "shooting", "ongoing violence", "ప్రాణాపాయం", "హత్యాయత్నం", "దాడి చేస్తున్నారు"
   ];
 
   const selfHarmTerms = [
-    "suicide threat",
-    "suicide attempt",
-    "self-harm",
-    "going to kill myself",
-    "ఆత్మహత్య",
+    "suicide threat", "suicide attempt", "self-harm", "going to kill myself", "ఆత్మహత్య"
   ];
 
   const fireDisasterTerms = [
-    "fire hazard",
-    "building fire",
-    "cylinder blast",
-    "flooding emergency",
-    "అగ్ని ప్రమాదం",
-    "సిలిండర్ పేలుడు",
+    "fire hazard", "building fire", "cylinder blast", "flooding emergency", "అగ్ని ప్రమాదం", "సిలిండర్ పేలుడు"
   ];
 
   const checkTerms = (terms: string[]): string[] =>
     terms.filter((term) => lower.includes(term));
 
   const matchedSexual = checkTerms(sexualViolenceTerms);
-  if (matchedSexual.length > 0) {
-    return { category: "Sexual Violence / Assault", isFalseContext: false, matchedTerms: matchedSexual };
-  }
+  if (matchedSexual.length > 0) return { category: "Sexual Violence / Assault", isFalseContext: false, matchedTerms: matchedSexual };
 
   const matchedChild = checkTerms(childSafetyTerms);
-  if (matchedChild.length > 0) {
-    return { category: "Child Safety / Abuse", isFalseContext: false, matchedTerms: matchedChild };
-  }
+  if (matchedChild.length > 0) return { category: "Child Safety / Abuse", isFalseContext: false, matchedTerms: matchedChild };
 
   const matchedTrafficking = checkTerms(traffickingTerms);
-  if (matchedTrafficking.length > 0) {
-    return { category: "Trafficking", isFalseContext: false, matchedTerms: matchedTrafficking };
-  }
+  if (matchedTrafficking.length > 0) return { category: "Trafficking", isFalseContext: false, matchedTerms: matchedTrafficking };
 
   const matchedKidnapping = checkTerms(kidnappingTerms);
-  if (matchedKidnapping.length > 0) {
-    return { category: "Threat to Life / Kidnapping", isFalseContext: false, matchedTerms: matchedKidnapping };
-  }
+  if (matchedKidnapping.length > 0) return { category: "Threat to Life / Kidnapping", isFalseContext: false, matchedTerms: matchedKidnapping };
 
   const matchedLife = checkTerms(threatToLifeTerms);
-  if (matchedLife.length > 0) {
-    return { category: "Threat to Life / Kidnapping", isFalseContext: false, matchedTerms: matchedLife };
-  }
+  if (matchedLife.length > 0) return { category: "Threat to Life / Kidnapping", isFalseContext: false, matchedTerms: matchedLife };
 
   const matchedDomestic = checkTerms(domesticViolenceDangerTerms);
-  if (matchedDomestic.length > 0) {
-    return { category: "Domestic Violence in Immediate Danger", isFalseContext: false, matchedTerms: matchedDomestic };
-  }
+  if (matchedDomestic.length > 0) return { category: "Domestic Violence in Immediate Danger", isFalseContext: false, matchedTerms: matchedDomestic };
 
   const matchedSelfHarm = checkTerms(selfHarmTerms);
-  if (matchedSelfHarm.length > 0) {
-    return { category: "Self-Harm / Personal Emergency", isFalseContext: false, matchedTerms: matchedSelfHarm };
-  }
+  if (matchedSelfHarm.length > 0) return { category: "Self-Harm / Personal Emergency", isFalseContext: false, matchedTerms: matchedSelfHarm };
 
   const matchedDisaster = checkTerms(fireDisasterTerms);
-  if (matchedDisaster.length > 0) {
-    return { category: "Fire or Disaster", isFalseContext: false, matchedTerms: matchedDisaster };
-  }
+  if (matchedDisaster.length > 0) return { category: "Fire or Disaster", isFalseContext: false, matchedTerms: matchedDisaster };
 
   return { category: "None", isFalseContext: false, matchedTerms: [] };
 }
 
-// ── Local rule-based analyzer with Safety-First priority & Legal Intelligence ─
+// ── Local rule-based analyzer ───────────────────────────────────────────────
 export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
   const desc = payload.description.toLowerCase();
 
-  // STEP 1: Run Safety Classification FIRST
+  // STEP 1: Safety Evaluation
   const safetyEval = detectSafetyCategory(payload.description);
   const isSafetyCase = safetyEval.category !== "None";
 
-  // STEP 2: Establish Urgency (SAFETY CASES CANNOT BE DOWNGRADED)
+  // STEP 2: Urgency
   let urgency: AIAnalysisResult["urgency"] = "Routine";
-
   if (isSafetyCase) {
     if (
       safetyEval.category === "Sexual Violence / Assault" ||
@@ -249,34 +180,16 @@ export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
       urgency = "Emergency";
     }
   } else {
-    // Non-safety urgency detection
-    if (
-      desc.includes("burst") ||
-      desc.includes("flooding") ||
-      desc.includes("contamination") ||
-      desc.includes("accident") ||
-      desc.includes("అగ్ని")
-    ) {
+    if (desc.includes("burst") || desc.includes("flooding") || desc.includes("contamination") || desc.includes("accident") || desc.includes("అగ్ని")) {
       urgency = "Emergency";
-    } else if (
-      desc.includes("bribe") ||
-      desc.includes("corruption") ||
-      desc.includes("leak") ||
-      desc.includes("లంచం")
-    ) {
+    } else if (desc.includes("bribe") || desc.includes("corruption") || desc.includes("leak") || desc.includes("లంచం")) {
       urgency = "High";
-    } else if (
-      desc.includes("delay") ||
-      desc.includes("pending") ||
-      desc.includes("road") ||
-      desc.includes("pothole") ||
-      desc.includes("ఆలస్యం")
-    ) {
+    } else if (desc.includes("delay") || desc.includes("pending") || desc.includes("road") || desc.includes("pothole") || desc.includes("ఆలస్యం")) {
       urgency = "Priority";
     }
   }
 
-  // STEP 3: Category & Subcategory Determination
+  // STEP 3: Category & Subcategory
   let category = "General Grievance";
   let subcategory = "Public Service Delivery";
 
@@ -295,7 +208,7 @@ export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
   } else if (desc.includes("electricity") || desc.includes("power") || desc.includes("విద్యుత్")) {
     category = "Infrastructure — Electricity";
     subcategory = "Power Supply Issue";
-  } else if (desc.includes("bribe") || desc.includes("payment") || desc.includes(" corruption") || desc.includes("లంచం")) {
+  } else if (desc.includes("bribe") || desc.includes("corruption") || desc.includes("లంచం")) {
     category = "Alleged Misconduct — Financial Irregularity";
     subcategory = "Alleged Bribery / Irregular Payment";
   }
@@ -304,10 +217,7 @@ export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
   let department = payload.department || "To Be Determined";
   if (!payload.department) {
     if (isSafetyCase) {
-      if (
-        safetyEval.category === "Sexual Violence / Assault" ||
-        safetyEval.category === "Child Safety / Abuse"
-      ) {
+      if (safetyEval.category === "Sexual Violence / Assault" || safetyEval.category === "Child Safety / Abuse") {
         department = "Police / Women & Child Protection";
       } else if (safetyEval.category === "Fire or Disaster") {
         department = "Fire & Disaster Response";
@@ -325,14 +235,12 @@ export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
     }
   }
 
-  // STEP 5: Completeness Evaluation
+  // STEP 5: Completeness & Missing Info
   const missingInformation: string[] = [];
   if (!payload.village) missingInformation.push("Exact village or ward location not provided");
   if (!payload.hasImages) missingInformation.push("No photographic or video evidence attached");
   if (!payload.hasAudio) missingInformation.push("No audio recording provided");
-  if (payload.description.length < 100) {
-    missingInformation.push("Description is brief — additional detail recommended");
-  }
+  if (payload.description.length < 100) missingInformation.push("Description is brief — additional detail recommended");
 
   const evidenceCompleteness: AIAnalysisResult["evidenceCompleteness"] =
     payload.hasImages && payload.hasAudio
@@ -341,19 +249,15 @@ export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
       ? "Partial"
       : "Insufficient";
 
-  // STEP 6: Credibility & Confidence Calculation
+  // STEP 6: Credibility & Confidence
   let baseConfidence = 55;
   if (payload.hasImages) baseConfidence += 15;
   if (payload.hasAudio) baseConfidence += 10;
   if (payload.village) baseConfidence += 8;
   if (payload.description.length > 200) baseConfidence += 5;
-
-  if (isSafetyCase) {
-    baseConfidence = Math.max(baseConfidence, 85);
-  }
+  if (isSafetyCase) baseConfidence = Math.max(baseConfidence, 85);
 
   const confidenceScore = Math.min(Math.max(baseConfidence, 30), 98);
-
   const credibilityBand: AIAnalysisResult["credibilityBand"] =
     confidenceScore >= 80
       ? "High preliminary confidence"
@@ -361,31 +265,30 @@ export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
       ? "Medium preliminary confidence"
       : "Low preliminary confidence";
 
-  // STEP 7: Recommended Action & Constitutional/Legal Directive
+  // STEP 7: Recommended Action & Summary
   let recommendedAction = "";
   let safetyMessage: string | undefined;
 
   if (isSafetyCase) {
     safetyMessage = SEXUAL_CHILD_SAFETY_DISCLAIMER;
     recommendedAction = `CRITICAL LEGAL & SAFETY ACTION: 
-1. Constitutional Safeguard: Article 21 (Right to Life & Personal Integrity) & Article 15(3) protection applies.
-2. Criminal Law Framework: File Zero FIR immediately under Section 173 Bharatiya Nyaya Sanhita (BNS) 2023 / Section 376 IPC & POCSO Act at nearest Police Station (DISHA / Srikalahasti Police).
-3. Medical & Forensic Protocol: Dispatch victim immediately for mandatory medical-legal examination under BNS Section 184 at Area Hospital Srikalahasti / SVRR Tirupati.
-4. Emergency Helplines: Contact Police 112 / 100, DISHA SOS, Women Helpline 181, Childline 1098.`;
+1. Constitutional Protection: Article 21 (Right to Life) & Article 15(3) protection applies.
+2. Criminal Procedure: Register Zero FIR under Section 173 Bharatiya Nyaya Sanhita (BNS) 2023 / Section 376 IPC & POCSO Act at DISHA / Srikalahasti Police Station.
+3. Medical & Forensic Protocol: Immediate medical-legal examination under BNS Section 184 at Area Hospital Srikalahasti / SVRR Hospital.
+4. Emergency Dispatch: Contact Police 112/100, DISHA SOS, Women Helpline 181, Childline 1098.`;
   } else {
-    recommendedAction = `Forward report to ${department} officer in ${payload.mandal} Mandal for preliminary verification. Human review required.`;
+    recommendedAction = `Forward report to ${department} officer in ${payload.mandal} Mandal for immediate field verification and resolution tracking.`;
   }
 
-  // STEP 8: Title Construction
-  let title = "";
-  if (isSafetyCase) {
-    title = `🚨 [CRITICAL SAFETY EMERGENCY] ${safetyEval.category} — ${payload.mandal}`;
-  } else {
-    title = `${category} reported in ${payload.mandal}${payload.village ? ` (${payload.village})` : ""}`;
-  }
+  const title = isSafetyCase
+    ? `🚨 [CRITICAL SAFETY EMERGENCY] ${safetyEval.category} — ${payload.mandal}`
+    : `${category} reported in ${payload.mandal}${payload.village ? ` (${payload.village})` : ""}`;
+
+  const summary = `Citizen report filed from ${payload.mandal} Mandal${payload.village ? ` (${payload.village})` : ""}. Categorized under ${category} (${subcategory}). Urgency assessed as ${urgency}. ${isSafetyCase ? "Immediate protective intervention mandated by law." : `Assigned to ${department} for field inspection.`}`;
 
   return {
     title,
+    summary,
     category,
     subcategory,
     department,
@@ -405,23 +308,23 @@ export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
   };
 }
 
-// ── Groq LLM integration ─────────────────────────────────────────────────────
+// ── Groq LLM Integration (Llama-3.3-70b-versatile) ──────────────────────────
 async function groqAnalysis(payload: ComplaintPayload): Promise<AIAnalysisResult> {
   const DEFAULT_KEY_B64 = "Z3NrX0gzbldaeHREWGVQdHNpa29RN2xZV0dkeWIzZllQYzRsdEVYUWt2NFpYMzlrZDhCbERuOFE=";
   const apiKey = process.env.GROQ_API_KEY || Buffer.from(DEFAULT_KEY_B64, "base64").toString("utf-8");
 
-  const prompt = `You are a senior constitutional legal and civic safety AI analyst for Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh, India.
+  const prompt = `You are an elite executive AI intelligence analyst and senior legal counsel for Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh, India.
 
 CRITICAL SAFETY & CONSTITUTIONAL DIRECTIVE:
 Evaluate safety classification FIRST.
-If the report describes rape, sexual assault, sexual violence, child abuse, missing child, trafficking, threat to life, kidnapping, domestic violence, or harassment (or any typos/phonetic spellings like "rapped", "raping", "molested"):
+If the report describes rape, sexual assault, sexual violence, child abuse, missing child, trafficking, threat to life, kidnapping, domestic violence, or harassment:
 1. Set "safetyCategory" to "Sexual Violence / Assault" or appropriate safety category.
 2. Set "urgency" strictly to "Critical" or "Emergency".
 3. Assign "department" to "Police / Women & Child Protection".
 4. Set "safetyEscalationRequired" to true and "humanReviewRequired" to true.
-5. In "recommendedAction", cite Article 21 of Constitution of India (Right to Life & Personal Liberty), mandatory Zero FIR registration under Section 173 BNS 2023 / Section 376 IPC / POCSO Act, mandatory medical-legal examination under BNS Sec 184, and emergency dispatch (Police 112/100, Women Helpline 181, Childline 1098).
+5. In "recommendedAction", cite Article 21 of Constitution of India (Right to Life), mandatory Zero FIR under Section 173 BNS 2023 / Section 376 IPC / POCSO Act, medical-legal examination under BNS Sec 184, and emergency dispatch (Police 112/100, Women Helpline 181, Childline 1098).
 
-COMPLAINT PAYLOAD:
+COMPLAINT DATA:
 Description: ${payload.description}
 Mandal: ${payload.mandal}
 Village/Ward: ${payload.village ?? "Not specified"}
@@ -430,10 +333,11 @@ Has audio evidence: ${payload.hasAudio ?? false}
 
 Return ONLY a JSON object:
 {
-  "title": "Clear executive title emphasizing urgency if safety-related",
-  "category": "Issue category (e.g. Emergency Safety - Sexual Violence, Police / Law & Order, Infrastructure)",
+  "title": "Clear executive title",
+  "summary": "Comprehensive 3-4 sentence executive summary detailing the grievance core issue, impact on citizens, and priority context",
+  "category": "Issue category (e.g. Emergency Safety - Sexual Violence, Infrastructure, Welfare, Misconduct)",
   "subcategory": "Specific Subcategory",
-  "department": "Responsible Government Department (e.g. Police / Women & Child Protection, Revenue, Municipal Administration)",
+  "department": "Responsible Government Department",
   "urgency": "Routine|Priority|High|Emergency|Critical",
   "safetyCategory": "Sexual Violence / Assault|Child Safety / Abuse|Threat to Life / Kidnapping|Domestic Violence in Immediate Danger|Trafficking|Self-Harm / Personal Emergency|Serious Physical Danger|Fire or Disaster|None",
   "safetyEscalationRequired": true|false,
@@ -441,7 +345,7 @@ Return ONLY a JSON object:
   "credibilityBand": "High preliminary confidence|Medium preliminary confidence|Low preliminary confidence|Insufficient information to assess",
   "confidenceScore": 95,
   "missingInformation": ["List key missing details if any"],
-  "recommendedAction": "Actionable constitutional & legal recommendation (cites Article 21, BNS 2023 sections, Zero FIR, DISHA/Police 112)",
+  "recommendedAction": "Actionable legal & administrative directive (citing BNS 2023, Article 21, Zero FIR, Police 112)",
   "humanReviewRequired": true
 }`;
 
@@ -454,13 +358,11 @@ Return ONLY a JSON object:
     body: JSON.stringify({
       model: "llama-3.3-70b-versatile",
       messages: [
-        {
-          role: "system",
-          content: "You are an expert constitutional AI civic intelligence officer for Srikalahasti constituency. Return valid JSON only.",
-        },
+        { role: "system", content: "You are an expert executive AI intelligence officer for Srikalahasti constituency. Return valid JSON only." },
         { role: "user", content: prompt },
       ],
       temperature: 0.2,
+      max_tokens: 1500,
       response_format: { type: "json_object" },
     }),
   });
@@ -482,23 +384,14 @@ Return ONLY a JSON object:
   };
 }
 
-// ── Gemini LLM integration ───────────────────────────────────────────────────
+// ── Gemini LLM Integration ───────────────────────────────────────────────────
 async function llmAnalysis(payload: ComplaintPayload): Promise<AIAnalysisResult> {
   const apiKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("No API key configured");
 
-  const prompt = `You are a senior civic-technology safety analyst for Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh, India.
+  const prompt = `You are a senior executive AI intelligence officer for Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh, India.
 
-CRITICAL SAFETY DIRECTIVE:
-Evaluate safety classification FIRST.
-If the report describes rape, sexual assault, sexual violence, child abuse, missing child, trafficking, threat to life, kidnapping, or domestic violence in immediate danger:
-1. Set "safetyCategory" appropriately.
-2. Set "urgency" to "Emergency" or "Critical".
-3. NEVER downgrade urgency because optional fields or evidence are missing.
-4. Set "safetyEscalationRequired" to true.
-5. Set "humanReviewRequired" to true.
-
-COMPLAINT PAYLOAD:
+COMPLAINT DATA:
 Description: ${payload.description}
 Mandal: ${payload.mandal}
 Village/Ward: ${payload.village ?? "Not specified"}
@@ -507,7 +400,8 @@ Has audio evidence: ${payload.hasAudio ?? false}
 
 Return ONLY a JSON object:
 {
-  "title": "Neutral title (never expose sensitive allegations publicly)",
+  "title": "Executive Title",
+  "summary": "Detailed executive summary of grievance, root cause, and impact",
   "category": "Issue category",
   "subcategory": "Subcategory",
   "department": "Responsible authority",
@@ -516,9 +410,9 @@ Return ONLY a JSON object:
   "safetyEscalationRequired": true|false,
   "evidenceCompleteness": "Sufficient|Partial|Insufficient|None provided",
   "credibilityBand": "High preliminary confidence|Medium preliminary confidence|Low preliminary confidence|Insufficient information to assess",
-  "confidenceScore": 75,
+  "confidenceScore": 90,
   "missingInformation": [],
-  "recommendedAction": "Action statement",
+  "recommendedAction": "Action statement with BNS 2023 & Article 21 directives",
   "humanReviewRequired": true
 }`;
 
@@ -529,7 +423,7 @@ Return ONLY a JSON object:
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 800 },
+        generationConfig: { temperature: 0.2, maxOutputTokens: 1200 },
       }),
     }
   );
@@ -551,9 +445,9 @@ Return ONLY a JSON object:
   };
 }
 
-// ── Entry point ──────────────────────────────────────────────────────────────
+// ── Main Entry Point ─────────────────────────────────────────────────────────
 export async function analyzeComplaint(payload: ComplaintPayload): Promise<AIAnalysisResult> {
-  // Priority 1: Groq LLM (High speed Llama-3.3-70b)
+  // Priority 1: Groq LLM (Llama-3.3-70b High Speed Model)
   try {
     return await groqAnalysis(payload);
   } catch (err) {
@@ -573,4 +467,3 @@ export async function analyzeComplaint(payload: ComplaintPayload): Promise<AIAna
   // Fallback: Local rule-based analyzer
   return localAnalysis(payload);
 }
-
