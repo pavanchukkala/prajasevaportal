@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Lock, Menu, X } from "lucide-react";
 import IndianFlagRibbon from "./IndianFlagRibbon";
 import CivicLogo from "./CivicLogo";
+import NationalEmblemIndia from "./NationalEmblemIndia";
 import ThemeSwitcher from "./ThemeSwitcher";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useLanguage } from "@/context/LanguageContext";
@@ -51,17 +51,10 @@ export default function GlobalHeader() {
           gap: "1rem",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
           <CivicLogo size="md" />
-          <div className="hidden-mobile" style={{ display: "flex", alignItems: "center", gap: "0.5rem", borderLeft: "1px solid var(--border-main)", paddingLeft: "0.85rem" }}>
-            <Image
-              src="/assets/symbols/emblem-of-india.svg"
-              alt="State Emblem of India • Satyameva Jayate (సత్యమేవ జయతే)"
-              width={34}
-              height={42}
-              priority
-              style={{ objectFit: "contain" }}
-            />
+          <div className="hidden-mobile">
+            <NationalEmblemIndia size={36} showMotto={true} showBadge={true} />
           </div>
         </div>
 

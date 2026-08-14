@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import NationalEmblemIndia from "@/components/layout/NationalEmblemIndia";
 import { ASSET_MANIFEST } from "@/config/assets";
 import { useLanguage } from "@/context/LanguageContext";
 import {
@@ -98,12 +99,15 @@ export default function HomePage() {
         <div style={{ position: "absolute", bottom: "10%", right: "8%", width: "500px", height: "500px", borderRadius: "50%", background: "radial-gradient(circle, rgba(180,83,9,0.1) 0%, transparent 70%)", pointerEvents: "none", zIndex: 1 }} />
 
         <div style={{ position: "relative", zIndex: 10, maxWidth: "1280px", margin: "0 auto", padding: "4.5rem 1.5rem 5.5rem", width: "100%", boxSizing: "border-box" }}>
-          {/* Badge */}
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.6rem", padding: "0.4rem 1.1rem", borderRadius: "9999px", background: "rgba(13,148,136,0.12)", border: "1px solid var(--accent-teal)", marginBottom: "1.75rem" }}>
-            <Zap size={14} style={{ color: "var(--accent-teal)" }} />
-            <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--accent-teal)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
-              {isTe ? "శ్రీకాళహస్తి ప్రజా సేవా ఇంటెలిజెన్స్ ప్లాట్‌ఫారమ్" : "Srikalahasti Assembly Constituency (No. 168)"}
-            </span>
+          {/* Official State Emblem of India Badge & Constituency Title */}
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", marginBottom: "1.75rem" }}>
+            <NationalEmblemIndia size={46} showMotto={true} showBadge={true} theme="gold" />
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "0.6rem", padding: "0.4rem 1.1rem", borderRadius: "9999px", background: "rgba(13,148,136,0.12)", border: "1px solid var(--accent-teal)" }}>
+              <Zap size={14} style={{ color: "var(--accent-teal)" }} />
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "var(--accent-teal)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                {isTe ? "శ్రీకాళహస్తి ప్రజా సేవా ఇంటెలిజెన్స్ ప్లాట్‌ఫారమ్" : "Srikalahasti Assembly Constituency (No. 168)"}
+              </span>
+            </div>
           </div>
 
           {/* Large Hero Headline */}
