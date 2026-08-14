@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { Lock, Menu, X } from "lucide-react";
 import IndianFlagRibbon from "./IndianFlagRibbon";
 import CivicLogo from "./CivicLogo";
-import NationalEmblemIndia from "./NationalEmblemIndia";
 import ThemeSwitcher from "./ThemeSwitcher";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useLanguage } from "@/context/LanguageContext";
@@ -42,21 +41,16 @@ export default function GlobalHeader() {
 
       <div
         style={{
-          maxWidth: "1240px",
+          maxWidth: "1200px",
           margin: "0 auto",
-          padding: "0.65rem 1.5rem",
+          padding: "0.75rem 1.5rem",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: "1rem",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
-          <CivicLogo size="md" />
-          <div className="hidden-mobile">
-            <NationalEmblemIndia size={36} showMotto={true} showBadge={true} />
-          </div>
-        </div>
+        <CivicLogo size="md" />
 
         {/* Desktop Navigation */}
         <nav

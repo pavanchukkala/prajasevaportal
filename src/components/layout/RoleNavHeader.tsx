@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SessionUser } from "@/lib/auth";
-import NationalEmblemIndia from "./NationalEmblemIndia";
 
 interface RoleNavHeaderProps {
   user: SessionUser;
@@ -30,26 +29,23 @@ export default function RoleNavHeader({ user, buildId = "v1e601de" }: RoleNavHea
         gap: "1rem",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
-        <NationalEmblemIndia size={34} showMotto={true} showBadge={true} theme="gold" />
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <span style={{ fontSize: "1.1rem", fontWeight: 900, color: "#fbbf24", letterSpacing: "-0.02em" }}>
-            🏛️ Srikalahasti Executive Portal
-          </span>
-          <span
-            style={{
-              fontSize: "0.7rem",
-              padding: "2px 8px",
-              borderRadius: "9999px",
-              backgroundColor: "rgba(56,189,248,0.15)",
-              color: "#38bdf8",
-              border: "1px solid rgba(56,189,248,0.3)",
-              fontWeight: 800,
-            }}
-          >
-            BUILD {buildId}
-          </span>
-        </div>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <span style={{ fontSize: "1.1rem", fontWeight: 900, color: "#fbbf24", letterSpacing: "-0.02em" }}>
+          🏛️ Srikalahasti Executive Portal
+        </span>
+        <span
+          style={{
+            fontSize: "0.7rem",
+            padding: "2px 8px",
+            borderRadius: "9999px",
+            backgroundColor: "rgba(56,189,248,0.15)",
+            color: "#38bdf8",
+            border: "1px solid rgba(56,189,248,0.3)",
+            fontWeight: 800,
+          }}
+        >
+          BUILD {buildId}
+        </span>
       </div>
 
       {/* Role-Specific Navigation Links */}
