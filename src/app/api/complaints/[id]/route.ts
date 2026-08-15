@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+function sanitizeAction(action: string): string {
+  if (!action) return "";
+  // Strip out signed URL query parameters (?expires=...&sig=...)
+  return action.split("?")[0];
+}
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -33,14 +39,17 @@ export async function GET(
           legalDisclaimer: complaint.aiAnalysis.legalDisclaimer,
         }
       : null,
-    statusHistory: (complaint.auditLog ?? []).map((e) => ({ timestamp: e.timestamp, action: e.action })),
+    statusHistory: (complaint.auditLog ?? []).map((e) => ({
+      timestamp: e.timestamp,
+      action: sanitizeAction(e.action),
+    })),
     message:
       complaint.status === "Solved" || complaint.status === "Resolved"
-        ? "This complaint has been officially solved and resolved by MLA Bojjala Venkata Sudhir Reddy's Executive Office."
+        ? "This complaint has been verified and resolved by the executives of Praja Seva."
         : complaint.status === "Viewed"
-        ? "Your complaint has been viewed and verified by MLA Executive Staff."
+        ? "Your complaint has been viewed and verified by executive staff."
         : complaint.status === "Contacted (No Response)"
-        ? "MLA Executive Staff attempted to contact you via mobile/WhatsApp regarding your complaint."
+        ? "Executive staff attempted to contact you via mobile/WhatsApp regarding your complaint."
         : complaint.status === "Under Review"
         ? "Your complaint is under active review by authorized staff."
         : complaint.status === "Assigned"
@@ -50,6 +59,5 @@ export async function GET(
         : complaint.status === "More Information Requested"
         ? "Reviewers have requested more information."
         : "Your complaint has been received and is in the processing queue.",
-    // Never expose: mobileNumber (raw), internalNotes, assignedTo, full auditLog with reviewer notes
   });
 }

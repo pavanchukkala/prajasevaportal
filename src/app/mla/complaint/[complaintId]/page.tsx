@@ -154,17 +154,20 @@ export default async function ComplaintDetailPage({
             <div style={theme.card}>
               <h2 style={theme.title}>Audit Log & Workflow History</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {complaint.auditLog?.map((log: any, i: number) => (
-                  <div key={i} style={{ borderLeft: '2px solid #38bdf8', paddingLeft: '16px' }}>
-                    <p style={{ color: '#94a3b8', fontSize: '12px', margin: '0 0 4px' }}>
-                      {new Date(log.timestamp).toLocaleString()} &mdash; <strong style={{ color: '#fbbf24' }}>{log.actor}</strong>
-                    </p>
-                    <p style={{ margin: 0, color: '#f8fafc', fontSize: '14px' }}>
-                      <strong>{log.action}</strong>
-                      {log.details && `: ${log.details}`}
-                    </p>
-                  </div>
-                ))}
+                {complaint.auditLog?.map((log: any, i: number) => {
+                  const cleanAction = (log.action || "").split("?")[0];
+                  return (
+                    <div key={i} style={{ borderLeft: '2px solid #38bdf8', paddingLeft: '16px', overflow: 'hidden' }}>
+                      <p style={{ color: '#94a3b8', fontSize: '12px', margin: '0 0 4px' }}>
+                        {new Date(log.timestamp).toLocaleString()} &mdash; <strong style={{ color: '#fbbf24' }}>{log.actor}</strong>
+                      </p>
+                      <p style={{ margin: 0, color: '#f8fafc', fontSize: '14px', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+                        <strong>{cleanAction}</strong>
+                        {log.details && `: ${log.details}`}
+                      </p>
+                    </div>
+                  );
+                })}
                 {(!complaint.auditLog || complaint.auditLog.length === 0) && (
                   <p style={{ color: '#94a3b8' }}>No audit history available.</p>
                 )}

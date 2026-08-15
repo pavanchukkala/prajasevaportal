@@ -190,16 +190,19 @@ export default async function DeptCaseDetailPage({
               <div style={theme.card}>
                 <h3 style={theme.cardTitle}>System Action Timeline</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
-                  {complaint.auditLog?.map((entry: any, idx: number) => (
-                    <div key={idx} style={{ borderLeft: "2px solid #10b981", paddingLeft: "1rem" }}>
-                      <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
-                        {new Date(entry.timestamp).toLocaleString()} · <strong style={{ color: "#94a3b8" }}>{entry.actor}</strong>
+                  {complaint.auditLog?.map((entry: any, idx: number) => {
+                    const cleanAction = (entry.action || "").split("?")[0];
+                    return (
+                      <div key={idx} style={{ borderLeft: "2px solid #10b981", paddingLeft: "1rem", overflow: "hidden" }}>
+                        <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
+                          {new Date(entry.timestamp).toLocaleString()} · <strong style={{ color: "#94a3b8" }}>{entry.actor}</strong>
+                        </div>
+                        <div style={{ fontSize: "0.875rem", color: "#f8fafc", fontWeight: 600, marginTop: "2px", wordBreak: "break-word", overflowWrap: "anywhere" }}>
+                          {cleanAction}
+                        </div>
                       </div>
-                      <div style={{ fontSize: "0.875rem", color: "#f8fafc", fontWeight: 600, marginTop: "2px" }}>
-                        {entry.action}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>

@@ -277,16 +277,19 @@ export default async function ReviewerCaseDetailPage({
                 <h3 style={theme.cardTitle}>Audit & Lifecycle Timeline</h3>
                 {complaint.auditLog && complaint.auditLog.length > 0 ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
-                    {complaint.auditLog.map((entry, idx) => (
-                      <div key={idx} style={{ borderLeft: "2px solid #38bdf8", paddingLeft: "1rem", position: "relative" }}>
-                        <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
-                          {entry.timestamp ? new Date(entry.timestamp).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "Timestamp Not Available"} · <strong style={{ color: "#94a3b8" }}>{entry.actor || "System"}</strong>
+                    {complaint.auditLog.map((entry, idx) => {
+                      const cleanAction = (entry.action || "").split("?")[0];
+                      return (
+                        <div key={idx} style={{ borderLeft: "2px solid #38bdf8", paddingLeft: "1rem", position: "relative", overflow: "hidden" }}>
+                          <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
+                            {entry.timestamp ? new Date(entry.timestamp).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "Timestamp Not Available"} · <strong style={{ color: "#94a3b8" }}>{entry.actor || "System"}</strong>
+                          </div>
+                          <div style={{ fontSize: "0.875rem", color: "#f8fafc", fontWeight: 600, marginTop: "2px", wordBreak: "break-word", overflowWrap: "anywhere" }}>
+                            {cleanAction}
+                          </div>
                         </div>
-                        <div style={{ fontSize: "0.875rem", color: "#f8fafc", fontWeight: 600, marginTop: "2px" }}>
-                          {entry.action}
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <p style={{ color: "#64748b", fontSize: "0.85rem", margin: 0, fontStyle: "italic" }}>

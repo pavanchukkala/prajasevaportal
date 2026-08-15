@@ -290,19 +290,22 @@ export default function TrackPage() {
 
             {/* Status history */}
             {result.statusHistory.length > 0 && (
-              <div style={{ background: "rgba(13,33,55,0.4)", border: "1px solid rgba(212,160,23,0.1)", borderRadius: "16px", padding: "1.5rem" }}>
+              <div style={{ background: "rgba(13,33,55,0.4)", border: "1px solid rgba(212,160,23,0.1)", borderRadius: "16px", padding: "1.5rem", overflow: "hidden" }}>
                 <div style={{ fontSize: "0.65rem", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, marginBottom: "1rem" }}>{t.historyLabel}</div>
                 <div style={{ position: "relative" }}>
                   <div style={{ position: "absolute", left: "8px", top: "12px", bottom: "12px", width: "1px", background: "rgba(212,160,23,0.15)" }} />
-                  {result.statusHistory.map((h, i) => (
-                    <div key={i} style={{ display: "flex", gap: "1rem", paddingLeft: "1.75rem", position: "relative", marginBottom: "0.875rem" }}>
-                      <div style={{ position: "absolute", left: "4px", top: "4px", width: "9px", height: "9px", borderRadius: "50%", background: i === 0 ? "#D4A017" : "rgba(212,160,23,0.3)", border: "1px solid rgba(212,160,23,0.4)" }} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: "0.78rem", color: "#94a3b8", lineHeight: 1.5 }}>{h.action}</div>
-                        <div style={{ fontSize: "0.68rem", color: "#475569", marginTop: "2px" }}>{new Date(h.timestamp).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</div>
+                  {result.statusHistory.map((h, i) => {
+                    const cleanAction = (h.action || "").split("?")[0];
+                    return (
+                      <div key={i} style={{ display: "flex", gap: "1rem", paddingLeft: "1.75rem", position: "relative", marginBottom: "0.875rem" }}>
+                        <div style={{ position: "absolute", left: "4px", top: "4px", width: "9px", height: "9px", borderRadius: "50%", background: i === 0 ? "#D4A017" : "rgba(212,160,23,0.3)", border: "1px solid rgba(212,160,23,0.4)" }} />
+                        <div style={{ flex: 1, overflow: "hidden" }}>
+                          <div style={{ fontSize: "0.78rem", color: "#94a3b8", lineHeight: 1.5, wordBreak: "break-word", overflowWrap: "anywhere" }}>{cleanAction}</div>
+                          <div style={{ fontSize: "0.68rem", color: "#475569", marginTop: "2px" }}>{new Date(h.timestamp).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}

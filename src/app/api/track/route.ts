@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getDepartmentLabel } from "@/lib/departments";
 
+function sanitizeAction(action: string): string {
+  if (!action) return "";
+  // Strip out signed URL query parameters (?expires=...&sig=...)
+  return action.split("?")[0];
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const token = searchParams.get("token");
@@ -41,19 +47,19 @@ export async function GET(req: NextRequest) {
           legalDisclaimer: complaint.aiAnalysis.legalDisclaimer,
         }
       : null,
-    // Return full action history for public citizen tracking timeline
+    // Return full action history for public citizen tracking timeline with sanitized action strings
     statusHistory: (complaint.auditLog ?? []).map((e) => ({
       timestamp: e.timestamp,
-      action: e.action,
+      action: sanitizeAction(e.action),
       actor: e.actor === "system" ? "System" : "Authorized Official",
     })),
     message:
       complaint.status === "Resolved" || complaint.status === "Solved"
-        ? "This complaint has been verified and resolved by executive field officers."
+        ? "This complaint has been verified and resolved by the executives of Praja Seva."
         : complaint.status === "Closed"
         ? "This case file has been officially closed."
         : complaint.status === "Viewed"
-        ? "Your complaint has been marked as viewed by MLA office staff."
+        ? "Your complaint has been marked as viewed by executive staff."
         : complaint.status === "More Information Requested"
         ? "Staff attempted contact to request additional details regarding your grievance."
         : complaint.status === "Contacted (No Response)"

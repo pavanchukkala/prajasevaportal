@@ -252,8 +252,8 @@ function statusMessage(status: ComplaintStatus): string {
     "Assigned": "Your complaint has been assigned to the relevant department.",
     "Escalated": "Your complaint has been escalated for priority review.",
     "Action Reported": "Action has been reported on this complaint.",
-    "Solved": "This complaint has been solved and resolved by executive office.",
-    "Resolved": "This complaint has been resolved.",
+    "Solved": "This complaint has been verified and resolved by the executives of Praja Seva.",
+    "Resolved": "This complaint has been verified and resolved by the executives of Praja Seva.",
     "Reopened": "This complaint has been reopened for further review.",
     "Closed": "This complaint has been closed.",
   };

@@ -155,7 +155,8 @@ export class FileSqliteAdapter implements IDatabaseAdapter {
       if (!media.includes(updates.mediaUrl)) {
         media.push(updates.mediaUrl);
         complaint.mediaUrls = media;
-        auditLog.push({ timestamp: now, action: `Evidence attached: ${updates.mediaUrl.split("/").pop()}`, actor });
+        const cleanFilename = updates.mediaUrl.split("?")[0].split("/").pop() || "File";
+        auditLog.push({ timestamp: now, action: `Evidence attached: ${cleanFilename}`, actor });
       }
     }
 
