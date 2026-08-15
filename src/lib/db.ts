@@ -81,6 +81,20 @@ export interface ComplaintData {
     analysisMode: "local_fallback" | "llm";
     legalDisclaimer: string;
     safetyEscalationRequired?: boolean;
+    // Extended intelligence layers
+    spamScore?: number;
+    spamReason?: string;
+    isDuplicate?: boolean;
+    duplicateReason?: string;
+    sentimentTone?: string;
+    distressFlag?: boolean;
+    rootCauseTags?: { domain: string; category: string; subcategory: string };
+    actionBrief?: {
+      assignTo: string;
+      exactAction: string;
+      deadline: string;
+      draftSms: string;
+    };
   };
   dataSource: "citizen_submission" | "sample_presentation";
   isSample: boolean;
@@ -149,6 +163,7 @@ export const db = {
         assignedTo?: string;
         assignedDepartment?: string;
         internalNote?: string;
+        mediaUrl?: string;   // Evidence attachment URL — passed through to adapter
         actor?: string;
       }
     ): Promise<ComplaintData | null> {

@@ -140,11 +140,13 @@ export function EvidenceAndActionManager({
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "12px" }}>
             {mediaUrls.map((url: string, i: number) => {
-              const isImage = url.match(/\.(jpeg|jpg|png|webp|gif)$/i);
-              const isVideo = url.match(/\.(mp4|webm|mov|avi|3gp|mkv)$/i);
-              const isAudio = url.match(/\.(mp3|wav|ogg|m4a)$/i);
+              // Strip query params before extension detection (handles signed URLs like ?expires=...&sig=...)
+              const urlBase = url.split("?")[0];
+              const isImage = /\.(jpeg|jpg|png|webp|gif)$/i.test(urlBase);
+              const isVideo = /\.(mp4|webm|mov|avi|3gp|mkv)$/i.test(urlBase);
+              const isAudio = /\.(mp3|wav|ogg|m4a)$/i.test(urlBase);
 
-              let filename = url.split("?")[0].split("/").pop() || `File #${i + 1}`;
+              let filename = urlBase.split("/").pop() || `File #${i + 1}`;
               try {
                 filename = decodeURIComponent(filename);
               } catch {}

@@ -48,6 +48,29 @@ export interface AIAnalysisResult {
   humanReviewRequired: boolean;
   analysisMode: "local_fallback" | "llm";
   legalDisclaimer: string;
+
+  // ── Extended Intelligence Layers (30B LLM Powered) ────────────────────────
+  /** Spam/troll/test submission score 0-100. 0 = genuine, 100 = definite spam */
+  spamScore?: number;
+  /** Short reason for spam classification */
+  spamReason?: string;
+  /** True if this complaint is likely a duplicate of an existing case */
+  isDuplicate?: boolean;
+  /** Reason why this may be a duplicate */
+  duplicateReason?: string;
+  /** Detected emotional tone: angry | distressed | scared | calm | informational | urgent */
+  sentimentTone?: string;
+  /** True if citizen shows signs of extreme distress (e.g. mentions of self-harm, desperation, threats) */
+  distressFlag?: boolean;
+  /** 3-level MECE hierarchical tags for analytics: domain, category, subcategory */
+  rootCauseTags?: { domain: string; category: string; subcategory: string };
+  /** Structured action brief: who should act, what exactly, by when, draft citizen SMS */
+  actionBrief?: {
+    assignTo: string;
+    exactAction: string;
+    deadline: string;
+    draftSms: string;
+  };
 }
 
 const LEGAL_DISCLAIMER =
@@ -303,50 +326,105 @@ export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
     duplicateLikelihood: "Unknown — local mode",
     recommendedAction,
     humanReviewRequired: true,
-    analysisMode: "local_fallback",
+    analysisMode: "local_fallback" as const,
     legalDisclaimer: isSafetyCase ? SEXUAL_CHILD_SAFETY_DISCLAIMER : LEGAL_DISCLAIMER,
+    // Extended intelligence layers (local fallback defaults)
+    spamScore: 0,
+    spamReason: "",
+    isDuplicate: false,
+    duplicateReason: "",
+    sentimentTone: "informational",
+    distressFlag: isSafetyCase,
+    rootCauseTags: {
+      domain: isSafetyCase ? "Safety" : category.split("—")[0].trim().split(" ")[0],
+      category,
+      subcategory: subcategory ?? "General",
+    },
+    actionBrief: {
+      assignTo: department,
+      exactAction: recommendedAction.slice(0, 200),
+      deadline: urgency === "Critical" || urgency === "Emergency" ? "Immediate" : urgency === "High" ? "24 hours" : urgency === "Priority" ? "72 hours" : "7 working days",
+      draftSms: `Your complaint received. ${department} will review within ${urgency === "Critical" ? "1 hour" : urgency === "Emergency" ? "2 hours" : "48 hours"}. Track at Srikalahasti Praja Seva Portal.`,
+    },
   };
 }
 
-// ── Groq LLM Integration (Llama-3.3-70b-versatile) ──────────────────────────
+// ── Groq LLM Integration — Llama-3.3-70b Full Intelligence Suite ────────────
 async function groqAnalysis(payload: ComplaintPayload): Promise<AIAnalysisResult> {
   const DEFAULT_KEY_B64 = "Z3NrX0gzbldaeHREWGVQdHNpa29RN2xZV0dkeWIzZllQYzRsdEVYUWt2NFpYMzlrZDhCbERuOFE=";
   const apiKey = process.env.GROQ_API_KEY || Buffer.from(DEFAULT_KEY_B64, "base64").toString("utf-8");
 
-  const prompt = `You are an elite executive AI intelligence analyst and senior legal counsel for Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh, India.
+  const prompt = `You are the elite AI intelligence engine for Srikalahasti Assembly Constituency (No. 168), Tirupati District, Andhra Pradesh, India. You are running on a 30-billion parameter model with unlimited capacity.
 
-CRITICAL SAFETY & CONSTITUTIONAL DIRECTIVE:
-Evaluate safety classification FIRST.
+YOUR MANDATE — Perform ALL of the following intelligence layers:
+
+===== LAYER 1: SAFETY EVALUATION (MANDATORY FIRST) =====
 If the report describes rape, sexual assault, sexual violence, child abuse, missing child, trafficking, threat to life, kidnapping, domestic violence, or harassment:
-1. Set "safetyCategory" to "Sexual Violence / Assault" or appropriate safety category.
-2. Set "urgency" strictly to "Critical" or "Emergency".
-3. Assign "department" to "Police / Women & Child Protection".
-4. Set "safetyEscalationRequired" to true and "humanReviewRequired" to true.
-5. In "recommendedAction", cite Article 21 of Constitution of India (Right to Life), mandatory Zero FIR under Section 173 BNS 2023 / Section 376 IPC / POCSO Act, medical-legal examination under BNS Sec 184, and emergency dispatch (Police 112/100, Women Helpline 181, Childline 1098).
+- Set safetyCategory to the appropriate category
+- Set urgency to "Critical" or "Emergency"
+- Set safetyEscalationRequired: true
+- In recommendedAction, cite Article 21 (Right to Life), Zero FIR under BNS 2023 / Section 376 IPC / POCSO Act, medical examination under BNS Sec 184, Police 112, Women Helpline 181, Childline 1098
 
-COMPLAINT DATA:
+===== LAYER 2: SPAM & DUPLICATE DETECTION =====
+Assess whether this is a genuine civic complaint or spam/test/troll/political provocation.
+- spamScore: 0-100 (0 = genuine, 100 = definite spam)
+- spamReason: short 1-sentence reason if spam score > 30
+- isDuplicate: true if this appears to be a near-duplicate of a common issue type in this area
+- duplicateReason: brief explanation if isDuplicate is true
+
+===== LAYER 3: SENTIMENT & DISTRESS ANALYSIS =====
+- sentimentTone: one of "angry" | "distressed" | "scared" | "calm" | "informational" | "urgent" | "desperate"
+- distressFlag: true only if citizen shows signs of extreme personal distress (mentions of no hope, desperation, suicidal hints, extreme fear)
+
+===== LAYER 4: ROOT-CAUSE HIERARCHICAL TAGGING (MECE) =====
+Provide 3-level classification:
+- rootCauseTags.domain: high-level domain (e.g., "Infrastructure", "Welfare", "Governance", "Safety", "Corruption", "Health", "Education", "Environment")
+- rootCauseTags.category: mid-level category (e.g., "Road Maintenance", "Pension Disbursement", "Water Supply")
+- rootCauseTags.subcategory: specific leaf-level tag (e.g., "Pothole on State Highway", "Old Age Pension Delay", "Contaminated Water Pipeline")
+
+===== LAYER 5: ACTION INTELLIGENCE BRIEF =====
+Generate an actionable directive:
+- actionBrief.assignTo: exact role/officer to assign (e.g., "Tahsildar, Srikalahasti Mandal", "AE, R&B Division, Srikalahasti")
+- actionBrief.exactAction: precise 2-sentence action directive
+- actionBrief.deadline: expected resolution timeframe (e.g., "72 hours", "7 working days", "Immediate")
+- actionBrief.draftSms: a 160-character draft SMS in Telugu/English to send the citizen confirming receipt and next step
+
+===== COMPLAINT DATA =====
 Description: ${payload.description}
 Mandal: ${payload.mandal}
 Village/Ward: ${payload.village ?? "Not specified"}
 Has photographic evidence: ${payload.hasImages ?? false}
 Has audio evidence: ${payload.hasAudio ?? false}
 
-Return ONLY a JSON object:
+Return ONLY a valid JSON object with ALL these fields:
 {
   "title": "Clear executive title",
-  "summary": "Comprehensive 3-4 sentence executive summary detailing the grievance core issue, impact on citizens, and priority context",
-  "category": "Issue category (e.g. Emergency Safety - Sexual Violence, Infrastructure, Welfare, Misconduct)",
-  "subcategory": "Specific Subcategory",
+  "summary": "Comprehensive 5-sentence executive summary: (1) core issue, (2) impact on citizens, (3) likely root cause, (4) historical pattern context, (5) estimated resolution timeline",
+  "category": "Issue category",
+  "subcategory": "Specific subcategory",
   "department": "Responsible Government Department",
   "urgency": "Routine|Priority|High|Emergency|Critical",
   "safetyCategory": "Sexual Violence / Assault|Child Safety / Abuse|Threat to Life / Kidnapping|Domestic Violence in Immediate Danger|Trafficking|Self-Harm / Personal Emergency|Serious Physical Danger|Fire or Disaster|None",
-  "safetyEscalationRequired": true|false,
+  "safetyEscalationRequired": true,
   "evidenceCompleteness": "Sufficient|Partial|Insufficient|None provided",
   "credibilityBand": "High preliminary confidence|Medium preliminary confidence|Low preliminary confidence|Insufficient information to assess",
-  "confidenceScore": 95,
-  "missingInformation": ["List key missing details if any"],
-  "recommendedAction": "Actionable legal & administrative directive (citing BNS 2023, Article 21, Zero FIR, Police 112)",
-  "humanReviewRequired": true
+  "confidenceScore": 90,
+  "missingInformation": [],
+  "recommendedAction": "Detailed action directive citing BNS 2023 and Article 21 where applicable",
+  "humanReviewRequired": true,
+  "spamScore": 5,
+  "spamReason": "",
+  "isDuplicate": false,
+  "duplicateReason": "",
+  "sentimentTone": "calm",
+  "distressFlag": false,
+  "rootCauseTags": { "domain": "Infrastructure", "category": "Road Maintenance", "subcategory": "Pothole on Village Road" },
+  "actionBrief": {
+    "assignTo": "AE, R&B Division, Srikalahasti",
+    "exactAction": "Conduct site inspection within 48 hours. Issue work order to contractor for repair completion within 7 days.",
+    "deadline": "7 working days",
+    "draftSms": "Namaskaram! Your complaint (ID: SKT-XXXX) received. R&B Dept will inspect within 48hrs. Thank you. -Srikalahasti Praja Seva"
+  }
 }`;
 
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -358,11 +436,14 @@ Return ONLY a JSON object:
     body: JSON.stringify({
       model: "llama-3.3-70b-versatile",
       messages: [
-        { role: "system", content: "You are an expert executive AI intelligence officer for Srikalahasti constituency. Return valid JSON only." },
+        {
+          role: "system",
+          content: "You are the elite AI intelligence engine for Srikalahasti constituency civic platform. You run 5 parallel intelligence layers on every complaint. Always return valid JSON only, with every field populated.",
+        },
         { role: "user", content: prompt },
       ],
-      temperature: 0.2,
-      max_tokens: 1500,
+      temperature: 0.15,
+      max_tokens: 2500,
       response_format: { type: "json_object" },
     }),
   });

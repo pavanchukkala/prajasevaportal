@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import RoleNavHeader from "@/components/layout/RoleNavHeader";
 import MLAChatbot from "@/components/mla/MLAChatbot";
 import { getDepartmentLabel } from "@/lib/departments";
@@ -38,6 +38,14 @@ interface ComplaintRecord {
     confidenceScore?: number;
     recommendedAction?: string;
     analysisMode?: string;
+    // Extended intelligence layers
+    spamScore?: number;
+    spamReason?: string;
+    isDuplicate?: boolean;
+    sentimentTone?: string;
+    distressFlag?: boolean;
+    rootCauseTags?: { domain: string; category: string; subcategory: string };
+    actionBrief?: { assignTo: string; exactAction: string; deadline: string; draftSms: string };
   };
 }
 
@@ -47,13 +55,34 @@ interface ActionDashboardProps {
   buildId?: string;
 }
 
+type SortKey = "date_desc" | "date_asc" | "urgency" | "department";
+
+const URGENCY_ORDER: Record<string, number> = {
+  Critical: 5,
+  Emergency: 4,
+  High: 3,
+  Priority: 2,
+  Routine: 1,
+};
+
+const PAGE_SIZE = 20;
+
 export function ActionDashboard({ user, complaints, buildId = "v1e601de" }: ActionDashboardProps) {
-  const pathname = usePathname();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"active" | "emergency" | "solved">("active");
   const [selectedMandal, setSelectedMandal] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sortKey, setSortKey] = useState<SortKey>("date_desc");
+  const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Calculate stats
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    router.refresh();
+    setTimeout(() => setIsRefreshing(false), 1200);
+  }, [router]);
+
+  // Stats
   const totalCount = complaints.length;
   const liveCount = complaints.filter((c) => !c.isSample).length;
   const emergencyCount = complaints.filter(
@@ -64,234 +93,427 @@ export function ActionDashboard({ user, complaints, buildId = "v1e601de" }: Acti
   ).length;
   const solvedCount = complaints.filter((c) => c.status === "Solved" || c.status === "Resolved").length;
   const activeQueueCount = totalCount - solvedCount;
+  const spamFlaggedCount = complaints.filter((c) => (c.aiAnalysis?.spamScore ?? 0) >= 50).length;
 
-  // Filter complaints according to tab, mandal, search query
-  const filteredComplaints = complaints.filter((c) => {
-    // 1. Tab Filter
-    if (activeTab === "solved") {
-      if (c.status !== "Solved" && c.status !== "Resolved") return false;
-    } else if (activeTab === "emergency") {
-      const isEm =
-        c.aiAnalysis?.urgency === "Emergency" ||
-        c.aiAnalysis?.urgency === "Critical" ||
-        c.aiAnalysis?.safetyEscalationRequired;
-      if (!isEm) return false;
-    } else {
-      // "active" tab: show non-solved cases
-      if (c.status === "Solved" || c.status === "Resolved") return false;
-    }
+  // Filter
+  const filteredComplaints = complaints
+    .filter((c) => {
+      if (activeTab === "solved") {
+        if (c.status !== "Solved" && c.status !== "Resolved") return false;
+      } else if (activeTab === "emergency") {
+        const isEm =
+          c.aiAnalysis?.urgency === "Emergency" ||
+          c.aiAnalysis?.urgency === "Critical" ||
+          c.aiAnalysis?.safetyEscalationRequired;
+        if (!isEm) return false;
+      } else {
+        if (c.status === "Solved" || c.status === "Resolved") return false;
+      }
 
-    // 2. Mandal Filter
-    if (selectedMandal !== "ALL") {
-      const mandalStr = (c.mandal || "").toLowerCase();
-      if (!mandalStr.includes(selectedMandal.toLowerCase())) return false;
-    }
+      if (selectedMandal !== "ALL") {
+        const mandalStr = (c.mandal || "").toLowerCase();
+        if (!mandalStr.includes(selectedMandal.toLowerCase())) return false;
+      }
 
-    // 3. Search Query
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchId = c.id.toLowerCase().includes(q);
-      const matchDesc = c.description.toLowerCase().includes(q);
-      const matchTitle = (c.aiAnalysis?.title || "").toLowerCase().includes(q);
-      const matchMandal = (c.mandal || "").toLowerCase().includes(q);
-      const matchDept = (c.assignedDepartment || c.department || c.aiAnalysis?.department || "").toLowerCase().includes(q);
-      if (!matchId && !matchDesc && !matchTitle && !matchMandal && !matchDept) return false;
-    }
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchId = c.id.toLowerCase().includes(q);
+        const matchDesc = c.description.toLowerCase().includes(q);
+        const matchTitle = (c.aiAnalysis?.title || "").toLowerCase().includes(q);
+        const matchMandal = (c.mandal || "").toLowerCase().includes(q);
+        const matchDept = (
+          c.assignedDepartment || c.department || c.aiAnalysis?.department || ""
+        ).toLowerCase().includes(q);
+        if (!matchId && !matchDesc && !matchTitle && !matchMandal && !matchDept) return false;
+      }
 
-    return true;
-  });
+      return true;
+    })
+    // Sort
+    .sort((a, b) => {
+      if (sortKey === "urgency") {
+        return (
+          (URGENCY_ORDER[b.aiAnalysis?.urgency ?? "Routine"] ?? 1) -
+          (URGENCY_ORDER[a.aiAnalysis?.urgency ?? "Routine"] ?? 1)
+        );
+      }
+      if (sortKey === "date_asc") {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      }
+      if (sortKey === "department") {
+        const dA = a.assignedDepartment || a.department || "";
+        const dB = b.assignedDepartment || b.department || "";
+        return dA.localeCompare(dB);
+      }
+      // date_desc (default)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
+  const visibleComplaints = filteredComplaints.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredComplaints.length;
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#04091A", color: "#f8fafc", fontFamily: "sans-serif" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#04091A",
+        color: "#f8fafc",
+        fontFamily: "'Inter', sans-serif",
+      }}
+    >
       {/* Header */}
       <RoleNavHeader user={user} buildId={buildId} />
 
-      <main style={{ maxWidth: "1280px", margin: "0 auto", padding: "2rem 1.5rem 4rem" }}>
-        {/* Title & Subtitle */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
+      <main
+        style={{
+          maxWidth: "1400px",
+          margin: "0 auto",
+          padding: "clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem",
+        }}
+      >
+        {/* Title Row */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            flexWrap: "wrap",
+            gap: "1rem",
+            marginBottom: "2rem",
+          }}
+        >
           <div>
-            <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#fbbf24", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.4rem" }}>
-              ⚡ Constituency Executive Triage & Resolution Hub
+            <div
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 800,
+                color: "#fbbf24",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                marginBottom: "0.4rem",
+              }}
+            >
+              ⚡ Constituency Triage &amp; Resolution Hub
             </div>
-            <h1 style={{ fontSize: "2rem", fontWeight: 900, color: "#ffffff", margin: 0, letterSpacing: "-0.02em" }}>
+            <h1
+              style={{
+                fontSize: "clamp(1.5rem, 4vw, 2.1rem)",
+                fontWeight: 900,
+                color: "#ffffff",
+                margin: 0,
+                letterSpacing: "-0.02em",
+              }}
+            >
               Action Dashboard
             </h1>
-            <p style={{ color: "#94a3b8", fontSize: "0.9rem", margin: "0.4rem 0 0" }}>
-              Logged in as <strong style={{ color: "#38bdf8" }}>{user.username}</strong> ({user.role}) · Srikalahasti Assembly Constituency No. 168
+            <p style={{ color: "#94a3b8", fontSize: "0.88rem", margin: "0.4rem 0 0" }}>
+              Logged in as{" "}
+              <strong style={{ color: "#38bdf8" }}>{user.username}</strong> ({user.role}) ·
+              Srikalahasti No. 168
             </p>
           </div>
 
-          <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-            <span style={{ fontSize: "0.78rem", color: "#34d399", background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.3)", padding: "0.4rem 0.85rem", borderRadius: "9999px", fontWeight: 800 }}>
-              🟢 Live Stream Engine
+          <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              style={{
+                padding: "0.45rem 1rem",
+                borderRadius: "8px",
+                fontSize: "0.8rem",
+                fontWeight: 800,
+                cursor: isRefreshing ? "not-allowed" : "pointer",
+                border: "1px solid rgba(56,189,248,0.4)",
+                backgroundColor: isRefreshing ? "rgba(56,189,248,0.05)" : "rgba(56,189,248,0.1)",
+                color: "#38bdf8",
+                transition: "all 0.2s",
+              }}
+            >
+              {isRefreshing ? "⏳ Refreshing..." : "🔄 Refresh"}
+            </button>
+            <span
+              style={{
+                fontSize: "0.75rem",
+                color: "#34d399",
+                background: "rgba(52,211,153,0.1)",
+                border: "1px solid rgba(52,211,153,0.3)",
+                padding: "0.4rem 0.85rem",
+                borderRadius: "9999px",
+                fontWeight: 800,
+              }}
+            >
+              🟢 Live
             </span>
           </div>
         </div>
 
-        {/* Executive Metric Cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.25rem", marginBottom: "2.5rem" }}>
-          <div
-            onClick={() => setActiveTab("active")}
-            style={{
-              backgroundColor: activeTab === "active" ? "rgba(56,189,248,0.12)" : "rgba(13,33,55,0.7)",
-              border: `1.5px solid ${activeTab === "active" ? "#38bdf8" : "rgba(255,255,255,0.08)"}`,
-              borderRadius: "14px",
-              padding: "1.25rem",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-            }}
-          >
-            <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase" }}>📋 Active Action Queue</div>
-            <div style={{ fontSize: "2rem", fontWeight: 900, color: "#38bdf8", marginTop: "0.25rem" }}>{activeQueueCount}</div>
-            <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.25rem" }}>Needs staff action / in progress</div>
-          </div>
+        {/* Metric Cards */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))",
+            gap: "1rem",
+            marginBottom: "2rem",
+          }}
+        >
+          {[
+            {
+              tab: "active" as const,
+              icon: "📋",
+              label: "Active Queue",
+              value: activeQueueCount,
+              color: "#38bdf8",
+              borderColor: "#38bdf8",
+            },
+            {
+              tab: "emergency" as const,
+              icon: "🚨",
+              label: "Emergency Cases",
+              value: emergencyCount,
+              color: "#f87171",
+              borderColor: "#ef4444",
+            },
+            {
+              tab: "solved" as const,
+              icon: "✅",
+              label: "Solved Cases",
+              value: solvedCount,
+              color: "#34d399",
+              borderColor: "#10b981",
+            },
+          ].map((card) => (
+            <div
+              key={card.tab}
+              onClick={() => { setActiveTab(card.tab); setVisibleCount(PAGE_SIZE); }}
+              style={{
+                backgroundColor:
+                  activeTab === card.tab ? `rgba(${card.color === "#38bdf8" ? "56,189,248" : card.color === "#f87171" ? "239,68,68" : "16,185,129"},0.12)` : "rgba(13,33,55,0.7)",
+                border: `1.5px solid ${activeTab === card.tab ? card.borderColor : "rgba(255,255,255,0.08)"}`,
+                borderRadius: "14px",
+                padding: "1.25rem",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
+                  color: card.color,
+                  textTransform: "uppercase",
+                }}
+              >
+                {card.icon} {card.label}
+              </div>
+              <div
+                style={{
+                  fontSize: "2rem",
+                  fontWeight: 900,
+                  color: card.color,
+                  marginTop: "0.25rem",
+                }}
+              >
+                {card.value}
+              </div>
+            </div>
+          ))}
 
           <div
-            onClick={() => setActiveTab("emergency")}
             style={{
-              backgroundColor: activeTab === "emergency" ? "rgba(239,68,68,0.15)" : "rgba(13,33,55,0.7)",
-              border: `1.5px solid ${activeTab === "emergency" ? "#ef4444" : "rgba(239,68,68,0.3)"}`,
+              backgroundColor: "rgba(13,33,55,0.7)",
+              border: "1px solid rgba(255,255,255,0.08)",
               borderRadius: "14px",
               padding: "1.25rem",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
             }}
           >
-            <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#f87171", textTransform: "uppercase" }}>🚨 Emergency Escalations</div>
-            <div style={{ fontSize: "2rem", fontWeight: 900, color: "#f87171", marginTop: "0.25rem" }}>{emergencyCount}</div>
-            <div style={{ fontSize: "0.75rem", color: "#fca5a5", marginTop: "0.25rem" }}>Critical safety & threat cases</div>
-          </div>
-
-          <div
-            onClick={() => setActiveTab("solved")}
-            style={{
-              backgroundColor: activeTab === "solved" ? "rgba(16,185,129,0.15)" : "rgba(13,33,55,0.7)",
-              border: `1.5px solid ${activeTab === "solved" ? "#10b981" : "rgba(16,185,129,0.3)"}`,
-              borderRadius: "14px",
-              padding: "1.25rem",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-            }}
-          >
-            <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#34d399", textTransform: "uppercase" }}>✅ Solved Cases List</div>
-            <div style={{ fontSize: "2rem", fontWeight: 900, color: "#34d399", marginTop: "0.25rem" }}>{solvedCount}</div>
-            <div style={{ fontSize: "0.75rem", color: "#6ee7b7", marginTop: "0.25rem" }}>Verified & completed cases</div>
-          </div>
-
-          <div style={{ backgroundColor: "rgba(13,33,55,0.7)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "1.25rem" }}>
-            <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase" }}>📦 Total Complaints</div>
-            <div style={{ fontSize: "2rem", fontWeight: 900, color: "#fbbf24", marginTop: "0.25rem" }}>{totalCount}</div>
-            <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.25rem" }}>Live citizen submissions ({liveCount})</div>
+            <div
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 800,
+                color: "#94a3b8",
+                textTransform: "uppercase",
+              }}
+            >
+              📦 Total · 🚫 Spam Flags
+            </div>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: 900,
+                color: "#fbbf24",
+                marginTop: "0.25rem",
+              }}
+            >
+              {totalCount}
+              {spamFlaggedCount > 0 && (
+                <span
+                  style={{
+                    fontSize: "1rem",
+                    color: "#fb923c",
+                    marginLeft: "0.5rem",
+                    fontWeight: 700,
+                  }}
+                >
+                  · {spamFlaggedCount} ⚠️
+                </span>
+              )}
+            </div>
+            <div style={{ fontSize: "0.72rem", color: "#64748b", marginTop: "0.25rem" }}>
+              {liveCount} live citizens · {spamFlaggedCount} flagged
+            </div>
           </div>
         </div>
 
-        {/* Tab & Mandal Filter Control Bar */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", backgroundColor: "rgba(13,33,55,0.6)", padding: "1rem 1.25rem", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.08)", marginBottom: "2rem" }}>
-          {/* Tab Navigation */}
-          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-            <button
-              type="button"
-              onClick={() => setActiveTab("active")}
-              style={{
-                padding: "0.5rem 1rem",
-                borderRadius: "8px",
-                fontSize: "0.85rem",
-                fontWeight: 800,
-                cursor: "pointer",
-                border: "none",
-                backgroundColor: activeTab === "active" ? "#38bdf8" : "rgba(255,255,255,0.05)",
-                color: activeTab === "active" ? "#04091A" : "#cbd5e1",
-              }}
-            >
-              📋 Active Action Queue ({activeQueueCount})
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab("emergency")}
-              style={{
-                padding: "0.5rem 1rem",
-                borderRadius: "8px",
-                fontSize: "0.85rem",
-                fontWeight: 800,
-                cursor: "pointer",
-                border: "none",
-                backgroundColor: activeTab === "emergency" ? "#ef4444" : "rgba(255,255,255,0.05)",
-                color: activeTab === "emergency" ? "#ffffff" : "#cbd5e1",
-              }}
-            >
-              🚨 Emergency Safety ({emergencyCount})
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab("solved")}
-              style={{
-                padding: "0.5rem 1rem",
-                borderRadius: "8px",
-                fontSize: "0.85rem",
-                fontWeight: 800,
-                cursor: "pointer",
-                border: "none",
-                backgroundColor: activeTab === "solved" ? "#10b981" : "rgba(255,255,255,0.05)",
-                color: activeTab === "solved" ? "#04091A" : "#cbd5e1",
-              }}
-            >
-              ✅ Solved Cases List ({solvedCount})
-            </button>
+        {/* Control Bar: Tabs + Sort + Mandal + Search + Refresh */}
+        <div
+          style={{
+            backgroundColor: "rgba(13,33,55,0.6)",
+            padding: "1rem 1.25rem",
+            borderRadius: "14px",
+            border: "1px solid rgba(255,255,255,0.08)",
+            marginBottom: "1.5rem",
+          }}
+        >
+          {/* Tabs */}
+          <div
+            style={{
+              display: "flex",
+              gap: "0.5rem",
+              flexWrap: "wrap",
+              marginBottom: "0.75rem",
+            }}
+          >
+            {(
+              [
+                { key: "active", label: `📋 Active (${activeQueueCount})`, activeColor: "#38bdf8" },
+                { key: "emergency", label: `🚨 Emergency (${emergencyCount})`, activeColor: "#ef4444" },
+                { key: "solved", label: `✅ Solved (${solvedCount})`, activeColor: "#10b981" },
+              ] as const
+            ).map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => { setActiveTab(tab.key); setVisibleCount(PAGE_SIZE); }}
+                style={{
+                  padding: "0.5rem 1rem",
+                  borderRadius: "8px",
+                  fontSize: "0.82rem",
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  border: "none",
+                  backgroundColor:
+                    activeTab === tab.key ? tab.activeColor : "rgba(255,255,255,0.05)",
+                  color: activeTab === tab.key ? (tab.key === "active" ? "#04091A" : "#ffffff") : "#cbd5e1",
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
 
-          {/* Mandal & Search Filters */}
-          <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap", flex: 1, justifyContent: "flex-end", minWidth: "280px" }}>
-            {/* Mandal Selector */}
+          {/* Filters Row */}
+          <div
+            style={{
+              display: "flex",
+              gap: "0.75rem",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
+            {/* Sort */}
             <select
-              value={selectedMandal}
-              onChange={(e) => setSelectedMandal(e.target.value)}
+              value={sortKey}
+              onChange={(e) => setSortKey(e.target.value as SortKey)}
               style={{
-                padding: "0.5rem 0.85rem",
+                padding: "0.45rem 0.75rem",
                 backgroundColor: "#0f172a",
                 border: "1px solid rgba(255,255,255,0.15)",
                 color: "#f8fafc",
                 borderRadius: "8px",
-                fontSize: "0.82rem",
+                fontSize: "0.8rem",
                 fontWeight: 700,
                 outline: "none",
               }}
             >
-              <option value="ALL">📍 All Mandals (4 Mandals)</option>
-              <option value="Srikalahasti">Srikalahasti Mandal</option>
-              <option value="Renigunta">Renigunta Mandal</option>
-              <option value="Yerpedu">Yerpedu Mandal</option>
-              <option value="Thottambedu">Thottambedu Mandal</option>
+              <option value="date_desc">🕐 Newest First</option>
+              <option value="date_asc">🕐 Oldest First</option>
+              <option value="urgency">🚨 Urgency (High → Low)</option>
+              <option value="department">🏢 Department A–Z</option>
             </select>
 
-            {/* Search Bar */}
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by ID, keyword, or village..."
+            {/* Mandal */}
+            <select
+              value={selectedMandal}
+              onChange={(e) => setSelectedMandal(e.target.value)}
               style={{
-                padding: "0.5rem 0.85rem",
+                padding: "0.45rem 0.75rem",
                 backgroundColor: "#0f172a",
                 border: "1px solid rgba(255,255,255,0.15)",
                 color: "#f8fafc",
                 borderRadius: "8px",
-                fontSize: "0.82rem",
-                minWidth: "200px",
+                fontSize: "0.8rem",
+                fontWeight: 700,
+                outline: "none",
+              }}
+            >
+              <option value="ALL">📍 All Mandals</option>
+              <option value="Srikalahasti">Srikalahasti</option>
+              <option value="Renigunta">Renigunta</option>
+              <option value="Yerpedu">Yerpedu</option>
+              <option value="Thottambedu">Thottambedu</option>
+            </select>
+
+            {/* Search */}
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search ID, keyword, village..."
+              style={{
+                padding: "0.45rem 0.85rem",
+                backgroundColor: "#0f172a",
+                border: "1px solid rgba(255,255,255,0.15)",
+                color: "#f8fafc",
+                borderRadius: "8px",
+                fontSize: "0.8rem",
+                flexGrow: 1,
+                minWidth: "160px",
+                maxWidth: "300px",
                 outline: "none",
               }}
             />
+
+            {/* Showing count */}
+            <span style={{ fontSize: "0.75rem", color: "#64748b", marginLeft: "auto" }}>
+              Showing {Math.min(visibleCount, filteredComplaints.length)} of{" "}
+              {filteredComplaints.length}
+            </span>
           </div>
         </div>
 
-        {/* Complaint Case Cards Grid */}
+        {/* Cards Grid */}
         {filteredComplaints.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "4rem 2rem", background: "rgba(13,33,55,0.4)", borderRadius: "16px", border: "1px dashed rgba(255,255,255,0.15)" }}>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "4rem 2rem",
+              background: "rgba(13,33,55,0.4)",
+              borderRadius: "16px",
+              border: "1px dashed rgba(255,255,255,0.15)",
+            }}
+          >
             <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem" }}>
               {activeTab === "solved" ? "🎉" : activeTab === "emergency" ? "🛡️" : "📂"}
             </div>
-            <h3 style={{ color: "#f8fafc", fontSize: "1.25rem", fontWeight: 800, margin: "0 0 0.5rem" }}>
+            <h3
+              style={{
+                color: "#f8fafc",
+                fontSize: "1.25rem",
+                fontWeight: 800,
+                margin: "0 0 0.5rem",
+              }}
+            >
               {activeTab === "solved"
                 ? "No Solved Cases Yet"
                 : activeTab === "emergency"
@@ -300,175 +522,522 @@ export function ActionDashboard({ user, complaints, buildId = "v1e601de" }: Acti
             </h3>
             <p style={{ color: "#94a3b8", fontSize: "0.88rem", margin: 0 }}>
               {searchQuery || selectedMandal !== "ALL"
-                ? "No complaints match your active filter parameters. Try clearing the search or mandal filter."
+                ? "No complaints match your filter. Try clearing search or mandal filter."
                 : activeTab === "solved"
-                ? "Cases marked as Solved or Resolved by staff will automatically appear here."
-                : "Live citizen submissions will automatically appear here as soon as they are filed."}
+                ? "Cases marked Solved or Resolved will appear here."
+                : "Live citizen submissions will appear here as they are filed."}
             </p>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "1.5rem" }}>
-            {filteredComplaints.map((c) => {
-              const ai = c.aiAnalysis;
-              const isEmergency =
-                ai?.urgency === "Emergency" || ai?.urgency === "Critical" || ai?.safetyEscalationRequired;
-              const title =
-                ai?.title || (c.description ? c.description.slice(0, 70) + "..." : "Grievance Report");
-              const summary = ai?.summary || c.description;
-              const deptLabel = getDepartmentLabel(c.assignedDepartment || c.department || ai?.department);
-              const isSolved = c.status === "Solved" || c.status === "Resolved";
+          <>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(min(340px, 100%), 1fr))",
+                gap: "1.25rem",
+              }}
+            >
+              {visibleComplaints.map((c) => {
+                const ai = c.aiAnalysis;
+                const isEmergency =
+                  ai?.urgency === "Emergency" ||
+                  ai?.urgency === "Critical" ||
+                  ai?.safetyEscalationRequired;
+                const isSpam = (ai?.spamScore ?? 0) >= 50;
+                const isDistress = ai?.distressFlag;
+                const isSolved = c.status === "Solved" || c.status === "Resolved";
+                const title =
+                  ai?.title ||
+                  (c.description ? c.description.slice(0, 70) + "..." : "Grievance Report");
+                const summary = ai?.summary || c.description;
+                const deptLabel = getDepartmentLabel(
+                  c.assignedDepartment || c.department || ai?.department
+                );
+                const mediaUrls = c.mediaUrls || [];
+                // First media for thumbnail — strip query string for type detection
+                const firstMedia = mediaUrls[0] ?? null;
+                const mediaBase = firstMedia ? firstMedia.split("?")[0] : "";
+                const firstIsImage = /\.(jpeg|jpg|png|webp|gif)$/i.test(mediaBase);
+                const firstIsVideo = /\.(mp4|webm|mov|avi|3gp|mkv)$/i.test(mediaBase);
+                const firstIsAudio = /\.(mp3|wav|ogg|m4a)$/i.test(mediaBase);
 
-              return (
-                <div
-                  key={c.id}
-                  style={{
-                    backgroundColor: "rgba(13,33,55,0.8)",
-                    border: `1.5px solid ${isEmergency ? "#ef4444" : isSolved ? "#10b981" : "rgba(255,255,255,0.1)"}`,
-                    borderRadius: "16px",
-                    padding: "1.5rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    gap: "1.25rem",
-                    boxShadow: isEmergency ? "0 4px 20px rgba(239,68,68,0.15)" : "0 4px 15px rgba(0,0,0,0.3)",
-                    position: "relative",
-                  }}
-                >
-                  {/* Card Header: Case ID, Stage Badge, Date */}
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.75rem" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
-                        <span style={{ fontSize: "0.85rem", fontWeight: 900, color: "#38bdf8", fontFamily: "monospace" }}>
-                          {c.id}
+                return (
+                  <div
+                    key={c.id}
+                    style={{
+                      backgroundColor: "rgba(13,33,55,0.85)",
+                      border: `1.5px solid ${
+                        isEmergency
+                          ? "#ef4444"
+                          : isSpam
+                          ? "#f97316"
+                          : isSolved
+                          ? "#10b981"
+                          : "rgba(255,255,255,0.1)"
+                      }`,
+                      borderRadius: "16px",
+                      padding: "1.25rem",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.9rem",
+                      boxShadow: isEmergency
+                        ? "0 4px 20px rgba(239,68,68,0.15)"
+                        : "0 4px 15px rgba(0,0,0,0.3)",
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {/* Emergency glow strip */}
+                    {isEmergency && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: "3px",
+                          background: "linear-gradient(90deg, #ef4444, #f97316, #ef4444)",
+                          backgroundSize: "200% 100%",
+                          animation: "shimmer 2s linear infinite",
+                        }}
+                      />
+                    )}
+
+                    {/* Card Header */}
+                    <div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          flexWrap: "wrap",
+                          gap: "0.5rem",
+                          marginBottom: "0.6rem",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: "0.82rem",
+                              fontWeight: 900,
+                              color: "#38bdf8",
+                              fontFamily: "monospace",
+                            }}
+                          >
+                            {c.id}
+                          </span>
+                          {c.isSample && (
+                            <span
+                              style={{
+                                fontSize: "0.63rem",
+                                padding: "1px 5px",
+                                borderRadius: "4px",
+                                background: "rgba(168,85,247,0.2)",
+                                color: "#c084fc",
+                                fontWeight: 700,
+                              }}
+                            >
+                              SAMPLE
+                            </span>
+                          )}
+                          {isSpam && (
+                            <span
+                              style={{
+                                fontSize: "0.63rem",
+                                padding: "1px 5px",
+                                borderRadius: "4px",
+                                background: "rgba(249,115,22,0.2)",
+                                color: "#fb923c",
+                                fontWeight: 700,
+                                border: "1px solid rgba(249,115,22,0.4)",
+                              }}
+                              title={ai?.spamReason || "Flagged as possible spam"}
+                            >
+                              ⚠️ SPAM?
+                            </span>
+                          )}
+                          {isDistress && !isEmergency && (
+                            <span
+                              style={{
+                                fontSize: "0.63rem",
+                                padding: "1px 5px",
+                                borderRadius: "4px",
+                                background: "rgba(239,68,68,0.15)",
+                                color: "#f87171",
+                                fontWeight: 700,
+                                border: "1px solid rgba(239,68,68,0.3)",
+                              }}
+                            >
+                              😰 Distress
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Status badge */}
+                        <span
+                          style={{
+                            fontSize: "0.7rem",
+                            padding: "3px 9px",
+                            borderRadius: "9999px",
+                            fontWeight: 800,
+                            backgroundColor:
+                              c.status === "Solved" || c.status === "Resolved"
+                                ? "rgba(16,185,129,0.2)"
+                                : c.status === "Viewed"
+                                ? "rgba(56,189,248,0.2)"
+                                : c.status === "More Information Requested"
+                                ? "rgba(251,191,36,0.2)"
+                                : c.status === "Contacted (No Response)"
+                                ? "rgba(249,115,22,0.2)"
+                                : c.status === "Escalated"
+                                ? "rgba(239,68,68,0.2)"
+                                : "rgba(255,255,255,0.1)",
+                            color:
+                              c.status === "Solved" || c.status === "Resolved"
+                                ? "#34d399"
+                                : c.status === "Viewed"
+                                ? "#38bdf8"
+                                : c.status === "More Information Requested"
+                                ? "#fbbf24"
+                                : c.status === "Contacted (No Response)"
+                                ? "#fb923c"
+                                : c.status === "Escalated"
+                                ? "#f87171"
+                                : "#cbd5e1",
+                            border: `1px solid ${
+                              c.status === "Solved" || c.status === "Resolved"
+                                ? "#10b981"
+                                : c.status === "Viewed"
+                                ? "#38bdf8"
+                                : c.status === "More Information Requested"
+                                ? "#fbbf24"
+                                : c.status === "Contacted (No Response)"
+                                ? "#f97316"
+                                : c.status === "Escalated"
+                                ? "#ef4444"
+                                : "rgba(255,255,255,0.2)"
+                            }`,
+                          }}
+                        >
+                          {c.status}
                         </span>
-                        {c.isSample && (
-                          <span style={{ fontSize: "0.65rem", padding: "1px 6px", borderRadius: "4px", background: "rgba(168,85,247,0.2)", color: "#c084fc", fontWeight: 700 }}>
-                            SAMPLE
+                      </div>
+
+                      {/* Title */}
+                      <h3
+                        style={{
+                          fontSize: "1rem",
+                          fontWeight: 900,
+                          color: "#ffffff",
+                          margin: "0 0 0.5rem",
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {title}
+                      </h3>
+
+                      {/* Location */}
+                      <div
+                        style={{
+                          fontSize: "0.78rem",
+                          color: "#94a3b8",
+                          marginBottom: "0.6rem",
+                          display: "flex",
+                          gap: "0.6rem",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <span>
+                          📍 <strong style={{ color: "#f8fafc" }}>{c.mandal || "N/A"}</strong>
+                        </span>
+                        {c.village && (
+                          <span>
+                            · <strong style={{ color: "#f8fafc" }}>{c.village}</strong>
                           </span>
                         )}
                       </div>
 
-                      {/* Status Stage Badge */}
-                      <span
+                      {/* AI Summary */}
+                      <div
                         style={{
-                          fontSize: "0.72rem",
-                          padding: "3px 10px",
-                          borderRadius: "9999px",
-                          fontWeight: 800,
-                          backgroundColor:
-                            c.status === "Solved" || c.status === "Resolved"
-                              ? "rgba(16,185,129,0.2)"
-                              : c.status === "Viewed"
-                              ? "rgba(56,189,248,0.2)"
-                              : c.status === "More Information Requested"
-                              ? "rgba(251,191,36,0.2)"
-                              : c.status === "Contacted (No Response)"
-                              ? "rgba(249,115,22,0.2)"
-                              : c.status === "Escalated"
-                              ? "rgba(239,68,68,0.2)"
-                              : "rgba(255,255,255,0.1)",
-                          color:
-                            c.status === "Solved" || c.status === "Resolved"
-                              ? "#34d399"
-                              : c.status === "Viewed"
-                              ? "#38bdf8"
-                              : c.status === "More Information Requested"
-                              ? "#fbbf24"
-                              : c.status === "Contacted (No Response)"
-                              ? "#fb923c"
-                              : c.status === "Escalated"
-                              ? "#f87171"
-                              : "#cbd5e1",
-                          border: `1px solid ${
-                            c.status === "Solved" || c.status === "Resolved"
-                              ? "#10b981"
-                              : c.status === "Viewed"
-                              ? "#38bdf8"
-                              : c.status === "More Information Requested"
-                              ? "#fbbf24"
-                              : c.status === "Contacted (No Response)"
-                              ? "#f97316"
-                              : c.status === "Escalated"
-                              ? "#ef4444"
-                              : "rgba(255,255,255,0.2)"
-                          }`,
+                          backgroundColor: "rgba(4,9,26,0.7)",
+                          padding: "0.75rem",
+                          borderRadius: "8px",
+                          border: "1px solid rgba(255,255,255,0.06)",
+                          fontSize: "0.8rem",
+                          color: "#cbd5e1",
+                          lineHeight: 1.55,
+                          marginBottom: "0.6rem",
                         }}
                       >
-                        {c.status}
-                      </span>
-                    </div>
-
-                    {/* RELEVANT TOP TITLE */}
-                    <h3 style={{ fontSize: "1.1rem", fontWeight: 900, color: "#ffffff", margin: "0 0 0.6rem", lineHeight: 1.4 }}>
-                      {title}
-                    </h3>
-
-                    {/* Location & Department */}
-                    <div style={{ fontSize: "0.8rem", color: "#94a3b8", marginBottom: "0.75rem", display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-                      <span>📍 Mandal: <strong style={{ color: "#f8fafc" }}>{c.mandal || "Not Specified"}</strong></span>
-                      {c.village && <span>Village: <strong style={{ color: "#f8fafc" }}>{c.village}</strong></span>}
-                    </div>
-
-                    {/* AI Deep Summary & Insights */}
-                    <div style={{ backgroundColor: "rgba(4,9,26,0.6)", padding: "0.85rem", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.06)", fontSize: "0.82rem", color: "#cbd5e1", lineHeight: 1.5, marginBottom: "0.85rem" }}>
-                      <div style={{ fontSize: "0.7rem", fontWeight: 800, color: "#fbbf24", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>
-                        🧠 AI Summary & Insights
+                        <div
+                          style={{
+                            fontSize: "0.68rem",
+                            fontWeight: 800,
+                            color: "#fbbf24",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em",
+                            marginBottom: "4px",
+                          }}
+                        >
+                          🧠 AI Summary
+                        </div>
+                        {summary.length > 160 ? summary.slice(0, 160) + "…" : summary}
                       </div>
-                      {summary.length > 180 ? summary.slice(0, 180) + "..." : summary}
-                    </div>
 
-                    {/* Department & Urgency Tags */}
-                    <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.72rem", padding: "2px 8px", borderRadius: "6px", backgroundColor: "rgba(56,189,248,0.1)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.25)", fontWeight: 700 }}>
-                        🏢 {deptLabel}
-                      </span>
+                      {/* Action Brief */}
+                      {ai?.actionBrief && (
+                        <div
+                          style={{
+                            backgroundColor: "rgba(251,191,36,0.05)",
+                            padding: "0.65rem 0.75rem",
+                            borderRadius: "8px",
+                            border: "1px solid rgba(251,191,36,0.15)",
+                            fontSize: "0.75rem",
+                            color: "#cbd5e1",
+                            marginBottom: "0.6rem",
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: "0.68rem",
+                              fontWeight: 800,
+                              color: "#fbbf24",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.04em",
+                              marginBottom: "3px",
+                            }}
+                          >
+                            ⚡ Action Brief · Deadline: {ai.actionBrief.deadline}
+                          </div>
+                          <span style={{ color: "#e2e8f0" }}>
+                            {ai.actionBrief.assignTo}
+                          </span>{" "}
+                          — {ai.actionBrief.exactAction.slice(0, 100)}
+                          {ai.actionBrief.exactAction.length > 100 ? "…" : ""}
+                        </div>
+                      )}
 
-                      <span style={{ fontSize: "0.72rem", padding: "2px 8px", borderRadius: "6px", backgroundColor: isEmergency ? "rgba(239,68,68,0.15)" : "rgba(251,191,36,0.12)", color: isEmergency ? "#f87171" : "#fbbf24", border: isEmergency ? "1px solid #ef4444" : "1px solid #fbbf24", fontWeight: 700 }}>
-                        ⚡ {ai?.urgency || "Routine"}
-                      </span>
-
-                      {(c.mediaUrls || []).length > 0 && (
-                        <span style={{ fontSize: "0.72rem", padding: "2px 8px", borderRadius: "6px", backgroundColor: "rgba(168,85,247,0.15)", color: "#c084fc", fontWeight: 700 }}>
-                          📎 {(c.mediaUrls || []).length} Evidence File(s)
+                      {/* Tags Row */}
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "0.4rem",
+                          flexWrap: "wrap",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: "0.7rem",
+                            padding: "2px 7px",
+                            borderRadius: "6px",
+                            backgroundColor: "rgba(56,189,248,0.1)",
+                            color: "#38bdf8",
+                            border: "1px solid rgba(56,189,248,0.25)",
+                            fontWeight: 700,
+                          }}
+                        >
+                          🏢 {deptLabel}
                         </span>
+
+                        <span
+                          style={{
+                            fontSize: "0.7rem",
+                            padding: "2px 7px",
+                            borderRadius: "6px",
+                            backgroundColor: isEmergency
+                              ? "rgba(239,68,68,0.15)"
+                              : "rgba(251,191,36,0.1)",
+                            color: isEmergency ? "#f87171" : "#fbbf24",
+                            border: isEmergency ? "1px solid #ef4444" : "1px solid #fbbf24",
+                            fontWeight: 700,
+                          }}
+                        >
+                          ⚡ {ai?.urgency || "Routine"}
+                        </span>
+
+                        {ai?.rootCauseTags?.domain && (
+                          <span
+                            style={{
+                              fontSize: "0.7rem",
+                              padding: "2px 7px",
+                              borderRadius: "6px",
+                              backgroundColor: "rgba(167,139,250,0.1)",
+                              color: "#a78bfa",
+                              fontWeight: 700,
+                            }}
+                          >
+                            🏷 {ai.rootCauseTags.domain}
+                          </span>
+                        )}
+
+                        {mediaUrls.length > 0 && (
+                          <span
+                            style={{
+                              fontSize: "0.7rem",
+                              padding: "2px 7px",
+                              borderRadius: "6px",
+                              backgroundColor: "rgba(168,85,247,0.15)",
+                              color: "#c084fc",
+                              fontWeight: 700,
+                            }}
+                          >
+                            📎 {mediaUrls.length} Evidence
+                          </span>
+                        )}
+
+                        {ai?.sentimentTone && ai.sentimentTone !== "informational" && (
+                          <span
+                            style={{
+                              fontSize: "0.7rem",
+                              padding: "2px 7px",
+                              borderRadius: "6px",
+                              backgroundColor:
+                                ai.sentimentTone === "angry" || ai.sentimentTone === "distressed"
+                                  ? "rgba(239,68,68,0.1)"
+                                  : "rgba(148,163,184,0.1)",
+                              color:
+                                ai.sentimentTone === "angry" || ai.sentimentTone === "distressed"
+                                  ? "#f87171"
+                                  : "#94a3b8",
+                              fontWeight: 700,
+                            }}
+                          >
+                            💬 {ai.sentimentTone}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* First Evidence Thumbnail */}
+                      {firstMedia && (
+                        <div style={{ marginTop: "0.65rem" }}>
+                          {firstIsImage && (
+                            <img
+                              src={firstMedia}
+                              alt="Evidence preview"
+                              style={{
+                                width: "100%",
+                                maxHeight: "160px",
+                                objectFit: "cover",
+                                borderRadius: "8px",
+                                border: "1px solid #334155",
+                              }}
+                            />
+                          )}
+                          {firstIsVideo && (
+                            <video
+                              src={firstMedia}
+                              controls
+                              preload="metadata"
+                              style={{
+                                width: "100%",
+                                maxHeight: "180px",
+                                borderRadius: "8px",
+                                border: "1px solid #334155",
+                                backgroundColor: "#000",
+                              }}
+                            />
+                          )}
+                          {firstIsAudio && (
+                            <audio
+                              src={firstMedia}
+                              controls
+                              style={{ width: "100%", marginTop: "4px" }}
+                            />
+                          )}
+                          {!firstIsImage && !firstIsVideo && !firstIsAudio && firstMedia && (
+                            <div
+                              style={{
+                                padding: "6px 10px",
+                                background: "rgba(15,23,42,0.6)",
+                                borderRadius: "6px",
+                                fontSize: "0.72rem",
+                                color: "#64748b",
+                              }}
+                            >
+                              📄 Document attached
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
-                  </div>
 
-                  {/* Card Footer: Take Action CTA Link */}
-                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "0.85rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
-                      Submitted: {new Date(c.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
-                    </div>
-
-                    <Link
-                      href={`/mla/complaint/${encodeURIComponent(c.id)}`}
+                    {/* Card Footer */}
+                    <div
                       style={{
-                        display: "inline-flex",
+                        borderTop: "1px solid rgba(255,255,255,0.06)",
+                        paddingTop: "0.75rem",
+                        display: "flex",
+                        justifyContent: "space-between",
                         alignItems: "center",
-                        gap: "0.35rem",
-                        padding: "0.55rem 1.1rem",
-                        borderRadius: "8px",
-                        background: "linear-gradient(135deg, #d97706, #fbbf24)",
-                        color: "#04091A",
-                        fontWeight: 900,
-                        fontSize: "0.82rem",
-                        textDecoration: "none",
-                        boxShadow: "0 2px 10px rgba(251,191,36,0.3)",
                       }}
                     >
-                      <span>Take Action</span>
-                      <span>→</span>
-                    </Link>
+                      <div style={{ fontSize: "0.7rem", color: "#64748b" }}>
+                        {new Date(c.createdAt).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </div>
+
+                      <Link
+                        href={`/mla/complaint/${encodeURIComponent(c.id)}`}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          padding: "0.5rem 1rem",
+                          borderRadius: "8px",
+                          background: "linear-gradient(135deg, #d97706, #fbbf24)",
+                          color: "#04091A",
+                          fontWeight: 900,
+                          fontSize: "0.8rem",
+                          textDecoration: "none",
+                          boxShadow: "0 2px 10px rgba(251,191,36,0.3)",
+                        }}
+                      >
+                        Take Action →
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+
+            {/* Load More */}
+            {hasMore && (
+              <div style={{ textAlign: "center", marginTop: "2rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                  style={{
+                    padding: "0.75rem 2rem",
+                    borderRadius: "10px",
+                    backgroundColor: "rgba(56,189,248,0.1)",
+                    border: "1px solid rgba(56,189,248,0.35)",
+                    color: "#38bdf8",
+                    fontWeight: 800,
+                    fontSize: "0.88rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  Load More ({filteredComplaints.length - visibleCount} remaining)
+                </button>
+              </div>
+            )}
+          </>
         )}
       </main>
 
-      {/* Real-Time Knowledge Assistant Chatbot */}
+      {/* AI Assistant Chatbot */}
       <MLAChatbot />
     </div>
   );

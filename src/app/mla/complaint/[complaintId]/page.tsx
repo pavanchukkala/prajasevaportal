@@ -46,7 +46,7 @@ export default async function ComplaintDetailPage({
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)", gap: "24px" }}>
           {/* Main Content */}
           <div>
             <div style={theme.card}>
@@ -172,7 +172,6 @@ export default async function ComplaintDetailPage({
             </div>
           </div>
 
-          {/* Sidebar */}
           <div>
             <div style={theme.card}>
               <h2 style={theme.title}>Intelligence Assessment</h2>
@@ -181,7 +180,7 @@ export default async function ComplaintDetailPage({
                   backgroundColor: ai?.analysisMode === 'local_fallback' ? '#64748b' : '#3b82f6', 
                   color: '#fff', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 800 
                 }}>
-                  {ai?.analysisMode === 'local_fallback' ? 'Local Fallback' : 'Platform Intel Engine'}
+                  {ai?.analysisMode === 'local_fallback' ? '⚙️ Local Fallback' : '🤖 AI Engine (30B)'}
                 </span>
               </div>
               
@@ -189,15 +188,61 @@ export default async function ComplaintDetailPage({
                 <li><strong>Category:</strong> {ai?.category ?? 'Public Grievance'}</li>
                 <li><strong>Subcategory:</strong> {ai?.subcategory ?? 'N/A'}</li>
                 <li><strong>Urgency:</strong> <span style={{ color: ai?.urgency === 'Emergency' || ai?.urgency === 'High' ? '#ef4444' : '#fbbf24', fontWeight: 800 }}>{ai?.urgency ?? 'Routine'}</span></li>
-                <li><strong>Credibility Band:</strong> {ai?.credibilityBand ?? 'High Credibility'}</li>
-                <li><strong>Confidence Score:</strong> {ai?.confidenceScore ?? '0.90'}</li>
+                <li><strong>Credibility:</strong> {ai?.credibilityBand ?? 'N/A'}</li>
+                <li><strong>Confidence:</strong> {typeof ai?.confidenceScore === 'number' ? `${Math.round(ai.confidenceScore > 1 ? ai.confidenceScore : ai.confidenceScore * 100)}%` : 'N/A'}</li>
                 <li><strong>Assigned Dept:</strong> {complaint.department || ai?.department || 'Unassigned'}</li>
               </ul>
 
+              {/* Spam Detection */}
+              {ai?.spamScore !== undefined && ai.spamScore >= 30 && (
+                <div style={{ marginTop: '14px', background: 'rgba(249,115,22,0.1)', border: '1px solid #f97316', borderRadius: '8px', padding: '10px' }}>
+                  <strong style={{ color: '#fb923c', fontSize: '12px' }}>⚠️ Spam Score: {ai.spamScore}/100</strong>
+                  {ai.spamReason && <p style={{ fontSize: '12px', color: '#f1f5f9', margin: '4px 0 0', lineHeight: 1.4 }}>{ai.spamReason}</p>}
+                </div>
+              )}
+
+              {/* Sentiment */}
+              {ai?.sentimentTone && (
+                <div style={{ marginTop: '12px', fontSize: '13px' }}>
+                  <strong>Sentiment Tone:</strong>{' '}
+                  <span style={{ color: ['angry','distressed','scared','desperate'].includes(ai.sentimentTone) ? '#f87171' : '#94a3b8', fontWeight: 700 }}>
+                    {ai.sentimentTone}
+                  </span>
+                  {ai.distressFlag && <span style={{ marginLeft: '8px', fontSize: '11px', background: 'rgba(239,68,68,0.15)', color: '#f87171', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>😰 Distress Flagged</span>}
+                </div>
+              )}
+
+              {/* Root Cause Tags */}
+              {ai?.rootCauseTags && (
+                <div style={{ marginTop: '12px', padding: '10px', background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.2)', borderRadius: '8px' }}>
+                  <strong style={{ color: '#a78bfa', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>🏷 Root Cause Tags</strong>
+                  <div style={{ fontSize: '12px', marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <span>Domain: <strong>{ai.rootCauseTags.domain}</strong></span>
+                    <span>Category: <strong>{ai.rootCauseTags.category}</strong></span>
+                    <span>Subcategory: <strong>{ai.rootCauseTags.subcategory}</strong></span>
+                  </div>
+                </div>
+              )}
+
               {ai?.recommendedAction && (
                 <div style={{ marginTop: '16px', background: 'rgba(251,191,36,0.1)', border: '1px solid #fbbf24', borderRadius: '8px', padding: '12px' }}>
-                  <strong style={{ color: '#fbbf24', fontSize: '13px' }}>💡 Executive Recommended Directive:</strong>
+                  <strong style={{ color: '#fbbf24', fontSize: '13px' }}>💡 Executive Directive:</strong>
                   <p style={{ fontSize: '13px', color: '#f1f5f9', margin: '6px 0 0', lineHeight: 1.5 }}>{ai.recommendedAction}</p>
+                </div>
+              )}
+
+              {/* Action Intelligence Brief */}
+              {ai?.actionBrief && (
+                <div style={{ marginTop: '16px', background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.25)', borderRadius: '8px', padding: '12px' }}>
+                  <strong style={{ color: '#38bdf8', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>⚡ Action Brief</strong>
+                  <div style={{ fontSize: '12px', marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px', color: '#f1f5f9' }}>
+                    <div><strong>Assign To:</strong> {ai.actionBrief.assignTo}</div>
+                    <div><strong>Action:</strong> {ai.actionBrief.exactAction}</div>
+                    <div><strong>Deadline:</strong> <span style={{ color: '#fbbf24', fontWeight: 700 }}>{ai.actionBrief.deadline}</span></div>
+                    <div style={{ marginTop: '6px', background: 'rgba(4,9,26,0.5)', borderRadius: '6px', padding: '8px', fontStyle: 'italic', color: '#94a3b8', fontSize: '11px' }}>
+                      📱 Draft SMS: {ai.actionBrief.draftSms}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

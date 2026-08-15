@@ -43,7 +43,7 @@ export default function MLASidebarNav({ currentNav, counts }: MLASidebarNavProps
             Srikalahasti No. 168
           </div>
           <h2 style={{ fontSize: "16px", color: "#ffffff", margin: "4px 0 0", fontWeight: 900 }}>
-            MLA Staff Workspace
+            Action Dashboard
           </h2>
         </div>
 

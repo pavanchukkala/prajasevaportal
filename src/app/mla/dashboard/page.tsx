@@ -8,8 +8,8 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata = {
-  title: "Action Dashboard — Srikalahasti Executive Command Centre",
-  description: "Executive Action Dashboard for reviewing citizen grievances, assigning field operations, and resolving constituency issues.",
+  title: "Action Dashboard — Srikalahasti Praja Seva Intelligence Platform",
+  description: "Action Dashboard for reviewing citizen grievances, triaging emergency cases, assigning field operations, and resolving constituency issues in Srikalahasti No. 168.",
 };
 
 export default async function ActionDashboardPage() {
