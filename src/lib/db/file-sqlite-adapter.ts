@@ -110,6 +110,7 @@ export class FileSqliteAdapter implements IDatabaseAdapter {
       assignedDepartment?: string;
       internalNote?: string;
       mediaUrl?: string;
+      citizenMessage?: string;
       actor?: string;
     }
   ): Promise<ComplaintData | null> {
@@ -158,6 +159,17 @@ export class FileSqliteAdapter implements IDatabaseAdapter {
         const cleanFilename = updates.mediaUrl.split("?")[0].split("/").pop() || "File";
         auditLog.push({ timestamp: now, action: `Evidence attached: ${cleanFilename}`, actor });
       }
+    }
+
+    if (updates.citizenMessage && updates.citizenMessage.trim()) {
+      const msgs = complaint.citizenMessages ? [...complaint.citizenMessages] : [];
+      msgs.push({
+        timestamp: now,
+        message: updates.citizenMessage.trim(),
+        author: actor,
+      });
+      complaint.citizenMessages = msgs;
+      auditLog.push({ timestamp: now, action: "Message sent to citizen", actor });
     }
 
     complaint.auditLog = auditLog;

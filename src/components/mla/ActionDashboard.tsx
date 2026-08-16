@@ -67,6 +67,198 @@ const URGENCY_ORDER: Record<string, number> = {
 
 const PAGE_SIZE = 20;
 
+// ── PSIP Intelligence Engine Command Banner ──────────────────────────────────
+function PSIPCommandBanner({
+  totalCount,
+  liveCount,
+  emergencyCount,
+  solvedCount,
+  spamFlaggedCount,
+  activeQueueCount,
+  username,
+}: {
+  totalCount: number;
+  liveCount: number;
+  emergencyCount: number;
+  solvedCount: number;
+  spamFlaggedCount: number;
+  activeQueueCount: number;
+  username: string;
+}) {
+  const [lineIdx, setLineIdx] = React.useState(0);
+  const [visible, setVisible] = React.useState(true);
+
+  const statusLines = React.useMemo(() => [
+    `PSIP Intelligence Engine — Online and operational. ${liveCount} live citizen reports loaded.`,
+    emergencyCount > 0
+      ? `⚠ ALERT: ${emergencyCount} case${emergencyCount > 1 ? "s" : ""} require immediate executive attention.`
+      : `All incoming cases within normal urgency thresholds. No emergency escalations pending.`,
+    `${activeQueueCount} cases in active queue. ${solvedCount} resolved to date.`,
+    spamFlaggedCount > 0
+      ? `${spamFlaggedCount} case${spamFlaggedCount > 1 ? "s" : ""} flagged with elevated spam probability — review before escalating.`
+      : `Spam analysis complete. No suspicious submissions detected in current dataset.`,
+    `I am PSIP-AI — Purpose-built for Srikalahasti Praja Seva. Every citizen's voice is analyzed with precision.`,
+    `Welcome back, ${username}. Srikalahasti No. 168 — ${totalCount} intelligence records available for review.`,
+    `AI department routing active. All new complaints are auto-assigned using 30B model analysis.`,
+    `Citizen communication channel operational. Executive messages are delivered to public tracking pages in real-time.`,
+  ], [totalCount, liveCount, emergencyCount, solvedCount, spamFlaggedCount, activeQueueCount, username]);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setLineIdx((prev) => (prev + 1) % statusLines.length);
+        setVisible(true);
+      }, 400);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [statusLines.length]);
+
+  return (
+    <div
+      style={{
+        background: "linear-gradient(135deg, rgba(13,33,55,0.95), rgba(4,9,26,0.9))",
+        border: "1px solid rgba(212,160,23,0.25)",
+        borderRadius: "18px",
+        padding: "1.5rem 1.75rem",
+        marginBottom: "2rem",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Animated shimmer top bar */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "3px",
+          background: emergencyCount > 0
+            ? "linear-gradient(90deg, #ef4444, #f97316, #fbbf24, #f97316, #ef4444)"
+            : "linear-gradient(90deg, #fbbf24, #38bdf8, #a78bfa, #38bdf8, #fbbf24)",
+          backgroundSize: "200% 100%",
+          animation: "shimmer 2.5s linear infinite",
+        }}
+      />
+
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "16px" }}>
+        {/* AI Avatar */}
+        <div
+          style={{
+            width: "48px",
+            height: "48px",
+            borderRadius: "50%",
+            background: "linear-gradient(135deg, #0D2137, #162f4a)",
+            border: "2px solid rgba(212,160,23,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "20px",
+            flexShrink: 0,
+            boxShadow: "0 0 20px rgba(212,160,23,0.2)",
+          }}
+        >
+          🤖
+        </div>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Identity line */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px", flexWrap: "wrap" }}>
+            <span style={{ fontSize: "12px", fontWeight: 900, color: "#fbbf24", letterSpacing: "0.02em" }}>
+              PSIP Intelligence Engine
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              <div
+                style={{
+                  width: "7px",
+                  height: "7px",
+                  borderRadius: "50%",
+                  background: "#10b981",
+                  boxShadow: "0 0 8px rgba(16,185,129,0.8)",
+                  animation: "pulseDot 2s ease infinite",
+                }}
+              />
+              <span style={{ fontSize: "10px", color: "#34d399", fontWeight: 700 }}>ONLINE</span>
+            </div>
+            <span style={{ fontSize: "10px", color: "#475569" }}>·</span>
+            <span style={{ fontSize: "10px", color: "#475569", fontWeight: 600 }}>
+              30B Parameter Model · Srikalahasti Constituency No. 168
+            </span>
+          </div>
+
+          {/* Typewriter status line */}
+          <div
+            style={{
+              fontSize: "0.9rem",
+              lineHeight: 1.5,
+              minHeight: "1.4em",
+              transition: "opacity 0.35s ease",
+              opacity: visible ? 1 : 0,
+              fontWeight: emergencyCount > 0 && lineIdx === 1 ? 700 : 500,
+              color: emergencyCount > 0 && lineIdx === 1 ? "#fbbf24" : "#e2e8f0",
+            }}
+          >
+            {statusLines[lineIdx]}
+          </div>
+
+          {/* Mission statement */}
+          <div style={{ fontSize: "10px", color: "#334155", marginTop: "8px", fontStyle: "italic" }}>
+            "Every complaint is a data point. Every data point is a citizen. Every citizen deserves a resolution."
+          </div>
+        </div>
+      </div>
+
+      {/* Stat ribbon */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))",
+          gap: "10px",
+          marginTop: "16px",
+          paddingTop: "16px",
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+        }}
+      >
+        {[
+          { label: "Total Records", value: totalCount, color: "#94a3b8" },
+          { label: "Live Citizens", value: liveCount, color: "#60a5fa" },
+          { label: "Active Queue", value: activeQueueCount, color: "#fbbf24" },
+          { label: "Emergency", value: emergencyCount, color: emergencyCount > 0 ? "#ef4444" : "#64748b" },
+          { label: "Resolved", value: solvedCount, color: "#10b981" },
+          { label: "Spam Flagged", value: spamFlaggedCount, color: spamFlaggedCount > 0 ? "#f97316" : "#64748b" },
+        ].map(({ label, value, color }) => (
+          <div key={label} style={{ textAlign: "center" }}>
+            <div
+              style={{
+                fontSize: "1.3rem",
+                fontWeight: 900,
+                color,
+                lineHeight: 1,
+                fontFamily: "monospace",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {value}
+            </div>
+            <div style={{ fontSize: "9px", color: "#475569", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: "3px" }}>
+              {label}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* CSS animations (scoped via style tag) */}
+      <style>{`
+        @keyframes pulseDot {
+          0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(16,185,129,0.8); }
+          50% { opacity: 0.5; box-shadow: 0 0 4px rgba(16,185,129,0.3); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 export function ActionDashboard({ user, complaints, buildId = "v1e601de" }: ActionDashboardProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"active" | "emergency" | "solved">("active");
@@ -171,6 +363,17 @@ export function ActionDashboard({ user, complaints, buildId = "v1e601de" }: Acti
           padding: "clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem",
         }}
       >
+        {/* ── PSIP INTELLIGENCE ENGINE — COMMAND INTERFACE ──────────────────── */}
+        <PSIPCommandBanner
+          totalCount={totalCount}
+          liveCount={liveCount}
+          emergencyCount={emergencyCount}
+          solvedCount={solvedCount}
+          spamFlaggedCount={spamFlaggedCount}
+          activeQueueCount={activeQueueCount}
+          username={user?.username ?? "Commander"}
+        />
+
         {/* Title Row */}
         <div
           style={{

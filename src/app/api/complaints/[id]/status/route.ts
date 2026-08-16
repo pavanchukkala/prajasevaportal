@@ -7,7 +7,6 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // Auth check
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -16,11 +15,11 @@ export async function PATCH(
   const { id } = await params;
   const body = await req.json();
 
-  // Support both standard payload names and client form aliases
   const status = body.status;
   const assignedDepartment = body.assignedDepartment || body.department;
   const assignedTo = body.assignedTo || body.assignee;
   const internalNote = body.internalNote || body.internalNotes;
+  const citizenMessage = body.citizenMessage;
 
   const validStatuses = [
     "New",
@@ -50,6 +49,7 @@ export async function PATCH(
     assignedTo,
     assignedDepartment,
     internalNote,
+    citizenMessage,
     actor: session.username,
   });
 
@@ -57,11 +57,13 @@ export async function PATCH(
     return NextResponse.json({ error: "Complaint not found." }, { status: 404 });
   }
 
-  // Trigger notification provider if citizen consented to notifications
+  // Trigger notification provider if citizen consented
   let notificationRecord = null;
   if (status && updated.consentGiven && updated.mobileNumber) {
     const messageType = status === "Resolved" || status === "Solved" ? "resolved" : "status_changed";
-    const text = `Update on Complaint ${updated.id}: Status changed to "${status}". Track at /track.`;
+    const text = citizenMessage
+      ? `Update on Complaint ${updated.id}: ${citizenMessage} Track at /track.`
+      : `Update on Complaint ${updated.id}: Status changed to "${status}". Track at /track.`;
 
     notificationRecord = await notifier.sendNotification({
       complaintId: updated.id,
@@ -90,6 +92,7 @@ export async function PATCH(
     assignedDepartment: updated.assignedDepartment,
     assignedTo: updated.assignedTo,
     internalNotes: updated.internalNotes,
+    citizenMessages: updated.citizenMessages,
     updatedAt: updated.updatedAt,
     auditLog: updated.auditLog,
     notificationStatus: notificationRecord
@@ -99,7 +102,7 @@ export async function PATCH(
           responseId: notificationRecord.providerResponseId,
         }
       : { provider: notifier.providerName, status: "No consent or mobile number provided" },
-    message: `Complaint ${updated.id} status updated to "${updated.status}".`,
+    message: `Complaint ${updated.id} updated successfully.`,
   });
 }
 

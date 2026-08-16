@@ -95,7 +95,9 @@ export interface ComplaintData {
       deadline: string;
       draftSms: string;
     };
+    moralSupportMessage?: string;
   };
+  citizenMessages?: Array<{ timestamp: string; message: string; author: string }>;
   dataSource: "citizen_submission" | "sample_presentation";
   isSample: boolean;
   internalNotes?: string[];
@@ -164,6 +166,7 @@ export const db = {
         assignedDepartment?: string;
         internalNote?: string;
         mediaUrl?: string;   // Evidence attachment URL — passed through to adapter
+        citizenMessage?: string;  // Message shown to citizen on tracking page
         actor?: string;
       }
     ): Promise<ComplaintData | null> {

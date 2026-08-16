@@ -135,9 +135,11 @@ export default async function ComplaintDetailPage({
                 complaintId={complaint.id}
                 initialMediaUrls={complaint.mediaUrls || []}
                 currentStatus={complaint.status}
-                currentDept={complaint.department}
+                currentDept={complaint.assignedDepartment || complaint.department}
                 currentNotes={complaint.internalNotes}
+                aiAnalysis={ai ?? undefined}
               />
+
 
               {complaint.internalNotes && (
                 <div style={theme.section}>

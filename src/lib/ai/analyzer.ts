@@ -71,6 +71,8 @@ export interface AIAnalysisResult {
     deadline: string;
     draftSms: string;
   };
+  /** Dynamic AI-generated moral support message for the citizen, shown on submission success and track page */
+  moralSupportMessage?: string;
 }
 
 const LEGAL_DISCLAIMER =
@@ -346,6 +348,11 @@ export function localAnalysis(payload: ComplaintPayload): AIAnalysisResult {
       deadline: urgency === "Critical" || urgency === "Emergency" ? "Immediate" : urgency === "High" ? "24 hours" : urgency === "Priority" ? "72 hours" : "7 working days",
       draftSms: `Your complaint received. ${department} will review within ${urgency === "Critical" ? "1 hour" : urgency === "Emergency" ? "2 hours" : "48 hours"}. Track at Srikalahasti Praja Seva Portal.`,
     },
+    moralSupportMessage: isSafetyCase
+      ? "You are safe. You have been heard. Emergency protocols are now active and the executive team will contact you immediately. Srikalahasti Praja Seva stands with you."
+      : urgency === "High" || urgency === "Emergency" || urgency === "Critical"
+      ? "We have received your complaint with high priority. The concerned department has been alerted and will take urgent action. Srikalahasti Praja Seva is committed to resolving this swiftly."
+      : `We have received your complaint about ${category.toLowerCase()} and it is now in the executive review queue. Your concern is important to us and will be addressed within the committed timeframe. Srikalahasti Praja Seva stands with you.`,
   };
 }
 
@@ -389,6 +396,15 @@ Generate an actionable directive:
 - actionBrief.deadline: expected resolution timeframe (e.g., "72 hours", "7 working days", "Immediate")
 - actionBrief.draftSms: a 160-character draft SMS in Telugu/English to send the citizen confirming receipt and next step
 
+===== LAYER 6: MORAL SUPPORT MESSAGE =====
+Generate a warm, human, empathetic 2-3 sentence message for the citizen who submitted this complaint:
+- moralSupportMessage: Written in simple English (or Telugu if complaint is in Telugu). Must feel human and warm, NOT bureaucratic.
+- For safety/violence complaints: Express urgency, assure them they are protected, mention emergency protocols activated.
+- For pension/welfare delays: Acknowledge the hardship, reassure quick review, express solidarity.
+- For infrastructure (roads/water/power): Validate the inconvenience, commit to swift departmental action.
+- For corruption/misconduct: Acknowledge the courage it took to speak up, assure confidential review.
+- Always end with a line of strength: "Srikalahasti Praja Seva stands with you."
+
 ===== COMPLAINT DATA =====
 Description: ${payload.description}
 Mandal: ${payload.mandal}
@@ -424,7 +440,8 @@ Return ONLY a valid JSON object with ALL these fields:
     "exactAction": "Conduct site inspection within 48 hours. Issue work order to contractor for repair completion within 7 days.",
     "deadline": "7 working days",
     "draftSms": "Namaskaram! Your complaint (ID: SKT-XXXX) received. R&B Dept will inspect within 48hrs. Thank you. -Srikalahasti Praja Seva"
-  }
+  },
+  "moralSupportMessage": "We have received your complaint and it is being reviewed by the Srikalahasti executive team. Your voice matters and this issue will be addressed within the committed timeframe. Thank you for trusting Praja Seva with your concern."
 }`;
 
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {

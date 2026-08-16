@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Run AI analysis
+    // Run AI analysis (30B model — all 6 intelligence layers)
     const aiResult = await analyzeComplaint({
       description: description.trim(),
       mandal,
@@ -43,12 +43,11 @@ export async function POST(req: NextRequest) {
       hasAudio: hasAudio ?? false,
     });
 
-    // Mask mobile number for storage (server only stores masked version in public fields)
+    // Mask mobile number for storage
     let mobileNumberMasked: string | undefined;
     let rawMobile: string | undefined;
     if (!isAnonymous && mobileNumber && consentGiven) {
       rawMobile = mobileNumber.replace(/\D/g, "");
-      // Only mask — never expose raw number via API response
       mobileNumberMasked = `+91 ******${rawMobile!.slice(-4)}`;
     }
 
@@ -65,7 +64,6 @@ export async function POST(req: NextRequest) {
       dataSource: "citizen_submission",
       isSample: false,
       isAnonymous: isAnonymous ?? true,
-      // Only store mobile if consent given
       mobileNumber: consentGiven ? rawMobile : undefined,
       mobileNumberMasked: consentGiven ? mobileNumberMasked : undefined,
       mobileVerified: false,
@@ -76,7 +74,6 @@ export async function POST(req: NextRequest) {
       email: !isAnonymous && email ? email : undefined,
     });
 
-    // Log notification intent (no real provider connected in demo)
     if (consentGiven && mobileNumberMasked) {
       await db.notifications.log({
         complaintId: complaint.id,
@@ -84,7 +81,7 @@ export async function POST(req: NextRequest) {
         recipientMasked: mobileNumberMasked,
         messageType: "complaint_received",
         providerStatus: "no_provider",
-        failureReason: "SMS provider not configured in this deployment. Notification queued for when provider is connected.",
+        failureReason: "SMS provider not configured in this deployment.",
       });
     }
 
@@ -97,7 +94,6 @@ export async function POST(req: NextRequest) {
         mandal: complaint.mandal,
         department: aiResult.department,
         aiAnalysis: {
-          // Return safe subset for display — never include raw mobile
           title: aiResult.title,
           category: aiResult.category,
           subcategory: aiResult.subcategory,
@@ -111,7 +107,15 @@ export async function POST(req: NextRequest) {
           humanReviewRequired: true,
           analysisMode: aiResult.analysisMode,
           legalDisclaimer: aiResult.legalDisclaimer,
+          // New fields
+          spamScore: aiResult.spamScore,
+          sentimentTone: aiResult.sentimentTone,
+          distressFlag: aiResult.distressFlag,
+          rootCauseTags: aiResult.rootCauseTags,
+          actionBrief: aiResult.actionBrief,
         },
+        // Dynamic AI moral support message for citizen
+        moralSupportMessage: aiResult.moralSupportMessage ?? null,
         notificationStatus: consentGiven
           ? "Notification queued — SMS provider not yet connected in this deployment."
           : "No notification requested.",
@@ -137,7 +141,6 @@ export async function GET(req: NextRequest) {
     ? await db.complaints.listLive()
     : await db.complaints.list();
 
-  // Strip sensitive mobile data from list response
   const safe = complaints.map((c) => ({
     id: c.id,
     status: c.status,
@@ -159,7 +162,7 @@ export async function GET(req: NextRequest) {
           analysisMode: c.aiAnalysis.analysisMode,
         }
       : null,
-    mobileNumberMasked: c.mobileNumberMasked, // masked only — never raw
+    mobileNumberMasked: c.mobileNumberMasked,
     consentGiven: c.consentGiven,
   }));
 

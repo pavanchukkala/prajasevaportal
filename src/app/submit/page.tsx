@@ -122,6 +122,7 @@ interface SubmitResult {
   mandal: string;
   department: string;
   createdAt: string;
+  moralSupportMessage?: string | null;
   aiAnalysis: {
     title: string;
     category: string;
@@ -386,6 +387,37 @@ export default function SubmitPage() {
     return (
       <main style={{ minHeight: "100vh", background: "#04091A", color: "#f0f4f8", padding: "2rem" }}>
         <div style={{ maxWidth: "640px", margin: "0 auto" }}>
+          {/* ── MORAL SUPPORT MESSAGE — AI-generated, dynamic ── */}
+          {result.moralSupportMessage && (
+            <div
+              style={{
+                background: "linear-gradient(135deg, rgba(13,33,55,0.95), rgba(4,9,26,0.85))",
+                border: "1.5px solid rgba(212,160,23,0.45)",
+                borderRadius: "20px",
+                padding: "1.5rem",
+                marginBottom: "1.25rem",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: "linear-gradient(90deg, #fbbf24, #f59e0b, #D4A017)" }} />
+              <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+                <div style={{ width: "46px", height: "46px", borderRadius: "50%", background: "linear-gradient(135deg, #0D2137, #162f4a)", border: "2px solid rgba(212,160,23,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", flexShrink: 0, boxShadow: "0 0 20px rgba(212,160,23,0.25)" }}>🤖</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: "10px", fontWeight: 800, color: "#fbbf24", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>
+                    PSIP Intelligence Engine · A Word of Support
+                  </div>
+                  <p style={{ fontSize: "1rem", color: "#e2e8f0", lineHeight: 1.75, margin: 0, fontStyle: "italic", fontWeight: 500 }}>
+                    "{result.moralSupportMessage}"
+                  </p>
+                  <div style={{ fontSize: "11px", color: "#475569", marginTop: "10px" }}>
+                    AI-generated support message · Context-aware · Srikalahasti Praja Seva
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Success header */}
           <div style={{ textAlign: "center", marginBottom: "2rem" }}>
             <div style={{ width: "88px", height: "88px", borderRadius: "50%", background: "rgba(34,197,94,0.1)", border: "2px solid rgba(34,197,94,0.4)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.5rem", fontSize: "2.25rem", boxShadow: "0 0 40px rgba(34,197,94,0.15)" }}>✅</div>
