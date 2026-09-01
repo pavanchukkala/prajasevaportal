@@ -60,6 +60,14 @@ export const leadershipConfig: LeadershipConfig = {
   
   stateAndNationalLeaders: [
     {
+      id: "pm",
+      name: "Sri Narendra Modi",
+      title: "Prime Minister of India",
+      role: "National Leadership",
+      assetKey: "pm",
+      quote: "Digital India empowering citizens at the grassroots level."
+    },
+    {
       id: "cm",
       name: "Sri N. Chandrababu Naidu",
       title: "Chief Minister of Andhra Pradesh",
@@ -74,22 +82,6 @@ export const leadershipConfig: LeadershipConfig = {
       role: "Digital Technology Leadership",
       assetKey: "lokesh",
       quote: "Leveraging technology to bring transparency and efficient public service delivery."
-    },
-    {
-      id: "pm",
-      name: "Sri Narendra Modi",
-      title: "Prime Minister of India",
-      role: "National Leadership",
-      assetKey: "pm",
-      quote: "Digital India empowering citizens at the grassroots level."
-    },
-    {
-      id: "ntr",
-      name: "Dr. N. T. Rama Rao (NTR)",
-      title: "Founder, Telugu Desam Party",
-      role: "Party Founder & Visionary",
-      assetKey: "ntr",
-      quote: "Society is the temple. People are the deities."
     }
   ],
   

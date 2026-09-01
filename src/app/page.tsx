@@ -191,9 +191,9 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Unified Leadership Gallery (6 Cards with Equal Size & Visual Importance) */}
+          {/* Unified Leadership Gallery (5 Cards with Equal Size & Visual Importance) */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.75rem" }}>
-            {[mla, father, lokesh, cm, ntr, pm].map((item) => (
+            {[pm, cm, lokesh, father, mla].map((item) => (
               <div key={item.id} style={{
                 background: "var(--bg-elevated)",
                 color: "var(--text-main)",
